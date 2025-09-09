@@ -1,0 +1,1270 @@
+{% if customer %}
+
+<!-- Incluye los estilos y scripts necesarios -->
+<link rel="stylesheet" href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" />
+<script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  .container-duck {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    }
+      a{
+      text-decoration: none;
+    color: red;
+      }
+  </style>
+
+
+
+
+
+
+
+
+
+<div style="padding-left: 20px; padding-right: 20px; background-color: white;" class="container-duck">
+
+    <div class="page__sub-header">
+      <nav aria-label="{{ 'general.breadcrumb.title' | t }}" class="breadcrumb">
+        <ol class="breadcrumb__list" role="list">
+          <li style="color: grey;" class="breadcrumb__item">
+            <a style="text-decoration: none; color: grey;" class="breadcrumb__link link" href="{{ routes.root_url }}">{{ 'general.breadcrumb.home' | t }}</a> {%- render 'icon', icon: 'arrow-right' -%}
+          </li>
+
+          <li style="color: grey;" class="breadcrumb__item">
+            <a style="text-decoration: none; color: grey;" class="breadcrumb__link link" href="{{ routes.account_url }}">{{ 'general.breadcrumb.account' | t }}</a> {%- render 'icon', icon: 'arrow-right' -%}
+          </li>
+
+          <li style="color: grey;" class="breadcrumb__item">
+            <span class="breadcrumb__link" aria-current="page">Mis RMA</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+
+
+  <h1 style="text-align: center;">Mis Solicitudes de Servicio Técnico (RMA)</h1>
+  <div style="text-align: center;">
+  <p>Dirección de envío: Av. Apoquindo 6415 Of. 115, Las Condes - Santiago, Chile. (LUN a VIER de 09:00 a 16:00 hrs)</p>
+  </div>
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button class="button-primary" onclick="window.location.href='https://colvinycia.cl/pages/creacion-rma'">Crear Nueva Solicitud de Servicio Técnico (RMA)</button>
+  </div>
+
+{% style %}
+     .button-primary {
+    background-color: #de0101 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+  }
+ 
+ 
+
+  .button-primary:hover {
+    background-color: #b80000 !important;
+    color: white !important;
+  }
+{% endstyle %}
+
+
+  <div id="grid" style="background-color: white;"></div>
+</div>
+
+<!-- Modal -->
+<div id="modal-overlay" class="modal-overlay" style="display: none;">
+  <div id="modal-content" class="modal-content">
+    <!-- El contenido dinámico se inyectará aquí -->
+  </div>
+    
+</div>
+  <div  class="container-duck">*RMA: Retorno de Material Autorizado</div>
+
+
+<style>
+  /* Estilos para el modal y responsividad */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 500;
+  }
+
+  .modal-content {
+    background-color: #fff;
+    margin: 15px auto auto auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90%;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .modal-content.small {
+    width: 90%;
+    max-width: 500px;
+  }
+
+  .close-modal, .back-button {
+    position: absolute;
+    top: 10px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 20px;
+  }
+
+  .close-modal {
+    right: 10px;
+  }
+
+  .back-button {
+    left: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .modal-content {
+      width: 95%;
+      margin: 5% auto;
+    }
+  }
+
+  /* Estilos para el formulario de subida de archivos */
+  .file-drop-area {
+    border: 2px dashed #ccc;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+  }
+
+  .file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #de0101;
+  }
+
+  .file-drop-area input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+  }
+
+  .file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #00bfff;
+    background-color: transparent;
+    color: #00bfff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .file-drop-area button:hover {
+    background-color: #00bfff;
+    color: white;
+  }
+
+  .file-list {
+    margin-top: 10px;
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .file-list li {
+    background-color: #f0f0f0;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .file-list li span {
+    margin-right: 10px;
+  }
+
+  .remove-file {
+    cursor: pointer;
+    color: red;
+    font-weight: bold;
+  }
+
+  /* Estilo para los campos obligatorios */
+  .required::after {
+    content: ' *';
+    color: red;
+  }
+
+  /* Texto para archivos no válidos en rojo */
+  .invalid-file {
+    color: red;
+  }
+
+  /* Ocultar campos */
+  .hidden {
+    display: none;
+  }
+
+  /* Texto explicativo */
+  .explanation {
+    font-size: 12px;
+    color: red;
+  }
+
+  /* Estilos para las columnas del grid */
+  .gridjs-th[data-column-id="numero"], .gridjs-td[data-column-id="numero"] {
+    width: 50px;
+  }
+
+  .gridjs-th[data-column-id="acciones"], .gridjs-td[data-column-id="acciones"] {
+    width: 80px;
+  }
+
+  /* Reducir padding lateral en columnas */
+  .gridjs-table th, .gridjs-table td {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  td {
+ 
+      padding-right: 10px;
+  }
+</style>
+
+<script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  document.addEventListener('DOMContentLoaded', function() {
+
+     const customerEmail = "{{ customer.email | escape }}"; // Escapa caracteres especiales
+
+    // Obtener datos de Liquid
+    const data = [
+      {% assign rmas = shop.metaobjects.rma.values | reverse %}
+      {% assign rma_index = 0 %}
+      {% for rma in rmas %}
+        {% if rma.cliente.value contains customer.id %}
+          {% if rma_index > 0 %},{% endif %}
+
+
+{% assign facturas_detalle = '' %}
+{% if rma.factura.value %}
+  {% assign facturas_detalle = rma.factura.value %}
+{% endif %}
+
+{% assign guias_detalle = '' %}
+{% if rma.guia_de_despacho.value %}
+  {% assign guias_detalle = rma.guia_de_despacho.value %}
+{% endif %}
+          
+          {
+            numero: {{ rma.numero_de_rma.value }},
+            id: "{{ rma.system.id }}",            
+            estado: "{{ rma.estado_para_el_cliente.value }}",
+            producto: "Serie: {{ rma.serie_de_producto.value.serie_de_producto.value }}<br>Nombre: {{ rma.serie_de_producto.value.nombre_de_producto.value }}",
+            serie: "{{ rma.serie_de_producto.value.serie_de_producto.value }}",
+            nombre: "{{ rma.serie_de_producto.value.nombre_de_producto.value }}",
+            observaciones: {{ rma.observaciones.value | json }},
+            fechaEstimada: "{{ rma.fecha_de_envio_estimada.value | date: '%d/%m/%Y' }}",
+            fechaDeCreacion: "{{ rma.fecha_de_creacion.value | date: '%d/%m/%Y %H:%M hrs' }}",
+            accesorios: "{{ rma.accesorios_agregados.value }}",
+            archivos: [
+              {% if rma.archivos_del_cliente.value %}
+                {% for archivo in rma.archivos_del_cliente.value %}
+                  {
+                    nombre: "Descargar Archivo",
+                    {% assign archivo_tipo = archivo | file_url %}
+                    {% if archivo_tipo contains 'files/files' %}
+                      {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+                    {% endif %}
+                    url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+                    tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+                  }{% if forloop.last == false %},{% endif %}
+                {% endfor %}
+              {% else %}
+                {
+                  mensaje: "No hay archivos aún"
+                }
+              {% endif %}
+            ],
+            archivosProducto: [
+              {% if rma.serie_de_producto.value.archivos_adjuntos_de_calibracion.value %}
+                {% for archivo in rma.serie_de_producto.value.archivos_adjuntos_de_calibracion.value %}
+                  {
+                    nombre: "Descargar Archivo",
+                    {% assign archivo_tipo = archivo | file_url %}
+                    {% if archivo_tipo contains 'files/files' %}
+                      {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+                    {% endif %}
+                    url: "{% if archivo_tipo contains 'VideoDrop' %}https://{{ archivo.url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+                    tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+                  }{% if forloop.last == false %},{% endif %}
+                {% endfor %}
+              {% else %}
+                {
+                  mensaje: "No hay archivos del producto"
+                }
+              {% endif %}
+            ],
+            presupuestos: [
+              {% if rma.presupuestos.value %}
+                {% for presupuesto in rma.presupuestos.value %}
+                  {
+                    numero: "{{ presupuesto.numero_de_presupuesto.value }}",
+                    id: "{{ presupuesto.system.id }}", // Añadimos el ID del presupuesto                    
+                    estado: "{% if presupuesto.acepta.value == blank or presupuesto.acepta.value == 'Por Responder' %}Por Responder{% else %}{{ presupuesto.acepta.value }}{% endif %}",
+                    fecha: "{{ presupuesto.fecha.value | date: '%d/%m/%Y' }}",
+                    monto: "{{ presupuesto.monto.value }}",
+                    tipo_de_pago: "{{ presupuesto.tipo_de_pago.value }}", // Agregamos el tipo de pago
+                    {% assign archivo_tipo_presupuesto = presupuesto.archivo_adjunto | file_url %}
+                    {% if archivo_tipo_presupuesto contains 'files/files' %}
+                      {% assign archivo_tipo_presupuesto = archivo_tipo_presupuesto | replace: 'files/files', 'files' %}
+                    {% endif %}
+                    archivo: "{% if archivo_tipo_presupuesto contains 'VideoDrop' %}<video controls width='100px'><source src='{{ archivo_tipo_presupuesto }}' type='video/mp4'>Tu navegador no soporta la reproducción de videos.</video>{% elsif archivo_tipo_presupuesto contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo_presupuesto }}{% endif %}",
+                    tipo: "{% if archivo_tipo_presupuesto contains 'VideoDrop' %}video{% elsif archivo_tipo_presupuesto contains 'GenericFileDrop' %}generic{% else %}image{% endif %}",
+                    comentario_cliente: "{{ presupuesto.comentario_de_cliente.value }}"
+                  }{% if forloop.last == false %},{% endif %}
+                {% endfor %}
+              {% else %}
+                {
+                  mensaje: "No hay presupuestos aún"
+                }
+              {% endif %}
+            ],
+facturas: [
+  {% for factura in facturas_detalle %}
+    {
+      numero_de_factura: "{{ factura.numero_de_factura.value | escape }}",
+      archivos: [
+        {% if factura.archivos.value %}
+          {% for archivo in factura.archivos.value %}
+        {
+            nombre: "Descargar",
+            {% assign archivo_tipo = archivo | file_url %}
+            {% if archivo_tipo contains 'files/files' %}
+              {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+            {% endif %}
+            url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+            tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+          }{% unless forloop.last %},{% endunless %}{% endfor %}
+        {% else %}
+          {
+            archivos_vacios: true
+          }
+        {% endif %}
+      ]
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+],
+
+          
+guias_de_despacho: [
+  {% for guia in guias_detalle %}
+    {
+      archivos: [        
+        {% if guia.archivos.value %}
+           {% for archivo in guia.archivos.value %}
+          {
+            nombre: "Descargar",
+            {% assign archivo_tipo = archivo | file_url %}
+            {% if archivo_tipo contains 'files/files' %}
+              {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+            {% endif %}
+            url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+            tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+          }{% unless forloop.last %},{% endunless %}
+             {% endfor %}
+        {% else %}
+          {
+            archivos_vacios: true
+          }
+        {% endif %}
+      ]
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]
+,
+
+          }
+          {% assign rma_index = rma_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    ];
+
+    // Inicializar Grid.js con ordenación y búsqueda
+    new gridjs.Grid({
+      columns: [
+        {
+          id: 'numero',
+          name: 'Número',
+          sort: {
+            compare: (a, b) => a - b // Ordenación numérica ascendente
+          },
+          formatter: (cell, row) => {
+            return gridjs.html(`<a href="#" class="ver-mas" data-index="${row.cells[4].data}">${cell}</a>`);
+          }
+        },
+        {
+          id: 'estado',
+          name: 'Estado',
+          sort: false
+        },
+        {
+          id: 'producto',
+          name: 'Equipo',
+          formatter: (cell) => gridjs.html(cell),
+          sort: false
+        },
+        {
+          id: 'fechaDeCreacion',
+          name: 'Fecha de Creación',
+          sort: true
+        },
+        {
+          id: 'acciones',
+          name: 'Acciones',
+          formatter: (cell) => {
+            return gridjs.html(`<a href="#" class="ver-mas" data-index="${cell}">ver más</a>`);
+          },
+          sort: false
+        }
+      ],
+      search: {
+        enabled: true
+      },
+      sort: {
+        enabled: true,
+        initial: {
+          column: 0,       // Índice de la columna "Número"
+          direction: 'asc' // Dirección de ordenación: 'asc' para ascendente
+        }
+      },
+      data: data.map((item, index) => [
+        Number(item.numero), // Asegura que 'numero' sea tratado como número
+        item.estado,
+        item.producto,
+        item.fechaDeCreacion,
+        index,        
+        index
+      ]),
+      pagination: {
+        enabled: false,
+        limit: 100
+      },
+      language: {
+        'search': {
+          'placeholder': 'Buscar...'
+        },
+        'pagination': {
+          'previous': 'Anterior',
+          'next': 'Siguiente',
+          'showing': 'Mostrando',
+          'results': () => 'registros'
+        }
+      }
+    }).render(document.getElementById('grid'));
+
+    // Manejo de eventos
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.classList.contains('ver-mas')) {
+        e.preventDefault();
+        const index = e.target.getAttribute('data-index');
+        const item = data[index];
+        showModal(item);
+      }
+    });
+
+    function showModal(item) {
+      const modalOverlay = document.getElementById('modal-overlay');
+      const modalContent = document.getElementById('modal-content');
+
+      // Construir el contenido del modal
+      // Observaciones
+
+      
+       let observacionesContent = `<h3>Tus Observaciones</h3><p style="white-space: pre-wrap; word-wrap: break-word;">${item.observaciones}</p><button class="button-primary agregar-comentario" data-numero="${item.numero}" data-rma-id="${item.id}">Añadir Comentario</button>`;
+      // Archivos del Cliente
+      let archivosContent = '<h3>Archivos</h3>';
+      if (item.archivos && item.archivos.length > 0 && !item.archivos[0].mensaje) {
+        archivosContent += '<table>';
+        item.archivos.forEach(archivo => {
+          archivosContent += `<tr><td><a href="${archivo.url}" target="_blank">${archivo.nombre}</a></td></tr>`;
+        });
+        archivosContent += '</table>';
+      } else {
+        archivosContent += '<p>No hay archivos aún. Si acabas de agregarlo recarga la página en un momento.</p>';
+      }
+      // Botón para agregar nuevos archivos del cliente
+      archivosContent += `<button style="margin-top: 10px;" class="button-primary agregar-archivos" data-numero="${item.numero}" data-rma-id="${item.id}">Agregar más</button>`;
+
+
+      // Presupuestos
+      let presupuestosContent = '<h3>Presupuestos</h3>';
+      if (item.presupuestos && item.presupuestos.length > 0 && !item.presupuestos[0].mensaje) {
+        presupuestosContent += '<table><tr><th>Fecha</th><th>Número</th><th>Estado</th></tr>';
+        item.presupuestos.forEach((p, idx) => {
+          presupuestosContent += `<tr><td>${p.fecha}</td><td><a href="#" class="ver-presupuesto" data-item-index="${data.indexOf(item)}" data-index="${idx}">${p.numero}</a></td><td><a href="#" style="color: white; background-color: #de0101; padding: 4px; border-radius: 3px;" class="ver-presupuesto" data-item-index="${data.indexOf(item)}" data-index="${idx}">${p.estado}</a></td></tr>`;
+        });
+        presupuestosContent += '</table>';
+      } else {
+        presupuestosContent += '<p>No hay presupuestos aún.</p>';
+      }
+      
+// Factura
+let facturaContent = '<h3>Facturas</h3>';
+if (item.facturas && item.facturas.length > 0 && !item.facturas[0].archivos_vacios) {
+  facturaContent += `<table><tr><th>Número de Factura</th><th>Documento</th></tr>`;
+  
+  item.facturas.forEach(factura => {
+    facturaContent += `<tr><td>${factura.numero_de_factura}</td><td>`;
+    if (factura.archivos && factura.archivos.length > 0 && !factura.archivos[0].archivos_vacios) {
+      factura.archivos.forEach(archivo => {
+        facturaContent += `<a href="${archivo.url}" target="_blank">${archivo.nombre}</a><br>`;
+      });
+    } else {
+      facturaContent += 'No hay documento de factura aún.';
+    }
+    facturaContent += `</td></tr>`;
+  });
+  
+  facturaContent += '</table>';
+} else {
+  facturaContent += '<p>No hay facturas aún.</p>';
+}
+
+
+// Guías de Despacho
+let guiasContent = '<h3>Guías de Despacho</h3>';
+if (item.guias_de_despacho && item.guias_de_despacho.length > 0 && !item.guias_de_despacho[0].archivos_vacios) {
+  guiasContent += `<table><tr><th>Documento</th></tr>`;
+  
+  item.guias_de_despacho.forEach(guia => {
+    guiasContent += `<tr><td>`;
+    if (guia.archivos && guia.archivos.length > 0 && !guia.archivos[0].archivos_vacios) {
+      guia.archivos.forEach(archivo => {
+        guiasContent += `<a href="${archivo.url}" target="_blank">${archivo.nombre}</a><br>`;
+      });
+    } else {
+      guiasContent += 'No hay archivos de guía de despacho aún.';
+    }
+    guiasContent += `</td></tr>`;
+  });
+  
+  guiasContent += '</table>';
+} else {
+  guiasContent += '<p>No hay guías de despacho aún.</p>';
+}
+
+
+
+      // Producto
+      let productoContent = `<h3>Equipo Principal</h3>
+      <ul>
+        <li>Número de Serie: ${item.serie}</li>
+        <li>Modelo: ${item.nombre} {% comment %}(<a href="#" class="ver-archivos-producto" data-index="${data.indexOf(item)}">ver archivos del producto</a>){% endcomment %}</li>
+      </ul>`;
+
+      // Accesorios como título
+      let accesoriosContent = `<h3>Accesorios</h3><p style="white-space: pre-wrap; word-wrap: break-word;">${item.accesorios}</p>`;
+
+      modalContent.innerHTML = `
+        <button class="close-modal">X</button>
+        <h2>Detalle de RMA #${item.numero}</h2>
+        <table style="border-style: solid;">
+          <tr><td><strong>Estado</strong></td><td>${item.estado}</td></tr>
+          <tr><td><strong>Fecha de Creación</strong></td><td>${item.fechaDeCreacion}</td></tr>
+          <tr><td><strong>Fecha Estimada de Envío a Colvin y Cia</strong></td><td>${item.fechaEstimada}</td></tr>
+        </table>
+        ${productoContent}
+        ${accesoriosContent}
+        ${observacionesContent}
+        ${archivosContent}
+        ${presupuestosContent}
+        ${facturaContent}
+        ${guiasContent}
+      `;
+
+      modalOverlay.style.display = 'block';
+
+      // Event listener para cerrar el modal
+      modalContent.querySelector('.close-modal').addEventListener('click', function() {
+        modalOverlay.style.display = 'none';
+      });
+
+      // Cerrar modal al hacer clic fuera del contenido
+      modalOverlay.addEventListener('click', function(event) {
+        if (event.target === modalOverlay) {
+          modalOverlay.style.display = 'none';
+        }
+      });
+
+      // Evento para ver presupuesto
+      modalContent.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('ver-presupuesto')) {
+          e.preventDefault();
+          const itemIndex = e.target.getAttribute('data-item-index');
+          const presupuestoIndex = e.target.getAttribute('data-index');
+          const presupuesto = data[itemIndex].presupuestos[presupuestoIndex];
+          const rmaId = data[itemIndex].id; // Obtener el RMA ID
+          showPresupuestoModal(presupuesto, rmaId); // Pasar el RMA ID
+        }
+      });
+
+      // Evento para agregar nuevos archivos del cliente
+      modalContent.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('agregar-archivos')) {
+          e.preventDefault();
+          const numeroRMA = e.target.getAttribute('data-numero');
+          const rmaId = e.target.getAttribute('data-rma-id');
+          showAgregarArchivosModal(numeroRMA, rmaId);
+        }
+      });
+
+
+      // Evento para agregar comentario a observaciones
+      modalContent.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('agregar-comentario')) {
+          e.preventDefault();
+          const numeroRMA = e.target.getAttribute('data-numero');
+          const rmaId = e.target.getAttribute('data-rma-id');
+          showAgregarComentarioModal(numeroRMA, item.observaciones, rmaId);        }
+      });
+
+      // Evento para ver archivos del producto
+      modalContent.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('ver-archivos-producto')) {
+          e.preventDefault();
+          const index = e.target.getAttribute('data-index');
+          const item = data[index];
+          showArchivosProductoModal(item.archivosProducto, item);
+        }
+      });
+    }
+
+
+function renderArchivos(archivos) {
+  if (!archivos || archivos.length === 0 || (archivos.length === 1 && archivos[0].archivos_vacios)) {
+    return '<p></p>';
+  }
+
+  let archivosHTML = '<div>';
+  
+  archivos.forEach(archivo => {
+    if (archivo.tipo === 'image') {
+      archivosHTML += `<a href="${archivo.url}" target="_blank"><img style="max-width: 100px; padding: 5px;" src="${archivo.url}&width=100" alt="Archivo ${archivo.nombre}" loading="lazy" /></a>`;
+    } else if (archivo.tipo === 'video') {
+      archivosHTML += `<video style="max-width: 100px; padding: 5px;" controls preload="metadata" class="anotacion-video" loading="lazy">
+        <source src="${archivo.url}" type="video/mp4">
+        Tu navegador no soporta la reproducción de videos.
+      </video>`;
+    } else if (archivo.tipo === 'generic') {
+      // Lista de extensiones de imagen
+      const extensionesImagen = ['.jpg', '.jpeg', '.heic', '.png', '.gif', '.webp'];
+
+      // Comprobar si la URL contiene alguna de las extensiones
+      const esImagen = extensionesImagen.some(ext => archivo.url.toLowerCase().includes(ext));
+
+      if (esImagen) {
+        archivosHTML += `<a href="${archivo.url}" target="_blank"><img style="width: 100%; max-width: 100px; padding: 5px;" src="${archivo.url}&width=100" alt="Archivo ${archivo.nombre}" loading="lazy" /></a>`;
+      } else {
+        archivosHTML += `<p>🗂️Documento: <a href="${archivo.url}" target="_blank">${archivo.nombre}</a></p>`;
+      }
+    }
+  });
+
+  archivosHTML += '</div>';
+  return archivosHTML;
+}
+    
+
+function showPresupuestoModal(presupuesto, rmaId) { // Añadido el parámetro rmaId
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalContent = document.getElementById('modal-content');
+
+  modalContent.classList.add('small');
+
+  // Título y Instrucciones
+  let titulo = `<div style="text-align: center;"><h3>Aceptación de Presupuesto</h3><h4>Adjunta ${presupuesto.tipo_de_pago}</h4></div>`;
+
+  // Formulario actualizado
+  modalContent.innerHTML = `
+    <button class="back-button">←</button>
+    <h2>Detalle del Presupuesto</h2>
+    <table>
+      <tr><td><strong>Fecha</strong></td><td>${presupuesto.fecha}</td></tr>
+      <tr><td><strong>Número</strong></td><td>${presupuesto.numero}</td></tr>
+      <tr><td><strong>Monto Neto (sin iva)</strong></td><td>${presupuesto.monto}</td></tr>
+      <tr><td><strong>Tipo de Pago</strong></td><td>${presupuesto.tipo_de_pago}</td></tr>
+    </table>
+    <p><a href="${presupuesto.archivo}" target="_blank" style="font-size: 20px; font-weight: bold;">Ver Presupuesto</a></p>
+    ${presupuesto.estado === 'Por Responder' ? `
+    ${titulo}
+    <form id="presupuesto-form" enctype="multipart/form-data">
+      <div class="file-drop-area" id="file-drop-area">
+        <p>Arrastra el archivo que deseas adjuntar</p>
+        <p>o</p>
+        <button type="button" id="browse-files">Sube tu comprobante</button>
+        <input type="file" name="comprobante" id="file-input" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.heic" />
+        <p class="explanation">Solo se permite subir imágenes y documentos (PDF, JPG, PNG, GIF, WEBP, HEIC).</p>
+      </div>
+      <ul class="file-list" id="file-list"></ul>
+      <p>Comentario:</p>
+      <textarea name="comentario" rows="4" cols="50" required></textarea>
+      ${presupuesto.tipo_de_pago == "Orden de Compra" ? `
+        <p>Número de Orden de Compra:</p>
+        <input type="text" name="numero_de_orden_de_compra" />
+      ` : `
+        <input type="hidden" name="numero_de_orden_de_compra" value="No Aplica" />  
+      `}
+      <input type="hidden" name="id" value="${presupuesto.id}">  
+      <input type="hidden" name="rma_id" value="${rmaId}"> <!-- Campo oculto para RMA ID -->
+      
+      <br><br>
+      <button class="button-primary aceptar-presupuesto" type="button">Aceptar Presupuesto</button>
+      <button class="button-primary rechazar-presupuesto" style="background-color: grey;" type="button">Rechazar Presupuesto</button>          
+    </form>
+    ` : ''}
+  `;
+
+  modalOverlay.style.display = 'block';
+
+  // Event listener para volver atrás
+  modalContent.querySelector('.back-button').addEventListener('click', function() {
+    modalContent.classList.remove('small');
+    showModal(data.find(item => item.presupuestos.find(p => p.id === presupuesto.id)));
+  });
+
+  if (presupuesto.estado === 'Por Responder') {
+    const presupuestoForm = document.getElementById('presupuesto-form');
+    const fileInput = presupuestoForm.querySelector('#file-input');
+    const numeroOrdenInput = presupuestoForm.querySelector('input[name="numero_de_orden_de_compra"]');
+
+    // Configurar el drag and drop para el comprobante
+    setupFileUpload('#presupuesto-form');
+
+    // Manejo de botones Aceptar y Rechazar
+    presupuestoForm.querySelector('.aceptar-presupuesto').addEventListener('click', function() {
+      // Agregar el atributo 'required' al campo de archivo
+      fileInput.setAttribute('required', 'required');
+      if (presupuesto.tipo_de_pago === "Orden de Compra") {
+        numeroOrdenInput.setAttribute('required', 'required');
+      }
+      enviarPresupuesto('Aceptado');
+    });
+
+    presupuestoForm.querySelector('.rechazar-presupuesto').addEventListener('click', function() {
+      // Eliminar el atributo 'required' del campo de archivo
+      fileInput.removeAttribute('required');
+      
+      // Establecer 'No Aplica' para el número de orden de compra si aplica
+      if (presupuesto.tipo_de_pago === "Orden de Compra") {
+        numeroOrdenInput.value = 'No Aplica';
+      }
+      
+      enviarPresupuesto('Rechazado');
+    });
+
+    function enviarPresupuesto(respuestaValor) {
+      const comentario = presupuestoForm.elements['comentario'].value;
+      const presupuestoId = presupuestoForm.elements['id'].value;
+      const rmaId = presupuestoForm.elements['rma_id'].value;
+      const tipo_de_pago = presupuesto.tipo_de_pago;
+
+  // Obtener el RMA correspondiente para extraer numero_de_rma
+  const rma = data.find(item => item.id === rmaId);
+  const numero_de_rma = rma ? rma.numero : '';
+
+      
+      // Asignar 'No Aplica' si se rechaza, o el valor ingresado si se acepta
+      const numeroOrden = (respuestaValor === 'Aceptado' && presupuesto.tipo_de_pago === "Orden de Compra") 
+        ? presupuestoForm.elements['numero_de_orden_de_compra'].value 
+        : 'No Aplica';
+      
+      const comprobanteFile = fileInput.files[0];
+
+      // Validar campos obligatorios
+      let camposFaltantes = [];
+      if (!comentario) {
+        camposFaltantes.push('Comentario');
+      }
+      if (presupuesto.tipo_de_pago === "Orden de Compra" && respuestaValor === 'Aceptado' && !numeroOrden) {
+        camposFaltantes.push('Número de Orden de Compra');
+      }
+      if (respuestaValor === 'Aceptado' && !comprobanteFile) {
+        camposFaltantes.push('Comprobante');
+      }
+
+      if (camposFaltantes.length > 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Campos requeridos',
+          text: `Por favor, completa los siguientes campos: ${camposFaltantes.join(', ')}.`,
+          didOpen: () => {
+            Swal.getPopup().style.zIndex = 100000;
+          }
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('respuesta', respuestaValor);
+      formData.append('comentario', comentario);
+      formData.append('id', presupuestoId);
+      formData.append('rma_id', rmaId);
+      formData.append('numero_de_orden_de_compra', numeroOrden);
+      formData.append('tipo_de_pago', tipo_de_pago);
+
+  // **Agregar los nuevos campos requeridos**
+  formData.append('numero_rma', numero_de_rma);
+  formData.append('customer_email', customerEmail);      
+      
+      if (comprobanteFile) {
+        formData.append('comprobante', comprobanteFile);
+      }
+
+      // Mostrar mensaje de envío
+      Swal.fire({
+        title: 'Enviando...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // Enviar datos a Azure Function
+      fetch('https://colvinycia-servicios.azurewebsites.net/api/cambiar_estado_de_presupuesto_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(errData => { throw errData; });
+        }
+        return response.json();
+      })
+      .then(result => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Enviado',
+          text: 'Tu respuesta ha sido enviada exitosamente.',
+          didOpen: () => {
+            Swal.getPopup().style.zIndex = 100000;
+          }
+        }).then(() => {
+          // Redirigir y refrescar
+          location.reload();
+        });
+      })
+      .catch(error => {
+        let errorMessage = 'Hubo un problema al enviar tu respuesta.';
+        if (error.error) {
+          errorMessage = error.error;
+          if (error.details) {
+            errorMessage += ` Detalles: ${JSON.stringify(error.details)}`;
+          }
+        }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorMessage,
+          didOpen: () => {
+            Swal.getPopup().style.zIndex = 100000;
+          }
+        });
+      });
+    }
+  }
+}
+
+
+    function showAgregarArchivosModal(numeroRMA, rmaId) {
+  const item = data.find(item => item.numero === numeroRMA);
+  const tipoDePago = item.presupuestos.find(p => p.id === rmaId)?.tipo_de_pago || '';
+
+      
+      const modalContent = document.getElementById('modal-content');
+      modalContent.classList.add('small');
+      
+
+      modalContent.innerHTML = `
+        <button class="back-button">←</button><label for="orden-compra">Número de Orden de Compra</label>
+
+        <h2>Agregar Archivos</h2>
+        <form id="agregar-archivos-form" enctype="multipart/form-data">
+          <div class="file-drop-area" id="file-drop-area">
+            <p>Arrastra los archivos que deseas adjuntar</p>
+            <p>o</p>
+            <button type="button" id="browse-files">Sube tus archivos</button>
+            <input type="file" name="archivos" id="file-input" multiple hidden required />
+            <p class="explanation">Solo se permite subir imágenes y documentos.</p>
+          </div>
+          <ul class="file-list" id="file-list"></ul>
+          <input type="hidden" name="id" value="${rmaId}">          
+          <input type="hidden" name="tipo_de_pago" value="${tipoDePago}"> <!-- Campo oculto para tipo_de_pago -->
+          <input type="hidden" name="numero" value="${numeroRMA}"> <!-- Campo oculto agregado -->
+          
+          <button class="button-primary" type="submit">Enviar</button>
+        </form>
+      `;
+
+      // Event listener para volver atrás
+      modalContent.querySelector('.back-button').addEventListener('click', function() {
+        modalContent.classList.remove('small');
+        modalContent.innerHTML = '';
+        showModal(data.find(item => item.numero === numeroRMA));
+      });
+
+      // Manejo de archivos
+  // Manejo de archivos
+  setupFileUpload(
+    '#agregar-archivos-form',
+    'https://colvinycia-servicios.azurewebsites.net/api/procesar_archivos_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D',
+    { 
+      rma_id: rmaId, 
+      accion: 'agregar_archivos',
+      numero: numeroRMA // Asegurarse de pasar el numero también
+    }
+  );  
+    }
+
+
+    function showAgregarComentarioModal(numeroRMA, observacionesActuales, rmaId) {
+      const modalContent = document.getElementById('modal-content');
+      modalContent.classList.add('small');
+
+      modalContent.innerHTML = `
+        <button class="back-button">←</button>
+        <h2>Agregar Comentario a Observaciones</h2>
+        <p><strong>Observaciones Actuales:</strong></p>
+        <p style="white-space: pre-wrap; word-wrap: break-word;" >${observacionesActuales}</p>
+        
+        <form id="agregar-comentario-form">
+          <p>Escribe tu comentario:</p>
+          <textarea name="comentario" rows="4" cols="50" required></textarea>
+          <input type="hidden" name="id" value="${rmaId}">
+          <input type="hidden" name="numero" value="${numeroRMA}">
+          <br><br>
+          <button type="submit">Enviar</button>
+        </form>
+      `;
+
+      // Event listener para volver atrás
+      modalContent.querySelector('.back-button').addEventListener('click', function() {
+        modalContent.classList.remove('small');
+        modalContent.innerHTML = '';
+        showModal(data.find(item => item.numero === numeroRMA));
+      });
+
+      // En el formulario de agregar comentario
+      document.getElementById('agregar-comentario-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const comentario = e.target.elements['comentario'].value;
+        const rmaId = e.target.elements['id'].value;
+        const rmaNumero = e.target.elements['numero'].value; 
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...';
+      
+        // Preparar datos para enviar
+        const dataToSend = {
+          numero: rmaNumero,
+          id: rmaId,
+          comentario: `${comentario}`
+        };
+      
+        // Enviar datos a Azure Function
+        fetch('https://colvinycia-servicios.azurewebsites.net/api/agregar_comentario_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(errData => { throw errData; });
+          }
+          return response.json();
+        })
+        .then(result => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Enviado',
+            text: 'Tu comentario ha sido enviado exitosamente.',
+            didOpen: () => {
+              Swal.getPopup().style.zIndex = 100000;
+            }
+          }).then(() => {
+            location.reload();
+          });
+        })
+        .catch(error => {
+          let errorMessage = 'Hubo un problema al enviar tu comentario.';
+          if (error.error) {
+            errorMessage = error.error;
+            if (error.details) {
+              errorMessage += ` Detalles: ${JSON.stringify(error.details)}`;
+            }
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+            didOpen: () => {
+              Swal.getPopup().style.zIndex = 100000;
+            }
+          });
+          submitButton.disabled = false;
+          submitButton.textContent = 'Enviar';
+          submitButton.className = 'button-primary';
+        });
+      });
+
+    }
+
+    function showArchivosProductoModal(archivosProducto, item) {
+      const modalOverlay = document.getElementById('modal-overlay');
+      const modalContent = document.getElementById('modal-content');
+      modalContent.classList.add('small');
+
+      let content = '<button class="back-button">←</button><h2>Archivos del Producto</h2>';
+      if (archivosProducto && archivosProducto.length > 0 && !archivosProducto[0].mensaje) {
+        content += '<table>';
+        archivosProducto.forEach(archivo => {
+          content += `<tr><td><a href="${archivo.url}" target="_blank">${archivo.nombre}</a></td></tr>`;
+        });
+        content += '</table>';
+      } else {
+        content += '<p>No hay archivos del producto.</p>';
+      }
+
+      modalContent.innerHTML = content;
+
+      // Event listener para volver atrás
+      modalContent.querySelector('.back-button').addEventListener('click', function() {
+        modalContent.classList.remove('small');
+        modalContent.innerHTML = '';
+        showModal(item);
+      });
+    }
+
+    function setupFileUpload(formSelector, uploadUrl = null, additionalData = {}) {
+      const form = document.querySelector(formSelector);
+      const fileDropArea = form.querySelector('#file-drop-area');
+      const fileInput = form.querySelector('#file-input');
+      const fileList = form.querySelector('#file-list');
+      const browseFilesButton = form.querySelector('#browse-files');
+
+      browseFilesButton.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      fileDropArea.addEventListener('dragover', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.add('dragover');
+      });
+
+      fileDropArea.addEventListener('dragleave', function() {
+        fileDropArea.classList.remove('dragover');
+      });
+
+      fileDropArea.addEventListener('drop', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.remove('dragover');
+        const files = event.dataTransfer.files;
+        handleFiles(files);
+      });
+
+      fileInput.addEventListener('change', function(event) {
+        const files = event.target.files;
+        handleFiles(files);
+      });
+
+      function handleFiles(files) {
+        const validTypes = [
+          "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", 
+          "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ];
+        const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+        Array.from(files).forEach(function(file) {
+          const listItem = document.createElement('li');
+          const isValidFile = validTypes.includes(file.type) && file.size <= maxSize;
+
+          if (!isValidFile) {
+            if (!validTypes.includes(file.type)) {
+              listItem.innerHTML = `<span>${file.name} <span class="invalid-file">(archivo no válido)</span></span><span class="remove-file">X</span>`;
+            } else if (file.size > maxSize) {
+              listItem.innerHTML = `<span>${file.name} <span class="invalid-file">(sobrepasa los 20 MB)</span></span><span class="remove-file">X</span>`;
+            }
+          } else {
+            listItem.innerHTML = `<span>${file.name}</span><span class="remove-file">X</span>`;
+          }
+
+          listItem.querySelector('.remove-file').addEventListener('click', function() {
+            listItem.remove();
+            removeFileFromInput(file.name);
+          });
+
+          fileList.appendChild(listItem);
+        });
+      }
+
+      function removeFileFromInput(fileName) {
+        const dt = new DataTransfer();
+        const files = fileInput.files;
+
+        Array.from(files).forEach(function(file) {
+          if (file.name !== fileName) {
+            dt.items.add(file);
+          }
+        });
+
+        fileInput.files = dt.files;
+      }
+
+      if (uploadUrl) {
+        form.addEventListener('submit', function(event) {
+          event.preventDefault();
+          const submitButton = form.querySelector('button[type="submit"]');
+          submitButton.disabled = true;
+          submitButton.textContent = 'Enviando...';
+
+          const formData = new FormData(form);
+          // Agregar datos adicionales
+          for (const key in additionalData) {
+            formData.append(key, additionalData[key]);
+          }
+
+          fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Error en la respuesta del servidor');
+            }
+            return response.text();
+          })
+          .then(data => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'La información ha sido enviada correctamente.',
+              didOpen: () => {
+                Swal.getPopup().style.zIndex = 100000;
+              }
+            }).then(() => {
+              location.reload();
+            });
+          })
+          .catch(error => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al enviar la información. Intente nuevamente.',
+              didOpen: () => {
+                Swal.getPopup().style.zIndex = 100000;
+              }
+            });
+            submitButton.disabled = false;
+            submitButton.textContent = 'Enviar';
+            submitButton.className = 'button-primary';
+          });
+        });
+      }
+    }
+
+function renderArchivos(archivos) {
+  if (!archivos || archivos.length === 0 || (archivos.length === 1 && archivos[0].archivos_vacios)) {
+    return '<p></p>';
+  }
+
+  let archivosHTML = '<div>';
+  
+  archivos.forEach(archivo => {
+    if (archivo.tipo === 'image') {
+      archivosHTML += `<a href="${archivo.url}" target="_blank"><img style="max-width: 100px; padding: 5px;" src="${archivo.url}&width=100" alt="Archivo ${archivo.nombre}" loading="lazy" /></a>`;
+    } else if (archivo.tipo === 'video') {
+      archivosHTML += `<video style="max-width: 100px; padding: 5px;" controls preload="metadata" class="anotacion-video" loading="lazy">
+        <source src="${archivo.url}" type="video/mp4">
+        Tu navegador no soporta la reproducción de videos.
+      </video>`;
+    } else if (archivo.tipo === 'generic') {
+      // Lista de extensiones de imagen
+      const extensionesImagen = ['.jpg', '.jpeg', '.heic', '.png', '.gif', '.webp'];
+
+      // Comprobar si la URL contiene alguna de las extensiones
+      const esImagen = extensionesImagen.some(ext => archivo.url.toLowerCase().includes(ext));
+
+      if (esImagen) {
+        archivosHTML += `<a href="${archivo.url}" target="_blank"><img style="width: 100%; max-width: 100px; padding: 5px;" src="${archivo.url}&width=100" alt="Archivo ${archivo.nombre}" loading="lazy" /></a>`;
+      } else {
+        archivosHTML += `<p>🗂️Documento: <a href="${archivo.url}" target="_blank">${archivo.nombre}</a></p>`;
+      }
+    }
+  });
+
+  archivosHTML += '</div>';
+  return archivosHTML;
+}
+        
+
+  });
+</script>
+
+
+    {% else %}
+<div class="mensaje-rma">
+  Debes ingresar a tu cuenta para ver esta página: <a href="/account">Ingresar</a>
+</div>
+
+<style>
+  .mensaje-rma {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .mensaje-rma a {
+    padding: 10px 20px;
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+  }
+
+  .mensaje-rma a:hover {
+    background-color: #0056b3;
+  }
+</style>
+{% endif %}

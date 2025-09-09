@@ -1,0 +1,80 @@
+<style>
+
+
+   /* Estilos para el botón de Filtro Avanzado */
+
+  .advanced-filter-button-container {
+
+    text-align: right;
+  }
+    #toggle-filters {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+  }
+
+
+
+  #toggle-filters:hover {
+
+    background-color: #0056b3;
+  }
+
+  
+</style>
+
+
+  <!-- Botón para mostrar/ocultar filtros avanzados -->
+  <div class="advanced-filter-button-container">
+    <button id="toggle-filters">Filtro Avanzado</button>
+  </div>
+  <a href="/pages/creacion-rma-para-cliente"><button class="boton-crear-rma">Crear RMA para Cliente</button></a>
+
+  <!-- Div de Filtros Avanzados -->
+  <div id="advanced-filters" style="display: none;">
+    <!-- Contenedor de Filtros -->
+    <div class="filters-container">
+      <!-- Filtro por Ubicación Actual -->
+      <div class="filter-group" id="filter-transito">
+        <h4>Filtrar por Ubicación Actual</h4>
+        <div class="filter-options" id="transito-options">
+          <!-- Checkboxes se generarán dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Filtro por Estado de Reparación -->
+      <div class="filter-group" id="filter-estado">
+        <h4>Filtrar por Estado de Reparación</h4>
+        <div class="filter-options" id="estado-options">
+          <!-- Checkboxes se generarán dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de Filtros Activos -->
+    <div class="active-filters" id="active-filters">
+      <!-- Se mostrará qué filtros están activos -->
+      Filtros Activos: Ninguno
+    </div>
+
+  
+    <!-- Buscador y Filtros de Fecha -->
+    <div class="search-container">
+      <label for="date-field-selector" style="align-self: center;">Busca por fecha:</label>
+      <select id="date-field-selector">
+        <option value="check_in">Check-in</option>
+        <option value="fecha_creacion">Creación</option>
+      </select>
+      <label for="from-date" style="align-self: center;">Desde:</label>
+      <input type="date" id="from-date" placeholder="Desde">
+      <label for="to-date" style="align-self: center;">Hasta:</label>
+      <input type="date" id="to-date" placeholder="Hasta">
+      <button id="reset-filter">Resetear Filtro</button>
+    </div>
+
+
+  </div>

@@ -1,0 +1,79 @@
+{%- layout none -%}
+{%- if search.terms contains 'handles:' -%}
+[
+  {%- assign params = canonical_url | url_decode | split: "?" | last | split: "&" -%}
+  {%- assign handles = '' -%}
+  {%- for str in params -%}
+    {%- assign str_split = str | split: "=" -%}
+    {%- if str_split.first == 'q' -%}
+      {%- assign handles = str_split.last | remove_first: "handles:" -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if handles != '' -%}
+    {%- assign handles = handles | split: "|" -%}
+    {%- for handle in handles limit:20 -%}
+      {%- assign product = all_products[handle] -%}
+      {%- unless forloop.first -%},{%- endunless -%}
+      {%- if product.id != '' -%}
+        {
+          "available": {{product.available}},
+          "id": {{ product.id }},
+          "handle": "{{ product.handle }}",
+          "options": {{ product.options | json }},
+          "variants": {{ product.variants | json }},
+          "tags": {{ product.tags | json }},
+          "title": {{ product.title | json }},
+          "type": {{ product.type | json }},
+          "url": "{{ product.url }}",
+          "vendor": {{ product.vendor | json }},
+          "featured_image": "{{ product.featured_image.src | image_url }}",
+          "images": {{ product.images | json }},
+          "collection": {{ product.collections | map: 'id' | json }}
+        }
+      {%- else -%}
+        null
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+]
+{%- else -%}
+[
+  {%- assign q = search.terms | downcase -%}
+  {%- assign first = true -%}
+  {%- for product in search.results -%}{% comment %}start BSS Commerce Hide Price{% endcomment %}{% capture bss_lock_check %}{% render 'bss-lock-condition', scope: 'subject', subject: product, variable: 'transparent' %}{% endcapture %}{% if bss_lock_check contains 'true' %}{% render 'bss-hide-product-design', section: 'templates/search.rfq.liquid', subject: product %}{% continue %}{% endif %}{% comment %}end BSS Commerce Hide Price{% endcomment %}
+    {%- assign matched = false -%}
+    {%- assign title = product.title | downcase -%}
+
+    {%- if title contains q -%}
+      {%- assign matched = true -%}
+    {%- endif -%}
+
+    {%- for variant in product.variants -%}
+      {%- assign sku = variant.sku | downcase -%}
+      {%- if sku contains q -%}
+        {%- assign matched = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if matched -%}
+      {%- unless first -%},{%- endunless -%}
+      {%- assign first = false -%}
+      {
+        "available": {{product.available}},
+        "id": {{ product.id }},
+        "handle": "{{ product.handle }}",
+        "options": {{ product.options | json }},
+        "variants": {{ product.variants | json }},
+        "tags": {{ product.tags | json }},
+        "title": {{ product.title | json }},
+        "type": {{ product.type | json }},
+        "url": "{{ product.url }}",
+        "vendor": {{ product.vendor | json }},
+        "featured_image": "{{ product.featured_image.src | image_url }}",
+        "images": {{ product.images | json }},
+        "collection": {{ product.collections | map: 'id' | json }}
+      }
+    {%- endif -%}
+  {%- endfor -%}
+]
+{%- endif -%}

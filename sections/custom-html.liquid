@@ -1,0 +1,38 @@
+{% comment %}
+  Este es un ejemplo de cómo podría verse el archivo sections/custom-html.liquid.
+  Si tu tema ya tiene una sección 'custom-html' con un esquema similar,
+  solo necesitas asegurarte de que el 'name' y los 'settings' (html, custom_css)
+  sean correctos.
+{% endcomment %}
+
+<div class="custom-html-section-wrapper">
+  {{ section.settings.html }}
+</div>
+
+{% schema %}
+{
+  "name": "Custom HTML Section",
+  "tag": "div",
+  "class": "custom-html-section",
+  "settings": [
+    {
+      "type": "html",
+      "id": "html",
+      "label": "HTML Content",
+      "default": "<p>Default HTML content. Add your custom HTML here.</p>"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "default": "/* Add your custom CSS here */\n.custom-html-section-wrapper {\n  /* Estilos generales si son necesarios */\n}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom HTML",
+      "category": "Custom Content"
+    }
+  ]
+}
+{% endschema %}

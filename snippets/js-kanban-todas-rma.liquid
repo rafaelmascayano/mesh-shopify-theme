@@ -1,0 +1,51 @@
+
+    // Función para generar el Tablero Kanban
+    function generateKanbanBoard(rmas) {
+      const kanbanBoard = document.getElementById('kanban-board');
+
+      // Agrupar RMAs por estado_de_reparacion
+      const grouped = rmas.reduce((acc, rma) => {
+        const state = rma.estado_de_reparacion || 'Sin Estado';
+        if (!acc[state]) {
+          acc[state] = [];
+        }
+        acc[state].push(rma);
+        return acc;
+      }, {});
+
+      // Obtener los estados únicos y ordenarlos alfabéticamente
+      const estados = Object.keys(grouped).sort();
+
+      // Para cada estado, crear una columna en el Kanban
+      estados.forEach(state => {
+        const column = document.createElement('div');
+        column.classList.add('kanban-column');
+
+        // Título de la columna con contador
+        const columnTitle = document.createElement('h2');
+        columnTitle.textContent = `${state} (${grouped[state].length})`;
+        column.appendChild(columnTitle);
+
+        // Tarjetas de RMAs
+        grouped[state].forEach(rma => {
+          const card = document.createElement('div');
+          card.classList.add('kanban-card');
+          card.innerHTML = `
+            <h3>RMA #${rma.numero}</h3>
+            <p><strong>Cliente:</strong> ${rma.nombre_cliente}</p>
+            <p><strong>Modelo:</strong> ${rma.modelo}</p>
+            <p><strong>Ubicación Actual:</strong> ${rma.transito_2}</p>
+          `;
+          // Añadir evento para mostrar detalles al hacer clic
+          card.addEventListener('click', function() {
+            showModal(rma);
+          });
+          column.appendChild(card);
+        });
+
+        kanbanBoard.appendChild(column);
+      });
+    }
+        
+    // Generar el Tablero Kanban con los datos existentes
+    generateKanbanBoard(data);

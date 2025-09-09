@@ -1,0 +1,191 @@
+
+    // Función para filtrar por rango de fechas y tipos adicionales
+    function filterData() {
+      const fromDate = document.getElementById('from-date').value;
+      const toDate = document.getElementById('to-date').value;
+      const selectedField = document.getElementById('date-field-selector').value;
+
+      // Obtener valores seleccionados para Ubicación Actual
+      const transitoCheckboxes = document.querySelectorAll('#transito-options input[type="checkbox"]');
+      const selectedTransitos = Array.from(transitoCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+
+      // Obtener valores seleccionados para Estado de Reparación
+      const estadoCheckboxes = document.querySelectorAll('#estado-options input[type="checkbox"]');
+      const selectedEstados = Array.from(estadoCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+
+      // Actualizar el indicador de filtros activos
+      updateActiveFilters(selectedTransitos, selectedEstados, fromDate, toDate, selectedField);
+
+      // Filtrar los datos
+      const filteredData = data.filter(item => {
+        // Filtro de Fecha
+        let dateMatch = true;
+        if (selectedField) {
+          const itemDateStr = item[selectedField] ? item[selectedField].split(' ')[0] : null;
+          if (itemDateStr) {
+            const itemDate = parseDateLocal(itemDateStr);
+            if (!itemDate) {
+              dateMatch = false;
+            } else {
+              // No es necesario establecer horas a 0 ya que parseDateLocal ya las establece
+              if (fromDate) {
+                const from = parseDateLocal(fromDate);
+                dateMatch = dateMatch && (itemDate >= from);
+              }
+
+              if (toDate) {
+                const to = parseDateLocal(toDate);
+                dateMatch = dateMatch && (itemDate <= to);
+              }
+            }
+          } else {
+            dateMatch = false;
+          }
+        }
+
+        // Filtro de Ubicación Actual
+        let transitoMatch = true;
+        if (selectedTransitos.length > 0 && selectedTransitos.length < getUniqueValues('transito_2').length) {
+          transitoMatch = selectedTransitos.includes(item.transito_2);
+        }
+
+        // Filtro de Estado de Reparación
+        let estadoMatch = true;
+        if (selectedEstados.length > 0 && selectedEstados.length < getUniqueValues('estado_de_reparacion').length) {
+          estadoMatch = selectedEstados.includes(item.estado_de_reparacion);
+        }
+
+        return dateMatch && transitoMatch && estadoMatch;
+      });
+
+      // Actualizar la tabla
+      grid.updateConfig({
+        data: filteredData.map(item => [
+          item.numero,               // #RMA
+          item.empresa_cliente,     // Empresa
+          item.modelo,              // Modelo
+          item.numero_de_serie,     // Número de serie
+          item.estado_de_reparacion,// Estado de Reparación
+          item.transito_2,          // Ubicación Actual
+          item.nombre_cliente,      // Nombre
+          item.email_cliente,       // Email
+          item.telefono_cliente,    // Teléfono
+          item.fecha_creacion,      // Fecha de creación
+          item.check_in,            // Check-in
+          item.id                   // ID (oculto)
+        ])
+      }).forceRender();
+    }
+
+    // Función para actualizar el indicador de filtros activos
+    function updateActiveFilters(transitos, estados, fromDate, toDate, selectedField) {
+      const activeFiltersDiv = document.getElementById('active-filters');
+      let filters = [];
+
+      // Filtros de Ubicación Actual
+      if (transitos.length > 0 && transitos.length < getUniqueValues('transito_2').length) {
+        filters.push(`Ubicación Actual: ${transitos.join(', ')}`);
+      }
+
+      // Filtros de Estado de Reparación
+      if (estados.length > 0 && estados.length < getUniqueValues('estado_de_reparacion').length) {
+        filters.push(`Estado de Reparación: ${estados.join(', ')}`);
+      }
+
+      // Filtros de Fecha
+      if (fromDate || toDate) {
+        let dateFilter = 'Fecha de ';
+        dateFilter += selectedField === 'check_in' ? 'Check-in' : 'Creación';
+        dateFilter += ': ';
+        dateFilter += fromDate ? `Desde ${fromDate} ` : '';
+        dateFilter += toDate ? `Hasta ${toDate}` : '';
+        filters.push(dateFilter.trim());
+      }
+
+      if (filters.length > 0) {
+        activeFiltersDiv.textContent = `Filtros Activos: ${filters.join(' | ')}`;
+      } else {
+        activeFiltersDiv.textContent = 'Filtros Activos: Ninguno';
+      }
+    }
+
+    // Función para obtener valores únicos de una propiedad
+    function getUniqueValues(property) {
+      return [...new Set(data.map(item => item[property] || 'Sin Información'))];
+    }
+
+    // Generar los Checkboxes para los filtros
+    function generateFilterOptions() {
+      // Filtro de Ubicación Actual
+      const transitoOptionsDiv = document.getElementById('transito-options');
+      const uniqueTransitos = getUniqueValues('transito_2').sort();
+      uniqueTransitos.forEach(transito => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${transito}" checked> ${transito}`;
+        transitoOptionsDiv.appendChild(label);
+      });
+
+      // Filtro de Estado de Reparación
+      const estadoOptionsDiv = document.getElementById('estado-options');
+      const uniqueEstados = getUniqueValues('estado_de_reparacion').sort();
+      uniqueEstados.forEach(estado => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${estado}" checked> ${estado}`;
+        estadoOptionsDiv.appendChild(label);
+      });
+    }
+
+    // Inicializar los Checkboxes de Filtros
+    generateFilterOptions();
+
+    // Agregar eventos a los Checkboxes
+    document.querySelectorAll('#transito-options input[type="checkbox"], #estado-options input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', filterData);
+    });
+
+    // Agregar eventos a los filtros de fecha
+    document.getElementById('from-date').addEventListener('change', filterData);
+    document.getElementById('to-date').addEventListener('change', filterData);
+    document.getElementById('date-field-selector').addEventListener('change', filterData);
+
+    // Manejo de evento para resetear el filtro
+    document.getElementById('reset-filter').addEventListener('click', function() {
+      document.getElementById('from-date').value = '';
+      document.getElementById('to-date').value = '';
+      document.getElementById('date-field-selector').value = 'check_in'; // Por defecto, Check-in
+      // Resetear los checkboxes
+      document.querySelectorAll('#transito-options input[type="checkbox"], #estado-options input[type="checkbox"]').forEach(cb => {
+        cb.checked = true;
+      });
+      // Actualizar los filtros
+      updateActiveFilters(
+        getUniqueValues('transito_2'),
+        getUniqueValues('estado_de_reparacion'),
+        '',
+        '',
+        'check_in'
+      );
+      // Filtrar los datos
+      grid.updateConfig({
+        data: data.map(item => [
+          item.numero,               // #RMA
+          item.empresa_cliente,     // Empresa
+          item.modelo,              // Modelo
+          item.numero_de_serie,     // Número de serie
+          item.estado_de_reparacion,// Estado de Reparación
+          item.transito_2,          // Ubicación Actual
+          item.nombre_cliente,      // Nombre
+          item.email_cliente,       // Email
+          item.telefono_cliente,    // Teléfono
+          item.fecha_creacion,      // Fecha de creación
+          item.check_in,            // Check-in
+          item.id                   // ID (oculto)
+        ])
+      }).forceRender();
+      // Actualizar el indicador de filtros
+      document.getElementById('active-filters').textContent = 'Filtros Activos: Ninguno';
+    });

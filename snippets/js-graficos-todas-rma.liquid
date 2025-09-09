@@ -1,0 +1,382 @@
+
+    // Funciones de Conteo
+    function contarTotalRMAs(rmas) {
+      return rmas.length;
+    }
+
+    function contarRMAsPorEstado(rmas) {
+      const estados = {};
+      rmas.forEach(rma => {
+        const estado = rma.estado_de_reparacion || 'Sin Estado';
+        if (estados[estado]) {
+          estados[estado]++;
+        } else {
+          estados[estado] = 1;
+        }
+      });
+      return estados;
+    }
+
+    function contarRMAsPorTransito(rmas) {
+      const transitos = {};
+      rmas.forEach(rma => {
+        const transito = rma.transito_2 || 'Sin Información';
+        if (transitos[transito]) {
+          transitos[transito]++;
+        } else {
+          transitos[transito] = 1;
+        }
+      });
+      return transitos;
+    }
+
+    // Función para ordenar las categorías por nombre
+    function ordenarCategorias(obj) {
+      return Object.keys(obj).sort().reduce((acc, key) => {
+        acc[key] = obj[key];
+        return acc;
+      }, {});
+    }
+
+    // Función para generar RMAs por Estado de Reparación Ordenado (para el gráfico de embudo)
+    function contarRMAsPorEstadoOrdenado(rmas) {
+      const estadosNumericos = rmas
+        .map(rma => parseInt(rma.estado_de_reparacion))
+        .filter(n => !isNaN(n));
+      const estadosUnicos = [...new Set(estadosNumericos)];
+      estadosUnicos.sort((a, b) => a - b); // Orden ascendente
+
+      const labels = estadosUnicos.map(num => `Estado ${num}`);
+      const counts = estadosUnicos.map(num => rmas.filter(rma => parseInt(rma.estado_de_reparacion) === num).length);
+
+      console.log("Labels para el gráfico de embudo:", labels);
+      console.log("Counts para el gráfico de embudo:", counts);
+
+      return { labels, counts };
+    }
+
+    // Función para contar RMAs con Check-in y Creación en los últimos 30 días
+    function contarRMAsUltimos30Dias(rmas) {
+      const hoy = new Date();
+      const fechas = [];
+
+      // Crear una lista de las últimas 30 fechas
+      for (let i = 29; i >= 0; i--) {
+        const fecha = new Date(hoy);
+        fecha.setDate(hoy.getDate() - i);
+        // Ajustar para evitar problemas de mes/día
+        fecha.setHours(0, 0, 0, 0);
+        const yyyy = fecha.getFullYear();
+        const mm = String(fecha.getMonth() + 1).padStart(2, '0'); // Months start at 0!
+        const dd = String(fecha.getDate()).padStart(2, '0');
+        fechas.push(`${yyyy}-${mm}-${dd}`);
+      }
+
+      const labels = fechas; // Formato YYYY-MM-DD
+
+      // Optimizar el rendimiento eliminando múltiples conversiones de fechas
+      const rmasPorFechaCheckIn = rmas.reduce((acc, rma) => {
+        const fechaStr = rma.check_in ? parseDateLocal(rma.check_in).toISOString().split('T')[0] : null; // Obtener solo la parte de la fecha
+        if (fechaStr) {
+          if (acc[fechaStr]) {
+            acc[fechaStr]++;
+          } else {
+            acc[fechaStr] = 1;
+          }
+        }
+        return acc;
+      }, {});
+
+      const rmasPorFechaCreacion = rmas.reduce((acc, rma) => {
+        const fechaStr = rma.fecha_creacion ? parseDateLocal(rma.fecha_creacion).toISOString().split('T')[0] : null; // Obtener solo la parte de la fecha
+        if (fechaStr) {
+          if (acc[fechaStr]) {
+            acc[fechaStr]++;
+          } else {
+            acc[fechaStr] = 1;
+          }
+        }
+        return acc;
+      }, {});
+
+      const countsCheckIn = labels.map(fechaStr => rmasPorFechaCheckIn[fechaStr] || 0);
+      const countsCreacion = labels.map(fechaStr => rmasPorFechaCreacion[fechaStr] || 0);
+
+      console.log("Labels para el gráfico de 30 días:", labels);
+      console.log("Counts Check-in para el gráfico de 30 días:", countsCheckIn);
+      console.log("Counts Creación para el gráfico de 30 días:", countsCreacion);
+
+      return { labels, countsCheckIn, countsCreacion };
+    }
+
+
+
+    // Función para generar los Gráficos
+    function generateCharts(rmas) {
+      // Distribución de RMAs por Estado de Reparación
+      const estados = ordenarCategorias(contarRMAsPorEstado(rmas));
+      const pieCtx = document.getElementById('pie-chart').getContext('2d');
+      new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(estados),
+          datasets: [{
+            data: Object.values(estados),
+            backgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF',
+              '#FF9F40',
+              '#E7E9ED',
+              '#A569BD',
+              '#F1948A',
+              '#85C1E9'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+            },
+            title: {
+              display: false,
+              text: 'Distribución de RMAs por Estado de Reparación'
+            }
+          }
+        }
+      });
+
+      // Distribución de RMAs por Ubicación Actual
+      const transitos = ordenarCategorias(contarRMAsPorTransito(rmas));
+      const transitoPieCtx = document.getElementById('transito-pie-chart').getContext('2d');
+      new Chart(transitoPieCtx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(transitos),
+          datasets: [{
+            data: Object.values(transitos),
+            backgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF',
+              '#FF9F40',
+              '#E7E9ED',
+              '#A569BD',
+              '#F1948A',
+              '#85C1E9'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+            },
+            title: {
+              display: false,
+              text: 'Distribución de RMAs por Ubicación Actual'
+            }
+          }
+        }
+      });
+
+      // Gráfico Combinado: Estado de Reparación vs Ubicación Actual
+      // Solo números enteros en el eje Y
+      const comboData = {};
+      rmas.forEach(rma => {
+        const estado = rma.estado_de_reparacion || 'Sin Estado';
+        const transito = rma.transito_2 || 'Sin Información';
+        if (!comboData[estado]) {
+          comboData[estado] = {};
+        }
+        if (comboData[estado][transito]) {
+          comboData[estado][transito]++;
+        } else {
+          comboData[estado][transito] = 1;
+        }
+      });
+
+      // Obtener etiquetas para el gráfico, ordenadas alfabéticamente
+      const transitoLabels = Object.keys(transitos).sort();
+
+      // Crear datasets para cada estado_de_reparacion
+      const comboLabels = Object.keys(comboData).sort();
+      const comboDatasets = comboLabels.map((estado, index) => {
+        return {
+          label: estado,
+          data: transitoLabels.map(transito => comboData[estado][transito] || 0),
+          backgroundColor: `rgba(${(index * 60) % 255}, ${(index * 120) % 255}, ${(index * 180) % 255}, 0.6)`,
+          borderWidth: 1
+        };
+      });
+
+      const comboCtx = document.getElementById('combo-chart').getContext('2d');
+      new Chart(comboCtx, {
+        type: 'bar',
+        data: {
+          labels: transitoLabels,
+          datasets: comboDatasets
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+            },
+            title: {
+              display: false,
+              text: 'RMAs por Estado de Reparación y Ubicación Actual'
+            }
+          },
+          scales: {
+            x: {
+              stacked: true
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              precision: 0, // Asegura que los ticks sean enteros
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+
+      // Actualización del Gráfico: RMAs Check-in y Creación en los Últimos 30 Días
+      const creationDateCtx = document.getElementById('creation-date-chart').getContext('2d');
+      const creationDateData = contarRMAsUltimos30Dias(rmas);
+      new Chart(creationDateCtx, {
+        type: 'line',
+        data: {
+          labels: creationDateData.labels,
+          datasets: [
+            {
+              label: 'RMAs Check-in',
+              data: creationDateData.countsCheckIn,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: 'RMAs Creación',
+              data: creationDateData.countsCreacion,
+              backgroundColor: 'rgba(153, 102, 255, 0.2)',
+              borderColor: 'rgba(153, 102, 255, 1)',
+              borderWidth: 1,
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+            },
+            title: {
+              display: false,
+              text: 'RMAs Check-in y Creación en los Últimos 30 Días'
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'day',
+                tooltipFormat: 'dd/MM/yyyy',
+                displayFormats: {
+                  day: 'dd/MM/yyyy'
+                }
+              },
+              title: {
+                display: true,
+                text: 'Fecha'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Cantidad de RMAs'
+              },
+              ticks: {
+                precision:0, // Solo números enteros
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+
+      // Nuevo Gráfico de Embudo: Distribución de RMAs por Estado de Reparación
+      const funnelData = contarRMAsPorEstadoOrdenado(rmas);
+      const funnelTrace = {
+        type: "funnel",
+        y: funnelData.labels,
+        x: funnelData.counts,
+        textposition: "inside",
+        textinfo: "value+percent initial",
+        marker: {
+          color: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#FF9F40',
+            '#E7E9ED',
+            '#A569BD',
+            '#F1948A',
+            '#85C1E9'
+          ]
+        }
+      };
+
+      const funnelLayout = {
+        title: "Distribución de RMAs por Estado de Reparación (Embudo)",
+        margin: { l: 100, r: 100, t: 100, b: 100 }
+      };
+
+      Plotly.newPlot('funnel-chart', [funnelTrace], funnelLayout);
+    }
+
+    // Función para generar tarjetas de resumen
+    function generateSummaryCards(rmas) {
+      // Total de RMAs
+      const totalRMAs = contarTotalRMAs(rmas);
+      document.getElementById('total-rmas').textContent = totalRMAs;
+
+      // RMAs por Estado de Reparación
+      const estados = ordenarCategorias(contarRMAsPorEstado(rmas));
+      const estadosTexto = Object.entries(estados).map(([estado, count]) => `${estado}: ${count}`).join('<br>');
+      document.getElementById('rmas-por-estado').innerHTML = estadosTexto;
+
+      // RMAs por Ubicación Actual
+      const transitos = ordenarCategorias(contarRMAsPorTransito(rmas));
+      const transitosTexto = Object.entries(transitos).map(([transito, count]) => `${transito}: ${count}`).join('<br>');
+      document.getElementById('rmas-por-transito').innerHTML = transitosTexto;
+    }
+
+
+
+    // Generar las Tarjetas de Resumen
+    generateSummaryCards(data);
+
+    // Generar los Gráficos
+    generateCharts(data);
+
+    

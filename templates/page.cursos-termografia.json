@@ -1,0 +1,63 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "image_with_text_VCbc8A": {
+      "type": "image-with-text",
+      "name": "Image with text",
+      "settings": {
+        "image": "shopify://shop_images/Captura_de_Pantalla_2025-08-22_a_la_s_15.57.02.png",
+        "image_position": "left",
+        "image_width": 50,
+        "title": "CURSOS DE TERMOGRAFÍA",
+        "content": "<p>Obtén el máximo provecho de tu cámara de infrarrojos. Mejora la precisión de los datos, la calidad de las imágenes y adquiere valiosas habilidades de interpretación</p>",
+        "button_text": "CURSO NIVEL I",
+        "button_link": "shopify://pages/curso-nivel-i-termografia"
+      }
+    },
+    "custom_html_nivel_i": {
+      "type": "custom-html",
+      "name": "Curso Nivel I",
+      "custom_css": [
+        "ul li a {color: #000000 !important; text-decoration: none; font-weight: bold;}",
+        "ul li a:hover {color: #000000 !important; text-decoration: underline; font-weight: bold;}"
+      ],
+      "settings": {
+        "title": "Nivel I",
+        "html": "<div style=\"display: flex; flex-wrap: wrap;\">\n  <div style=\"flex: 1; min-width: 220px; padding: 20px; background-color: #f9f9f9; border-right: 1px solid #ddd;\">\n    <h3 style=\"margin-bottom: 20px;\">Menú</h3>\n    <ul style=\"list-style: none; padding: 0;\">\n      <li><a href=\"#descripcion-n1\">Descripción</a></li>\n      <li><a href=\"#certificacion-n1\">Certificación Oficial</a></li>\n      <li><a href=\"#programa-n1\">Programa</a></li>\n      <li><a href=\"#fechas-n1\">Fechas y horarios</a></li>\n      <li><a href=\"#faq-n1\">Requisitos</a></li>\n    </ul>\n  </div>\n  <div style=\"flex: 3; padding: 20px;\">\n    <section id=\"descripcion-n1\">\n      <h2>Descripción</h2>\n      <p>Curso diseñado para nuevos termógrafos que desean obtener una certificación reconocida internacionalmente. Cubre principios básicos de termografía, uso de cámaras infrarrojas y análisis térmico.</p>\n    </section>\n    <section id=\"certificacion-n1\">\n      <h2>Certificación Oficial</h2>\n      <p>Emitida por Infrared Training Center bajo estándares ISO 18436-7 y ASNT CP-105. Validez de 5 años.</p>\n    </section>\n    <section id=\"programa-n1\">\n      <h2>Programa</h2>\n      <ul>\n        <li>Día 1: Introducción, física térmica, operación de cámara</li>\n        <li>Día 2: Transferencia de calor, prácticas con cámara</li>\n        <li>Día 3: Técnicas de medición, informes</li>\n        <li>Día 4: Aplicaciones, repaso, examen</li>\n      </ul>\n    </section>\n    <section id=\"fechas-n1\">\n      <h2>Fechas y horarios</h2>\n      <p>Del 6 al 9 de Octubre (4 días / 36 horas)</p>\n    </section>\n    <section id=\"faq-n1\">\n      <h2>Requisitos</h2>\n      <p>Se recomienda contar con una cámara térmica. Podemos ayudarte a conseguir una si no tienes.</p>\n    </section>\n  </div>\n</div>"
+      }
+    },
+    "custom_html_nivel_ii": {
+      "type": "custom-html",
+      "name": "Curso Nivel II",
+      "custom_css": [
+        "ul li a {color: #000000 !important; text-decoration: none; font-weight: bold;}",
+        "ul li a:hover {color: #000000 !important; text-decoration: underline; font-weight: bold;}"
+      ],
+      "settings": {
+        "title": "Nivel II",
+        "html": "<div style=\"display: flex; flex-wrap: wrap;\">\n  <div style=\"flex: 1; min-width: 220px; padding: 20px; background-color: #f0f0f0; border-right: 1px solid #ccc;\">\n    <h3 style=\"margin-bottom: 20px;\">Menú</h3>\n    <ul style=\"list-style: none; padding: 0;\">\n      <li><a href=\"#descripcion-n2\">Descripción</a></li>\n      <li><a href=\"#certificacion-n2\">Certificación Oficial</a></li>\n      <li><a href=\"#programa-n2\">Programa</a></li>\n      <li><a href=\"#fechas-n2\">Fechas y horarios</a></li>\n      <li><a href=\"#faq-n2\">Requisitos</a></li>\n    </ul>\n  </div>\n  <div style=\"flex: 3; padding: 20px;\">\n    <section id=\"descripcion-n2\">\n      <h2>Descripción</h2>\n      <p>Curso avanzado que cumple con ANSI/ASNT CP-105 y profundiza en técnicas de análisis térmico. Ideal para profesionales con experiencia previa en termografía.</p>\n    </section>\n    <section id=\"certificacion-n2\">\n      <h2>Certificación Oficial</h2>\n      <p>Incluye certificación Nivel II de Infrared Training Center. Acreditación internacional: INTERNACHI, NETA, ITC.</p>\n    </section>\n    <section id=\"programa-n2\">\n      <h2>Programa</h2>\n      <p>Curso de 4 días, incluye manual impreso, laboratorios prácticos y examen de certificación.</p>\n    </section>\n    <section id=\"fechas-n2\">\n      <h2>Fechas y horarios</h2>\n      <p>Del 1 al 4 de Diciembre (4 días).</p>\n    </section>\n    <section id=\"faq-n2\">\n      <h2>Requisitos</h2>\n      <p>Requiere cámara térmica. Podemos ayudarte si aún no cuentas con una.</p>\n    </section>\n  </div>\n</div>"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image_with_text_VCbc8A",
+    "custom_html_nivel_i",
+    "custom_html_nivel_ii"
+  ]
+}
+
+ 

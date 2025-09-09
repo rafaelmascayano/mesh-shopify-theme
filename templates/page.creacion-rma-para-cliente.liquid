@@ -1,0 +1,1123 @@
+{% if customer and customer.tags contains 'admin' %}
+<!-- Incluir Flatpickr y el idioma español -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+<!-- Incluir SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Transformar heic a jpg -->
+<script src="https://unpkg.com/heic2any/dist/heic2any.min.js"></script>  
+
+<style>
+
+
+  /* Estilos para la barra de progreso */
+  .steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .steps li {
+    width: 100%;
+    position: relative;
+    text-align: center;
+  }
+
+  .steps li::before {
+    content: attr(data-step);
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 50%;
+    line-height: 30px;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  .steps li.active::before,
+  .steps li.completed::before {
+    background-color: #de0101;
+  }
+
+  .steps li.completed::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background-color: #de0101;
+    z-index: -1;
+  }
+
+  .steps li:first-child::after {
+    display: none;
+  }
+
+  .steps li:last-child::after {
+    display: none;
+  }
+
+
+
+
+
+
+
+
+
+
+
+  
+  /* Añadir estilos para el estado de carga del botón */
+  .loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    position: relative;
+  }
+
+  .loading::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top: 2px solid #de0101;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translateY(-50%);
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+
+
+
+
+  
+  .rma-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .rma-form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rma-input,
+  .rma-textarea,
+  .rma-file {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 16px;
+  }
+
+ .rma-submit {
+    background-color: #de0101 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+  }
+ 
+ 
+
+  .rma-submit:hover {
+    background-color: #b80000 !important;
+    color: white !important;
+  }
+
+  .rma-file-drop-area {
+    border: 2px dashed #ccc;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+  }
+
+  .rma-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #de0101;
+  }
+
+  .rma-file-drop-area input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+  }
+
+  .rma-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #00bfff;
+    background-color: transparent;
+    color: #00bfff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .rma-file-drop-area button:hover {
+    background-color: #00bfff;
+    color: white;
+  }
+
+  .rma-file-list {
+    margin-top: 10px;
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .rma-file-list li {
+    background-color: #f0f0f0;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .rma-file-list li span {
+    margin-right: 10px;
+  }
+
+  .rma-remove-file {
+    cursor: pointer;
+    color: red;
+    font-weight: bold;
+  }
+
+  /* Estilo para los campos obligatorios */
+  .required::after {
+    content: ' *';
+    color: red;
+  }
+
+  /* Texto para archivos no válidos en rojo */
+  .invalid-file {
+    color: red;
+  }
+
+  /* Ocultar campos */
+  .hidden {
+    display: none;
+  }
+
+  /* Texto explicativo */
+  .explanation {
+    font-size: 12px;
+    color: red;
+  }
+
+  /* Estilos para la validación del RUT */
+  .rut-valid {
+    border-color: green;
+  }
+
+  .rut-invalid {
+    border-color: red;
+  }
+
+  .rut-message {
+    font-size: 12px;
+    color: red;
+    margin-top: -10px;
+    margin-bottom: 10px;
+  }
+
+  .rut-message.valid {
+    color: green;
+  }
+
+
+    .back-button {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .back-button a {
+    text-decoration: none;
+    color: #de0101;
+    font-weight: bold;
+    
+  }
+  
+</style>
+<div class="rma-container">
+  <div class="back-button">
+    <a href="/pages/todas-rma">Volver a Todas las RMA</a>
+  </div>
+  <h1>Crear una RMA</h1>
+  <ul class="steps">
+    <li id="step-1" data-step="1"> Cliente</li>
+    <li id="step-2" data-step="2"> Empresa</li>
+    <li id="step-3" data-step="3"> Detalles</li>
+  </ul>
+</div>
+
+<!-- Paso 1: Crear Cliente -->
+<div class="rma-container" id="create-client-step">
+  <h2>Información del Cliente</h2>
+  <form id="cliente-form" class="rma-form" novalidate>
+    <!-- Email -->
+    <label class="required">Email</label>
+    <input type="email" name="email" class="rma-input" autocomplete="off" required />
+
+    <!-- Botón para enviar el formulario -->
+    <input type="submit" class="rma-submit" value="Continuar" />
+  </form>
+</div>
+
+<!-- Formulario para completar datos del cliente si no existe -->
+<div class="rma-container" id="complete-client-info" style="display: none;">
+  <h2>Completar Información del Cliente</h2>
+  <form id="complete-client-form" class="rma-form" novalidate>
+    <!-- Nombre (First Name) -->
+    <label class="required">Nombre</label>
+    <input type="text" name="first_name" class="rma-input" autocomplete="off" required />
+
+    <!-- Apellido (Last Name) -->
+    <label class="required">Apellido</label>
+    <input type="text" name="last_name" class="rma-input" autocomplete="off" required />
+
+    <!-- Teléfono -->
+    <label class="required">Teléfono</label>
+    <input type="text" name="phone" class="rma-input" autocomplete="off" required />
+
+    <!-- Botón para enviar el formulario -->
+    <input type="submit" class="rma-submit" value="Crear Cliente" />
+  </form>
+</div>
+
+<!-- Paso 2: Información de la Empresa -->
+<div class="rma-container" id="empresa-step" style="display: none;">
+  <h2>Información de la Empresa</h2>
+  <form id="empresa-form" class="rma-form" novalidate>
+    <!-- ID del Cliente (Oculto) -->
+    <input type="text" name="customer_id" id="customer_id_empresa" class="rma-input hidden" />
+
+    <!-- RUT de Empresa -->
+    <label class="required">Rut de Empresa </label> <span>(sin puntos y con guión. ej: 76720158-k)</span>
+    <input type="text" name="rut_empresa" id="rut_empresa" class="rma-input" autocomplete="off" required />
+    <!-- Mensaje de validación del RUT -->
+    <div id="rut-message" class="rut-message"></div>
+
+    <!-- Botón para enviar el formulario -->
+    <input type="submit" class="rma-submit" value="Continuar" />
+  </form>
+</div>
+
+<!-- Formulario para completar datos de la empresa si no existe -->
+<div class="rma-container" id="complete-empresa-info" style="display: none;">
+  <h2>Completar Información de la Empresa</h2>
+  <form id="complete-empresa-form" class="rma-form" novalidate>
+    <!-- Teléfono de Contacto (Campo obligatorio) -->
+    <label class="required">Teléfono de Contacto</label>
+    <input type="text" name="telefono" class="rma-input" autocomplete="off" required />
+
+    <!-- Nombre de Empresa (Campo obligatorio) -->
+    <label class="required">Nombre de Empresa</label>
+    <input type="text" name="nombre_empresa" class="rma-input" autocomplete="off" required />
+
+    <!-- Botón para enviar el formulario -->
+    <input type="submit" class="rma-submit" value="Guardar Información de la Empresa" />
+  </form>
+</div>
+
+
+<!-- Paso 3: Creación de RMA -->
+<div class="rma-container" id="rma-step" style="display: none;">
+  <!-- Título del formulario -->
+  <h2>Creación de RMA</h2>
+
+  <form id="rma-form" class="rma-form" enctype="multipart/form-data" novalidate>
+    <!-- ID del Cliente (Oculto) -->
+    <input type="text" name="customer_id" id="customer_id_rma" class="rma-input hidden" />
+    <input type="text" name="customer_email" id="customer_email_rma" class="rma-input hidden" />
+
+    <!-- Campo oculto para el Número de RMA -->
+    <input type="text" name="numero_rma" id="numero_rma" class="rma-input hidden" />
+
+    <!-- Número de Serie de Producto (Campo obligatorio) -->
+    <label class="required">Número de Serie de Equipo Principal</label>
+    <input type="text" name="numero_serie" class="rma-input" autocomplete="off" required />
+
+    <!-- Nombre del Producto (Campo obligatorio) -->
+    <label class="required">Modelo del Equipo</label>
+    <input type="text" name="nombre_producto" class="rma-input" autocomplete="off" required />
+
+    <!-- Accesorios (Campo obligatorio) -->
+    <label class="required">Accesorios</label>
+    <textarea name="accesorios" class="rma-textarea" rows="3" required></textarea>
+
+    <!-- Observaciones (Campo obligatorio) -->
+    <label class="required">Observaciones</label>
+    <textarea name="observaciones" class="rma-textarea" rows="4" required></textarea>
+
+    <!-- Fecha de Envío Estimada (Campo obligatorio) -->
+    <label class="required">Fecha de envío estimada</label>
+    <input type="text" id="rma-fecha-envio" class="rma-input" name="fecha_envio" required />
+
+
+    <!-- Área de subida de archivos -->
+    <div style="text-align: center;">
+        <h4>Agrega imágenes, videos o documentos que nos ayuden a entender mejor tu RMA.</h4>
+      <p>Puedes iniciar con una foto a tu equipo junto a los accesorios que enviarás como el siguiente ejemplo:</p>
+    <img src="https://cdn.shopify.com/s/files/1/0255/7509/6354/files/Ejemplo_imagen_RMA_texto.jpg" style="width: 300px">
+    </div>
+    <div class="rma-file-drop-area" id="rma-file-drop-area">
+      <p>Arrastra los archivos que deseas adjuntar</p>
+      <p>o</p>
+      <button type="button" id="rma-browse-files">Sube tus archivos</button>
+      <input type="file" name="archivos" id="rma-file-input" multiple hidden />
+      <!-- Texto explicativo sobre los archivos permitidos -->
+      <p class="explanation">Están permitidos los videos, imágenes y documentos de hasta 20mb.</p>
+      <p class="explanation">Debes subir al menos 1 archivo.*</p>
+    </div>
+
+    <ul class="rma-file-list" id="rma-file-list"></ul>
+
+    <!-- Explicación del * obligatorio -->
+    <p class="explanation">* Es obligatorio</p>
+
+    <!-- Botón para enviar el formulario -->
+    <input type="submit" class="rma-submit" value="Crear y enviar RMA a revisión" />
+  </form>
+</div>
+
+<script>
+  // Variable global para almacenar el customer_id y el email
+  window.customerId = null;
+  window.customerEmail = null;
+  window.rutEmpresa = null;
+
+  // Función para actualizar el progreso de los pasos
+  function updateSteps(step) {
+    const steps = ['step-1', 'step-2', 'step-3'];
+    steps.forEach((s, index) => {
+      const stepElement = document.getElementById(s);
+      if (index < step - 1) {
+        stepElement.classList.add('completed');
+        stepElement.classList.remove('active');
+      } else if (index === step - 1) {
+        stepElement.classList.add('active');
+        stepElement.classList.remove('completed');
+      } else {
+        stepElement.classList.remove('active', 'completed');
+      }
+    });
+  }
+
+  updateSteps(1); // Iniciar en el paso 1
+
+  // Función para validar RUT
+  function validarRUT(rut) {
+    // Eliminar puntos y guión
+    rut = rut.replace(/\./g, '').replace(/-/g, '');
+    // Verificar que tenga al menos 7 dígitos y un dígito verificador
+    if (!/^\d{7,8}[0-9Kk]$/.test(rut)) {
+      return false;
+    }
+    // Obtener cuerpo y dígito verificador
+    var cuerpo = rut.slice(0, -1);
+    var dv = rut.slice(-1).toUpperCase();
+
+    // Calcular dígito verificador
+    var suma = 0;
+    var multiplo = 2;
+
+    for (var i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo.charAt(i)) * multiplo;
+      multiplo = multiplo < 7 ? multiplo + 1 : 2;
+    }
+
+    var dvCalculado = 11 - (suma % 11);
+    if (dvCalculado === 11) dvCalculado = '0';
+    else if (dvCalculado === 10) dvCalculado = 'K';
+    else dvCalculado = dvCalculado.toString();
+
+    return dv === dvCalculado;
+  }
+
+  // Función para restringir caracteres en el RUT (solo permitir números, guiones y K/k)
+  function restringirCaracteresRUT(event) {
+    const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'];
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+    // Permitir solo números, guiones y K/k
+    const regex = /[0-9Kk\-]/;
+    if (!regex.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  // Evento para restringir caracteres en el RUT
+  document.getElementById('rut_empresa').addEventListener('keypress', restringirCaracteresRUT);
+
+  // Manejar la creación del cliente
+  document.getElementById('cliente-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const submitButton = this.querySelector('.rma-submit');
+
+    // Obtener el email del formulario
+    const email = this.email.value.trim();
+
+    if (!email) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, ingrese el email.',
+      });
+      return;
+    }
+
+    // Deshabilitar el botón y mostrar estado de carga
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...';
+
+    // Enviar datos al servidor para verificar si el cliente existe
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/verificar_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.json();
+    })
+    .then(data => {
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Continuar';
+
+      if (data.exists) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Cliente encontrado',
+          text: 'El cliente existe y se usará para la RMA.',
+        }).then(() => {
+          // Guardar el customer_id y email para los siguientes pasos
+          window.customerId = data.customer_id.split('/').pop();
+          window.customerEmail = email;
+          // Ocultar el formulario actual y mostrar el siguiente
+          document.getElementById('create-client-step').style.display = 'none';
+          document.getElementById('empresa-step').style.display = 'block';
+          // Actualizar progreso
+          updateSteps(2);
+        });
+      } else {
+        // Mostrar formulario para completar datos del cliente
+        document.getElementById('create-client-step').style.display = 'none';
+        document.getElementById('complete-client-info').style.display = 'block';
+        // Guardar email
+        window.customerEmail = email;
+      }
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al verificar el cliente. Intente nuevamente.',
+      });
+      // Rehabilitar el botón y quitar estado de carga
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Continuar';
+    });
+  });
+
+  // Manejar la creación del cliente si no existe
+  document.getElementById('complete-client-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const submitButton = this.querySelector('.rma-submit');
+
+    // Obtener los datos del formulario
+    const formData = new FormData(this);
+    formData.append('email', window.customerEmail);
+
+    // Validar campos obligatorios
+    if (!formData.get('first_name') || !formData.get('last_name') || !formData.get('phone')) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, complete todos los campos obligatorios.',
+      });
+      return;
+    }
+
+    // Deshabilitar el botón y mostrar estado de carga
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...';
+
+    // Enviar datos al servidor para crear el cliente
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: JSON.stringify({
+        first_name: formData.get('first_name'),
+        last_name: formData.get('last_name'),
+        email: window.customerEmail,
+        phone: formData.get('phone')
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.json();
+    })
+    .then(data => {
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Crear Cliente';
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'El cliente ha sido creado correctamente.',
+      }).then(() => {
+        // Guardar el customer_id para los siguientes pasos
+        window.customerId = data.customer_id.split('/').pop();
+        // Ocultar el formulario actual y mostrar el siguiente
+        document.getElementById('complete-client-info').style.display = 'none';
+        document.getElementById('empresa-step').style.display = 'block';
+        // Actualizar progreso
+        updateSteps(2);
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al crear el cliente. Intente nuevamente.',
+      });
+      // Rehabilitar el botón y quitar estado de carga
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Crear Cliente';
+    });
+  });
+
+  // Manejar la verificación de la empresa
+  document.getElementById('empresa-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const submitButton = this.querySelector('.rma-submit');
+
+    const rutEmpresa = this.rut_empresa.value.trim();
+
+    if (!rutEmpresa) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, ingrese el RUT de la empresa.',
+      });
+      return;
+    }
+
+    // Validar RUT
+    if (!validarRUT(rutEmpresa)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'RUT Inválido',
+        text: 'Por favor, ingrese un RUT válido con el formato XXXXXXXX-X.',
+      });
+      return;
+    }
+
+    // Deshabilitar el botón y mostrar estado de carga
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...';
+
+    // Enviar datos al servidor para verificar si la empresa existe
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/verificar_empresa?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: JSON.stringify({
+        rut_empresa: rutEmpresa,
+        customer_id: window.customerId
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.json();
+    })
+    .then(data => {
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Continuar';
+
+      if (data.exists) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Empresa encontrada',
+          text: 'La empresa existe y se usará para la RMA.',
+        }).then(() => {
+          // Ocultar el formulario actual y mostrar el siguiente
+          document.getElementById('empresa-step').style.display = 'none';
+          document.getElementById('rma-step').style.display = 'block';
+          // Establecer customer_id y customer_email en el formulario de RMA
+          document.getElementById('customer_id_rma').value = window.customerId;
+          document.getElementById('customer_email_rma').value = window.customerEmail;
+          // Actualizar progreso
+          updateSteps(3);
+        });
+      } else {
+        // Mostrar formulario para completar datos de la empresa
+        document.getElementById('empresa-step').style.display = 'none';
+        document.getElementById('complete-empresa-info').style.display = 'block';
+        // Guardar rut de empresa
+        window.rutEmpresa = rutEmpresa;
+      }
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al verificar la empresa. Intente nuevamente.',
+      });
+      // Rehabilitar el botón y quitar estado de carga
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Continuar';
+    });
+  });
+
+  // Manejar la creación de la empresa si no existe
+  document.getElementById('complete-empresa-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const submitButton = this.querySelector('.rma-submit');
+
+    // Obtener los datos del formulario
+    const formData = new FormData(this);
+    formData.append('rut_empresa', window.rutEmpresa);
+    formData.append('customer_id', window.customerId);
+
+    // Validar campos obligatorios
+    if (!formData.get('telefono') || !formData.get('nombre_empresa')) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, complete todos los campos obligatorios.',
+      });
+      return;
+    }
+
+    // Deshabilitar el botón y mostrar estado de carga
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...';
+
+    // Enviar datos al servidor para crear la empresa
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_empresa?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: JSON.stringify({
+        nombre_empresa: formData.get('nombre_empresa'),
+        rut_empresa: window.rutEmpresa,
+        telefono: formData.get('telefono'),
+        customer_id: window.customerId
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.text();
+    })
+    .then(data => {
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Guardar Información de la Empresa';
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'La información de la empresa ha sido guardada correctamente.',
+      }).then(() => {
+        // Ocultar el formulario actual y mostrar el siguiente
+        document.getElementById('complete-empresa-info').style.display = 'none';
+        document.getElementById('rma-step').style.display = 'block';
+        // Establecer customer_id y customer_email en el formulario de RMA
+        document.getElementById('customer_id_rma').value = window.customerId;
+        document.getElementById('customer_email_rma').value = window.customerEmail;
+        // Actualizar progreso
+        updateSteps(3);
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al guardar la información de la empresa. Intente nuevamente.',
+      });
+      // Rehabilitar el botón y quitar estado de carga
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Guardar Información de la Empresa';
+    });
+  });
+
+  
+  // Manejar el formulario de RMA
+  document.getElementById('rma-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Asegurarse de que customer_id y customer_email estén establecidos
+    if (!window.customerId || !window.customerEmail) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se ha podido obtener el ID o email del cliente. Por favor, vuelva a intentar.',
+      });
+      return;
+    }
+    // Establecer customer_id y customer_email en el formulario
+    this.customer_id.value = window.customerId;
+    this.customer_email.value = window.customerEmail;
+
+    // Validar el formulario (puedes mantener tu código existente)
+    // ... (tu código de validación y envío del formulario RMA) ...
+  });
+
+  // Inicializar Flatpickr para la fecha de envío estimada
+  flatpickr("#rma-fecha-envio", {
+    dateFormat: "d/m/Y",
+    locale: "es",
+    allowInput: false
+  });
+
+  // Código para obtener el número de RMA más alto y establecer el nuevo número
+  document.addEventListener('DOMContentLoaded', function() {
+    // Obtener el mayor número de RMA y rellenar el campo de Número de RMA
+    var mayorNumeroRMA = 0;
+
+    {% for rma in shop.metaobjects.rma.values %}
+      var numeroActual = parseInt("{{ rma.numero_de_rma.value }}", 10);
+      if (numeroActual > mayorNumeroRMA) {
+        mayorNumeroRMA = numeroActual;
+      }
+    {% endfor %}
+
+    // Establecer el nuevo número de RMA
+    var nuevoNumeroRMA = mayorNumeroRMA + 1;
+    document.getElementById('numero_rma').value = nuevoNumeroRMA;
+  });
+  document.getElementById('rma-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formIsValid = this.reportValidity();
+    const fileListItems = document.querySelectorAll('#rma-file-list li');
+    let hasInvalidFiles = false;
+
+    fileListItems.forEach(item => {
+      if (item.textContent.includes('(archivo no válido)') || item.textContent.includes('(sobrepasa los 20 mb)')) {
+        hasInvalidFiles = true;
+      }
+    });
+
+    if (!formIsValid) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, complete todos los campos obligatorios.',
+      });
+      return;
+    }
+
+    if (hasInvalidFiles) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pueden enviar archivos inválidos o que superen los 20 MB. Por favor, elimine los archivos no válidos antes de continuar.',
+      });
+      return;
+    }
+
+
+    const submitButton = this.querySelector('.rma-submit');
+
+    // Deshabilitar el botón y mostrar estado de carga
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...'; // Cambiar texto del botón
+
+    
+    var formData = new FormData(this);
+
+    // Enviar datos al servidor
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_rma?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.text();
+    })
+    .then(data => {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'El RMA ha sido creado correctamente.',
+      }).then(() => {
+        window.location.href = '/pages/todas-rma';
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al crear el RMA. Intente nuevamente.',
+      });
+     // Rehabilitar el botón y quitar estado de carga
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Crear y enviar RMA a revisión';  
+    });
+  });
+
+  // Manejar el Drag & Drop de archivos
+  var fileDropArea = document.getElementById('rma-file-drop-area');
+  var fileInput = document.getElementById('rma-file-input');
+  var fileList = document.getElementById('rma-file-list');
+  var browseFilesButton = document.getElementById('rma-browse-files');
+
+  browseFilesButton.addEventListener('click', function() {
+    fileInput.click();
+  });
+
+  fileDropArea.addEventListener('dragover', function(event) {
+    event.preventDefault();
+    fileDropArea.classList.add('dragover');
+  });
+
+  fileDropArea.addEventListener('dragleave', function() {
+    fileDropArea.classList.remove('dragover');
+  });
+
+// Manejar el Drag & Drop de archivos
+fileDropArea.addEventListener('drop', function(event) {
+  event.preventDefault();
+  fileDropArea.classList.remove('dragover');
+  var files = event.dataTransfer.files;
+  handleFiles(files);
+});
+
+fileInput.addEventListener('change', function(event) {
+  var files = event.target.files;
+  handleFiles(files);
+});
+  // Lista global para almacenar todos los archivos
+  var allFiles = [];
+
+async function handleFiles(files) {
+  const validTypes = [
+    "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf",
+    "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "video/mp4", "video/avi", "video/mpeg", "video/quicktime", "video/x-ms-wmv",
+    "video/x-flv", "video/webm", "video/ogg", "video/x-matroska",
+    "image/heic", "image/heif" // Añadido para detectar HEIC/HEIF
+  ];
+
+  const allowedExtensions = ['.heic', '.heif', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.csv', '.txt', '.mp4', '.avi', '.mpeg', '.mov', '.wmv', '.flv', '.webm', '.ogg', '.mkv'];
+
+  const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+  var dt = new DataTransfer();
+  var input = document.getElementById('rma-file-input');
+  var fileList = document.getElementById('rma-file-list');
+
+  // Agregar los archivos ya existentes al DataTransfer
+  allFiles.forEach(function(file) {
+    dt.items.add(file);
+  });
+
+  for (const file of files) {
+    // Renombrar el archivo para asegurar unicidad
+    let renamedFile = renameFile(file);
+
+    // Obtener la extensión del archivo
+    const extension = `.${renamedFile.name.split('.').pop().toLowerCase()}`;
+
+    // Verificar el tipo MIME
+    console.log(`Archivo: ${renamedFile.name}, Tipo MIME: ${renamedFile.type}, Extensión: ${extension}`);
+
+    // Verificar si el archivo renombrado ya existe en la lista global
+    if (allFiles.some(f => f.name === renamedFile.name && f.size === renamedFile.size)) {
+      // Archivo duplicado, no lo agregamos de nuevo
+      continue;
+    }
+
+    let isValidFile = (validTypes.includes(renamedFile.type) || allowedExtensions.includes(extension)) && renamedFile.size <= maxSize;
+
+    // Si el tipo MIME es HEIC o HEIF, intenta convertirlo
+    if ((renamedFile.type === 'image/heic' || renamedFile.type === 'image/heif') && renamedFile.size <= maxSize) {
+      try {
+        const convertedBlob = await heic2any({
+          blob: renamedFile,
+          toType: "image/jpeg",
+          quality: 0.8
+        });
+        const convertedFile = new File([convertedBlob], renamedFile.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+
+        // Re-validate el archivo convertido
+        if (validTypes.includes(convertedFile.type) || allowedExtensions.includes('.jpg')) {
+          allFiles.push(convertedFile);
+          dt.items.add(convertedFile); // Agregar el archivo convertido al DataTransfer
+          listItem = document.createElement('li');
+          listItem.innerHTML = `<span>${convertedFile.name}</span><span class="rma-remove-file">X</span>`;
+          listItem.querySelector('.rma-remove-file').addEventListener('click', function() {
+            listItem.remove();
+            removeFileFromInput(convertedFile.name); // Pasar el nombre convertido
+          });
+          fileList.appendChild(listItem);
+        } else {
+          throw new Error('Tipo de archivo convertido inválido.');
+        }
+      } catch (error) {
+        console.error("Error al convertir el archivo HEIC:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no pudo ser convertido o es inválido.`,
+        });
+        continue; // Saltar este archivo y continuar con el siguiente
+      }
+    } else {
+      if (!isValidFile) {
+        if (!validTypes.includes(renamedFile.type)) {
+          listItem.innerHTML = `<span>${renamedFile.name} <span class="invalid-file">(archivo no válido)</span></span><span class="rma-remove-file">X</span>`;
+        } else if (renamedFile.size > maxSize) {
+          listItem.innerHTML = `<span>${renamedFile.name} <span class="invalid-file">(sobrepasa los 20 MB)</span></span><span class="rma-remove-file">X</span>`;
+        }
+        var listItem = document.createElement('li');
+        listItem.innerHTML = isValidFile ? `<span>${renamedFile.name}</span><span class="rma-remove-file">X</span>` : listItem.innerHTML;
+        listItem.querySelector('.rma-remove-file').addEventListener('click', function() {
+          listItem.remove();
+          removeFileFromInput(renamedFile.name);
+        });
+        fileList.appendChild(listItem);
+        continue; // No agregar archivos inválidos a la lista global
+      } else {
+        // Agregar el archivo renombrado a la lista global
+        allFiles.push(renamedFile);
+        dt.items.add(renamedFile); // Agregar el archivo renombrado al DataTransfer
+
+        // Crear y agregar el elemento a la lista visual
+        var listItem = document.createElement('li');
+        listItem.innerHTML = `<span>${renamedFile.name}</span><span class="rma-remove-file">X</span>`;
+        listItem.querySelector('.rma-remove-file').addEventListener('click', function() {
+          listItem.remove();
+          removeFileFromInput(renamedFile.name);
+        });
+        fileList.appendChild(listItem);
+      }
+    }
+  }
+
+  // Actualizar los archivos del input
+  input.files = dt.files;
+}
+
+
+
+  function renameFile(file) {
+    const timestamp = Date.now();
+    const uniqueName = `${timestamp}_${file.name}`;
+    return new File([file], uniqueName, { type: file.type, lastModified: Date.now() });
+  }
+
+  
+
+function removeFileFromInput(fileName) {
+  var dt = new DataTransfer();
+  var input = document.getElementById('rma-file-input');
+
+  // Filtrar el archivo eliminado de la lista global
+  allFiles = allFiles.filter(function(file) {
+    return file.name !== fileName;
+  });
+
+  // Agregar los archivos restantes al DataTransfer
+  allFiles.forEach(function(file) {
+    dt.items.add(file);
+  });
+
+  input.files = dt.files;
+}
+
+</script>
+
+{% else %}
+<div class="mensaje-rma">
+  Debes ingresar a tu cuenta para poder crear una RMA. <a href="/account">Ingresar</a>
+</div>
+
+<style>
+  .mensaje-rma {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .mensaje-rma a {
+    padding: 10px 20px;
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+  }
+
+  .mensaje-rma a:hover {
+    background-color: #0056b3;
+  }
+</style>
+{% endif %}

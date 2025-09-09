@@ -1,0 +1,815 @@
+
+<style>
+  /* Estilos generales */
+  .container-duck {
+    padding: 20px;
+    max-width: 1400px; /* Aumentar el ancho para acomodar más visualizaciones */
+    margin: 0 auto;
+    background-color: #ffffff;
+  }
+
+  a {
+    text-decoration: none;
+    color: red;
+  }
+
+  /* Estilos para el modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .modal-content {
+    background-color: #fff;
+    margin: 15px auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90%;
+    overflow-y: auto;
+    position: relative;
+    border-radius: 8px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+  }
+
+  .modal-title {
+    margin: 0;
+    font-size: 24px;
+  }
+
+  .modal-subtitles {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+    font-size: 16px;
+    color: #555;
+  }
+
+  .modal-qrcode {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .modal-body {
+    padding-top: 10px;
+  }
+
+  .modal-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  .modal-body td {
+    padding: 8px;
+    border: 1px solid #f0f0f0;
+  }
+
+  .additional-info {
+    margin-bottom: 20px;
+  }
+
+  .info-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .info-box .info-column {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .info-box p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+
+  .archivos-content {
+    margin-bottom: 20px;
+  }
+
+  .archivos-content img,
+  .archivos-content video {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .modal-footer {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  /* Botones principales */
+  .print-button,
+  .registrar-transito-button,
+  .agregar-anotacion-button,
+  .actualizar-estado-button,
+  .ver-presupuestos-button,
+  .agregar-presupuesto-button,
+  .ver-facturas-button,
+  .agregar-factura-button,
+  .ver-guias-button,
+  .boton-crear-rma,
+  .agregar-guia-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s;
+  }
+
+  .print-button:hover,
+  .registrar-transito-button:hover,
+  .agregar-anotacion-button:hover,
+  .actualizar-estado-button:hover,
+  .ver-presupuestos-button:hover,
+  .agregar-presupuesto-button:hover,
+  .ver-facturas-button:hover,
+  .agregar-factura-button:hover,
+  .ver-guias-button:hover,
+  .agregar-guia-button:hover {
+    background-color: #0056b3;
+  }
+
+  /* Responsividad del modal */
+  @media (max-width: 600px) {
+    .modal-content {
+      width: 95%;
+      margin: 5% auto;
+    }
+    .modal-subtitles {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .modal-qrcode {
+      position: static;
+      margin-top: 10px;
+    }
+
+    /* Responsividad para los Modales de Facturas y Guías de Despacho */
+    .facturas-modal-content,
+    .agregar-factura-modal-content,
+    .guias-modal-content,
+    .agregar-guia-modal-content {
+      width: 95%;
+      margin: 5% auto;
+    }
+
+    .facturas-modal-content table,
+    .agregar-factura-modal-content table,
+    .guias-modal-content table,
+    .agregar-guia-modal-content table {
+      font-size: 14px;
+    }
+
+    .ver-facturas-button,
+    .agregar-factura-button,
+    .ver-guias-button,
+    .agregar-guia-button {
+      width: 100%;
+      margin: 10px 0;
+    }
+  }
+
+  /* Estilos para los filtros y el indicador */
+  .filters-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  .filter-group {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    width: 48%;
+  }
+
+  .filter-group h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .filter-options {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .filter-options label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+
+  .active-filters {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+  }
+
+  @media (max-width: 768px) {
+    .filter-group {
+      width: 100%;
+    }
+    .anotacion-card {
+      padding: 10px;
+    }
+    .anotacion-usuario {
+      font-size: 1em;
+    }
+    .anotacion-fecha {
+      font-size: 0.8em;
+    }
+    .anotacion-texto {
+      font-size: 0.95em;
+    }
+  }
+
+  /* Estilos para la impresión */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #modal-overlay,
+    #modal-overlay * {
+      visibility: visible;
+    }
+    #modal-overlay {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #modal-content {
+      position: relative;
+      max-height: none;
+      overflow: visible;
+    }
+    /* Ocultar botones en la impresión */
+    #modal-content .print-button,
+    #modal-content .close-modal,
+    #modal-content .registrar-transito-button,
+    #modal-content .agregar-anotacion-button,
+    #modal-content .actualizar-estado-button,
+    #modal-content .ver-guias-button,
+    #modal-content .ver-presupuestos-button,
+    #modal-content .ver-facturas-button {
+      display: none;
+    }
+  }
+
+  /* Estilos para la Tabla Tipo Chat de Trello */
+  .anotaciones-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .anotacion-card {
+    background-color: #f4f5f7;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 1px 0 rgba(9,30,66,.25);
+  }
+
+  .anotacion-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .anotacion-usuario {
+    font-weight: bold;
+    color: #172b4d;
+  }
+
+  .anotacion-fecha {
+    font-size: 0.9em;
+    color: #5e6c84;
+  }
+
+  .anotacion-body {
+    margin-bottom: 10px;
+  }
+
+  .anotacion-texto {
+    margin: 0 0 5px 0;
+    color: #172b4d;
+  }
+
+  .anotacion-ubicacion {
+    margin: 0;
+    color: #5e6c84;
+  }
+
+  .anotacion-archivos img.anotacion-imagen,
+  .anotacion-archivos video.anotacion-video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 3px;
+    margin-top: 10px;
+  }
+
+  .anotacion-archivos p {
+    margin: 5px 0;
+  }
+
+  @media (max-width: 768px) {
+    .anotacion-card {
+      padding: 10px;
+    }
+
+    .anotacion-usuario {
+      font-size: 1em;
+    }
+
+    .anotacion-fecha {
+      font-size: 0.8em;
+    }
+
+    .anotacion-texto {
+      font-size: 0.95em;
+    }
+  }
+
+  /* Estilos para las pestañas */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+
+  .tab-link {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+
+  .tab-link.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .tab-pane {
+    display: none;
+  }
+
+  .tab-pane.active {
+    display: block;
+  }
+
+  /* Botones para cerrar los modales */
+  .close-modal,
+  .close-transito-modal,
+  .close-anotacion-modal,
+  .close-estado-modal,
+  .close-presupuestos-modal,
+  .close-agregar-presupuesto-modal,
+  .close-facturas-modal,
+  .close-agregar-factura-modal,
+  .close-guias-modal,
+  .close-agregar-guia-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+  }
+
+  /* Estilos para los formularios */
+  .transito-form,
+  .anotacion-form,
+  .estado-form,
+  .facturas-form,
+  .agregar-factura-form,
+  .guias-form,
+  .agregar-guia-form,
+  .agregar-presupuesto-form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .transito-input,
+  .transito-textarea,
+  .transito-select,
+  .anotacion-input,
+  .anotacion-textarea,
+  .anotacion-select,
+  .estado-select,
+  .facturas-input,
+  .facturas-textarea,
+  .facturas-select,
+  .agregar-factura-input,
+  .agregar-factura-textarea,
+  .agregar-factura-select,
+  .guias-input,
+  .guias-textarea,
+  .guias-select,
+  .agregar-guia-input,
+  .agregar-guia-textarea,
+  .agregar-guia-select,
+  .agregar-presupuesto-input,
+  .agregar-presupuesto-select {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 16px;
+  }
+
+  /* Estilos para los botones de los formularios */
+  .transito-submit,
+  .anotacion-submit,
+  .estado-submit,
+  .facturas-submit,
+  .agregar-factura-submit,
+  .guias-submit,
+  .agregar-guia-submit,
+  .agregar-presupuesto-submit {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .transito-submit {
+    background-color: #de0101;
+    color: white;
+  }
+
+  .transito-submit:hover {
+    background-color: #b80000;
+  }
+
+  .anotacion-submit {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .anotacion-submit:hover {
+    background-color: #218838;
+  }
+
+  .estado-submit {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .estado-submit:hover {
+    background-color: #138496;
+  }
+
+  .facturas-submit {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .facturas-submit:hover {
+    background-color: #0056b3;
+  }
+
+  .agregar-factura-submit {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .agregar-factura-submit:hover {
+    background-color: #218838;
+  }
+
+  .guias-submit,
+  .agregar-guia-submit {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .guias-submit:hover,
+  .agregar-guia-submit:hover {
+    background-color: #138496;
+  }
+
+  .agregar-presupuesto-submit {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .agregar-presupuesto-submit:hover {
+    background-color: #0056b3;
+  }
+
+  /* Estilos para las áreas de arrastrar y soltar archivos */
+  .transito-file-drop-area,
+  .anotacion-file-drop-area,
+  .estado-file-drop-area,
+  .facturas-file-drop-area,
+  .agregar-factura-file-drop-area,
+  .guias-file-drop-area,
+  .agregar-guia-file-drop-area,
+  .agregar-presupuesto-file-drop-area {
+    border: 2px dashed #ccc;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+    border-radius: 8px;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+
+  .transito-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #de0101;
+  }
+
+  .anotacion-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #28a745;
+  }
+
+  .estado-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #17a2b8;
+  }
+
+  .facturas-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #007bff;
+  }
+
+  .agregar-factura-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #28a745;
+  }
+
+  .guias-file-drop-area.dragover,
+  .agregar-guia-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #17a2b8;
+  }
+
+  .agregar-presupuesto-file-drop-area.dragover {
+    background-color: #f0f0f0;
+    border-color: #007bff;
+  }
+
+  /* Inputs de archivo */
+  .transito-file-drop-area input[type="file"],
+  .anotacion-file-drop-area input[type="file"],
+  .estado-file-drop-area input[type="file"],
+  .facturas-file-drop-area input[type="file"],
+  .agregar-factura-file-drop-area input[type="file"],
+  .guias-file-drop-area input[type="file"],
+  .agregar-guia-file-drop-area input[type="file"],
+  .agregar-presupuesto-file-drop-area input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+  }
+
+  /* Botones en las áreas de arrastrar y soltar */
+  .transito-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #00bfff;
+    background-color: transparent;
+    color: #00bfff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .transito-file-drop-area button:hover {
+    background-color: #00bfff;
+    color: white;
+  }
+
+  .anotacion-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #28a745;
+    background-color: transparent;
+    color: #28a745;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .anotacion-file-drop-area button:hover {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .estado-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #17a2b8;
+    background-color: transparent;
+    color: #17a2b8;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .estado-file-drop-area button:hover {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .facturas-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #007bff;
+    background-color: transparent;
+    color: #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .facturas-file-drop-area button:hover {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .agregar-factura-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #28a745;
+    background-color: transparent;
+    color: #28a745;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .agregar-factura-file-drop-area button:hover {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .guias-file-drop-area button,
+  .agregar-guia-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #17a2b8;
+    background-color: transparent;
+    color: #17a2b8;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .guias-file-drop-area button:hover,
+  .agregar-guia-file-drop-area button:hover {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .agregar-presupuesto-file-drop-area button {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #007bff;
+    background-color: transparent;
+    color: #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .agregar-presupuesto-file-drop-area button:hover {
+    background-color: #007bff;
+    color: white;
+  }
+
+  /* Listas de Archivos */
+  .transito-file-list,
+  .anotacion-file-list,
+  .estado-file-list,
+  .facturas-file-list,
+  .agregar-factura-file-list,
+  .guias-file-list,
+  .agregar-guia-file-list,
+  .agregar-presupuesto-file-list {
+    margin-top: 10px;
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .transito-file-list li,
+  .anotacion-file-list li,
+  .estado-file-list li,
+  .facturas-file-list li,
+  .agregar-factura-file-list li,
+  .guias-file-list li,
+  .agregar-guia-file-list li,
+  .agregar-presupuesto-file-list li {
+    background-color: #f0f0f0;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .transito-file-list li span,
+  .anotacion-file-list li span,
+  .estado-file-list li span,
+  .facturas-file-list li span,
+  .agregar-factura-file-list li span,
+  .guias-file-list li span,
+  .agregar-guia-file-list li span,
+  .agregar-presupuesto-file-list li span {
+    margin-right: 10px;
+  }
+
+  /* Estilos para remover archivos */
+  .facturas-remove-file,
+  .agregar-factura-remove-file,
+  .guias-remove-file,
+  .agregar-guia-remove-file,
+  .agregar-presupuesto-remove-file,
+  .transito-remove-file,
+  .anotacion-remove-file,
+  .estado-remove-file {
+    cursor: pointer;
+    color: red;
+    font-weight: bold;
+  }
+
+  /* Estilo para los campos obligatorios */
+  .required::after {
+    content: ' *';
+    color: red;
+  }
+
+  /* Ocultar campos */
+  .hidden {
+    display: none;
+  }
+
+  /* Loading button state */
+  .loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    position: relative;
+  }
+
+  .loading::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top: 2px solid #de0101;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translateY(-50%);
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>

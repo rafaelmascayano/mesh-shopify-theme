@@ -1,0 +1,142 @@
+<style>
+
+  
+  /* Estilos para las tarjetas de resumen */
+  .summary-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 50px;
+  }
+
+  .summary-card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 30%;
+    margin-bottom: 20px;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+
+  .summary-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .summary-card h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .summary-card p {
+    font-size: 18px;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    .summary-card {
+      width: 45%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .summary-card {
+      width: 100%;
+    }
+  }
+
+  
+  /* Estilos para los gráficos */
+  .charts-container-two-columns, .charts-container-three-columns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 50px;
+  }
+
+  .chart-box-two {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 48%; /* 2 gráficos por fila */
+    margin-bottom: 20px;
+  }
+
+  .chart-box-three {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 30%; /* 3 gráficos por fila en pantallas grandes */
+    margin-bottom: 20px;
+  }
+
+  .chart-box h3 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 1200px) {
+    .chart-box-three {
+      width: 45%; /* 2 gráficos por fila en pantallas medianas */
+    }
+  }
+
+  @media (max-width: 768px) {
+    .chart-box-two, .chart-box-three {
+      width: 100%; /* 1 gráfico por fila en pantallas pequeñas */
+    }
+  }
+
+</style>
+
+
+
+  <!-- Tarjetas de Resumen -->
+  <div class="summary-cards">
+    <div class="summary-card">
+      <h3>Total de RMAs</h3>
+      <p id="total-rmas">0</p>
+    </div>
+    <div class="summary-card">
+      <h3>RMAs por Estado</h3>
+      <p id="rmas-por-estado">0</p>
+    </div>
+    <div class="summary-card">
+      <h3>RMAs por Ubicación Actual</h3>
+      <p id="rmas-por-transito">0</p>
+    </div>
+  </div>
+
+  <!-- Contenedores para los Gráficos -->
+  <!-- Primer Contenedor: 2 Columnas -->
+  <div class="charts-container-two-columns">
+    <div class="chart-box-two">
+      <h3>RMAs por Estado de Reparación y Ubicación Actual</h3>
+      <canvas id="combo-chart"></canvas>
+    </div>
+    <div class="chart-box-two">
+      <h3>RMAs Check-in y Creación en los Últimos 30 Días</h3>
+      <canvas id="creation-date-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- Segundo Contenedor: 3 Columnas -->
+  <div class="charts-container-three-columns">
+    <div class="chart-box-three">
+      <h3>Distribución de RMAs por Estado de Reparación (Embudo)</h3>
+      <div id="funnel-chart" style="width:350px; height:400px;"></div>
+    </div>
+    <div class="chart-box-three">
+      <h3>Distribución de RMAs por Ubicación Actual</h3>
+      <canvas id="transito-pie-chart"></canvas>
+    </div>
+    <div class="chart-box-three">
+      <h3>Distribución de RMAs por Estado de Reparación</h3>
+      <canvas id="pie-chart"></canvas>
+    </div>
+  </div>
+
+

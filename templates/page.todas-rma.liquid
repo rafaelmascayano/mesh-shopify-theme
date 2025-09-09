@@ -1,0 +1,3477 @@
+{% if customer and customer.tags contains 'admin' %}
+<!-- Verificación: solo usuarios con la etiqueta 'admin' pueden ver esta página -->
+
+<!-- Incluir estilos y scripts necesarios -->
+{{ 'mermaid.min.css' | asset_url | stylesheet_tag }}
+{{ 'gridjs.umd.js' | asset_url | script_tag }}
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+{{ 'mermaid.min.css' | asset_url | stylesheet_tag }}
+{{ 'sweetalert2@11.js' | asset_url | script_tag }}
+  
+<!-- Incluir Chart.js <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+  {{ 'chart.js' | asset_url | script_tag }}
+
+<!-- Incluir el adaptador de Chart.js para tiempo    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>-->
+    {{ 'chartjs-adapter-date-fns.js' | asset_url | script_tag }}
+  
+<!-- Incluir Plotly.js para el gráfico de embudo <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
+    {{ 'plotly-latest.min.js' | asset_url | script_tag }}
+  
+<!-- Incluir QRCode.js para generar códigos QR <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script> -->
+    {{ 'qrcode.min.js' | asset_url | script_tag }}
+  
+<!-- Incluir SortableJS para drag and drop en el tablero Kanban <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>-->
+    {{ 'Sortable.min.js' | asset_url | script_tag }}
+
+{% render 'css-todas-rma' %}
+
+
+<div class="container-duck">
+  <h1 style="text-align: center;">Todas las RMAs</h1>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab-link active" data-tab="list">📋Lista RMA</button>
+    <button class="tab-link" data-tab="board">🔧Tablero Laboratorio</button>
+    <button class="tab-link" data-tab="charts">📊Dashboard</button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Lista -->
+    <div id="list" class="tab-pane active">
+<style>
+
+
+   /* Estilos para el botón de Filtro Avanzado */
+
+  .advanced-filter-button-container {
+
+    text-align: right;
+  }
+    #toggle-filters {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+  }
+
+
+
+  #toggle-filters:hover {
+
+    background-color: #0056b3;
+  }
+
+  
+</style>
+
+
+  <!-- Botón para mostrar/ocultar filtros avanzados -->
+  <div class="advanced-filter-button-container">
+    <button id="toggle-filters">Filtro Avanzado</button>
+  </div>
+  <a href="/pages/creacion-rma-para-cliente"><button class="boton-crear-rma" style="background-color: grey">Crear RMA para Cliente</button></a>
+
+  <!-- Div de Filtros Avanzados -->
+  <div id="advanced-filters" style="display: none;">
+    <!-- Contenedor de Filtros -->
+    <div class="filters-container">
+      <!-- Filtro por Ubicación Actual -->
+      <div class="filter-group" id="filter-transito">
+        <h4>Filtrar por Ubicación Actual</h4>
+        <div class="filter-options" id="transito-options">
+          <!-- Checkboxes se generarán dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Filtro por Estado de Reparación -->
+      <div class="filter-group" id="filter-estado">
+        <h4>Filtrar por Estado de Reparación</h4>
+        <div class="filter-options" id="estado-options">
+          <!-- Checkboxes se generarán dinámicamente -->
+        </div>
+      </div>
+
+
+<!-- Filtro por Factura, Guía de Despacho y Pago -->
+<div class="filter-group" id="filter-adicionales">
+  <h4>Filtrar por Factores Adicionales</h4>
+  <div class="filter-options" id="adicionales-options">
+    <!-- Filtro Factura -->
+    <div class="sub-filter">
+      <strong>Factura:</strong><br>
+      <label><input type="checkbox" value="Sí" checked> Sí</label>
+      <label><input type="checkbox" value="No" checked> No</label>
+    </div>
+    <!-- Filtro Guía de Despacho -->
+    <div class="sub-filter">
+      <strong>Guía de Despacho:</strong><br>
+      <label><input type="checkbox" value="Sí" checked> Sí</label>
+      <label><input type="checkbox" value="No" checked> No</label>
+    </div>
+    <!-- Filtro Pago -->
+    <div class="sub-filter">
+      <strong>Pago:</strong><br>
+      <label><input type="checkbox" value="Sí" checked> Sí</label>
+      <label><input type="checkbox" value="No" checked> No</label>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+      
+    </div>
+
+    <!-- Indicador de Filtros Activos -->
+    <div class="active-filters" id="active-filters">
+      <!-- Se mostrará qué filtros están activos -->
+      Filtros Activos: Ninguno
+    </div>
+
+  
+    <!-- Buscador y Filtros de Fecha -->
+    <div class="search-container">
+      <label for="date-field-selector" style="align-self: center;">Busca por fecha:</label>
+      <select id="date-field-selector">
+        <option value="check_in">Check-in</option>
+        <option value="fecha_creacion">Creación</option>
+      </select>
+      <label for="from-date" style="align-self: center;">Desde:</label>
+      <input type="date" id="from-date" placeholder="Desde">
+      <label for="to-date" style="align-self: center;">Hasta:</label>
+      <input type="date" id="to-date" placeholder="Hasta">
+      <button id="reset-filter">Resetear Filtro</button>
+    </div>
+
+
+  </div>
+      <!-- Tabla de RMAs -->
+      <div id="grid" style="background-color: white;"></div>
+    </div>
+
+    <!-- Tablero (Kanban) -->
+    <div id="board" class="tab-pane">
+<style>
+
+
+  /* Estilos para el Tablero Kanban */
+  .kanban-board {
+    display: flex;
+    overflow-x: auto;
+    padding: 20px 0;
+  }
+
+  .kanban-column {
+    background-color: #f4f5f7;
+    border-radius: 3px;
+    width: 300px;
+    min-width: 300px;
+    margin-right: 20px;
+    padding: 10px;
+    flex-shrink: 0;
+  }
+
+  .kanban-column h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .kanban-card {
+    background-color: #fff;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 0 rgba(9,30,66,.25);
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .kanban-card:hover {
+    background-color: #e1e4e8;
+  }
+
+  .kanban-card h3 {
+    font-size: 16px;
+    margin: 0 0 5px 0;
+  }
+
+  .kanban-card p {
+    margin: 0;
+    font-size: 14px;
+    color: #5e6c84;
+  }
+
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .kanban-column {
+      width: 250px;
+      min-width: 250px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .kanban-column {
+      width: 200px;
+      min-width: 200px;
+    }
+  }
+
+  
+</style>
+  
+  <!-- Tablero Kanban <h2 style="text-align: center; margin-top: 50px;">Tablero Kanban de RMAs</h2> -->
+  
+  <div class="kanban-board" id="kanban-board">
+    <!-- Las columnas Kanban se generarán dinámicamente aquí -->
+  </div>
+
+
+
+  
+    </div>
+
+    <!-- Gráficos -->
+    <div id="charts" class="tab-pane">
+      {% render 'graficos-todas-rma' %}
+    </div>
+  </div>
+</div>
+
+<!-- Modales -->
+<div id="modal-overlay" class="modal-overlay">
+  <div id="modal-content" class="modal-content">
+    <!-- El contenido dinámico se inyectará aquí -->
+  </div>
+</div>
+
+<!-- Modal para el formulario de Registro de Tránsito -->
+<div id="transito-modal-overlay" class="modal-overlay">
+  <div id="transito-modal-content" class="modal-content">
+    <!-- El formulario de registro de tránsito se inyectará aquí -->
+  </div>
+</div>
+
+<!-- Modal para el formulario de Agregar Anotación -->
+<div id="anotacion-modal-overlay" class="modal-overlay">
+  <div id="anotacion-modal-content" class="modal-content">
+    <!-- El formulario de agregar anotación se inyectará aquí -->
+  </div>
+</div>
+
+<!-- Modal para el formulario de Actualizar Estado Reparación -->
+<div id="estado-modal-overlay" class="modal-overlay">
+  <div id="estado-modal-content" class="modal-content">
+    <!-- El formulario de actualizar estado se inyectará aquí -->
+  </div>
+</div>
+
+<!-- Modal para el listado de presupuestos -->
+<div id="presupuestos-modal-overlay" class="modal-overlay">
+  <div id="presupuestos-modal-content" class="modal-content">
+    <!-- El contenido del modal se inyectará aquí -->
+  </div>
+</div>
+
+
+<!-- Modal para agregar presupuesto -->
+<div id="agregar-presupuesto-modal-overlay" class="modal-overlay">
+  <div id="agregar-presupuesto-modal-content" class="modal-content">
+    <!-- El contenido del modal se inyectará aquí -->
+  </div>
+</div>
+
+<!-- Modal para Facturas -->
+<div id="facturas-modal-overlay" class="modal-overlay">
+  <div id="facturas-modal-content" class="modal-content">
+    <!-- Facturas content will be injected here -->
+  </div>
+</div>
+
+
+<!-- Modal para agregar Factura -->
+<div id="agregar-factura-modal-overlay" class="modal-overlay">
+  <div id="agregar-factura-modal-content" class="modal-content">
+    <!-- Content will be injected here -->
+  </div>
+</div>  
+
+
+<!-- Modal for Guías de Despacho -->
+<div id="guias-modal-overlay" class="modal-overlay">
+  <div id="guias-modal-content" class="modal-content">
+    <!-- Content will be injected here -->
+  </div>
+</div>
+
+<!-- Modal for Adding Guía de Despacho -->
+<div id="agregar-guia-modal-overlay" class="modal-overlay">
+  <div id="agregar-guia-modal-content" class="modal-content">
+    <!-- Content will be injected here -->
+  </div>
+</div>
+
+
+  
+<script>
+  // Lista global para almacenar todos los archivos renombrados
+  let allFiles = [];
+  let allAnotacionFiles = [];
+  let allEstadoFiles = []; // Si en el futuro se agregan archivos para estado
+  let allAgregarFacturaFiles = [];
+
+  // Función para renombrar archivos con un timestamp
+  function renameFile(file) {
+    const timestamp = Date.now();
+    const uniqueName = `${timestamp}_${file.name}`;
+    return new File([file], uniqueName, { type: file.type, lastModified: Date.now() });
+  }
+
+  // Función para manejar la eliminación de archivos de tránsito
+  function removeFileFromInput(fileName) {
+    var dt = new DataTransfer();
+    var input = document.getElementById('transito-file-input');
+
+    // Filtrar el archivo eliminado de la lista global
+    allFiles = allFiles.filter(function(file) {
+      return file.name !== fileName;
+    });
+
+    // Agregar los archivos restantes al DataTransfer
+    allFiles.forEach(function(file) {
+      dt.items.add(file);
+    });
+
+    input.files = dt.files;
+
+    // Actualizar la lista visual de archivos
+    const fileList = document.getElementById('transito-file-list');
+    fileList.innerHTML = '';
+    allFiles.forEach(function(file) {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `<span>${file.name}</span><span class="transito-remove-file">X</span>`;
+      listItem.querySelector('.transito-remove-file').addEventListener('click', function() {
+        removeFileFromInput(file.name);
+      });
+      fileList.appendChild(listItem);
+    });
+  }
+
+  // Función para manejar la eliminación de archivos de anotación
+  function removeAnotacionFileFromInput(fileName) {
+    var dt = new DataTransfer();
+    var input = document.getElementById('anotacion-file-input');
+
+    // Filtrar el archivo eliminado de la lista global
+    allAnotacionFiles = allAnotacionFiles.filter(function(file) {
+      return file.name !== fileName;
+    });
+
+    // Agregar los archivos restantes al DataTransfer
+    allAnotacionFiles.forEach(function(file) {
+      dt.items.add(file);
+    });
+
+    input.files = dt.files;
+
+    // Actualizar la lista visual de archivos
+    const fileList = document.getElementById('anotacion-file-list');
+    fileList.innerHTML = '';
+    allAnotacionFiles.forEach(function(file) {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `<span>${file.name}</span><span class="anotacion-remove-file">X</span>`;
+      listItem.querySelector('.anotacion-remove-file').addEventListener('click', function() {
+        removeAnotacionFileFromInput(file.name);
+      });
+      fileList.appendChild(listItem);
+    });
+  }
+
+  // Función para manejar la eliminación de archivos de estado (si se requiere en el futuro)
+  function removeEstadoFileFromInput(fileName) {
+    var dt = new DataTransfer();
+    var input = document.getElementById('estado-file-input');
+
+    // Filtrar el archivo eliminado de la lista global
+    allEstadoFiles = allEstadoFiles.filter(function(file) {
+      return file.name !== fileName;
+    });
+
+    // Agregar los archivos restantes al DataTransfer
+    allEstadoFiles.forEach(function(file) {
+      dt.items.add(file);
+    });
+
+    input.files = dt.files;
+
+    // Actualizar la lista visual de archivos
+    const fileList = document.getElementById('estado-file-list');
+    fileList.innerHTML = '';
+    allEstadoFiles.forEach(function(file) {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `<span>${file.name}</span><span class="estado-remove-file">X</span>`;
+      listItem.querySelector('.estado-remove-file').addEventListener('click', function() {
+        removeEstadoFileFromInput(file.name);
+      });
+      fileList.appendChild(listItem);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Manejo de pestañas
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        const target = this.getAttribute('data-tab');
+
+        // Remover clase active de todos los links
+        tabLinks.forEach(function(link) {
+          link.classList.remove('active');
+        });
+
+        // Agregar clase active al link clicado
+        this.classList.add('active');
+
+        // Ocultar todas las pestañas
+        tabPanes.forEach(function(pane) {
+          pane.classList.remove('active');
+        });
+
+        // Mostrar la pestaña correspondiente
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    // Obtener datos de Liquid
+    const data = [
+      {% assign rmas = shop.metaobjects.rma.values | reverse %}
+      {% for rma in rmas %}
+        {% assign fecha_ingreso = '' %}
+        {% if rma.eventos_de_transito.value %}
+          {% for evento in rma.eventos_de_transito.value %}
+            {% assign fecha_ingreso = evento.fecha.value | date: "%Y-%m-%dT%H:%M:%S" | escape %}
+            {% break %}
+          {% endfor %}
+        {% endif %}
+        {% assign fecha_creacion = rma.fecha_de_creacion.value | date: "%Y-%m-%dT%H:%M:%S" | escape %}
+
+        {% comment %}
+          Procesar las anotaciones internas en orden inverso
+        {% endcomment %}
+        {% assign anotaciones_internas = rma.anotaciones.value | where: "tipo", "Interno" | reverse %}
+
+{% assign presupuesto_acepta = '🟡Sin Respuesta' %}
+{% if rma.presupuestos.value %}
+  {% assign last_presupuesto = rma.presupuestos.value | last %}
+  {% if last_presupuesto.acepta.value == 'Aceptado' %}
+    {% assign presupuesto_acepta = '🟢Sí' %}
+  {% elsif last_presupuesto.acepta.value == 'Rechazado' %}
+    {% assign presupuesto_acepta = '🔴No' %}
+  {% endif %}
+{% endif %}
+
+{% assign presupuestos_detalle = '' %}
+{% if rma.presupuestos.value %}
+  {% assign presupuestos_detalle = rma.presupuestos.value %}
+{% endif %}
+
+
+{% assign facturas_detalle = '' %}
+{% if rma.factura.value %}
+  {% assign facturas_detalle = rma.factura.value %}
+{% endif %}
+
+{% assign guias_detalle = '' %}
+{% if rma.guia_de_despacho.value %}
+  {% assign guias_detalle = rma.guia_de_despacho.value %}
+{% endif %}
+
+        
+        
+        {
+          numero: "{{ rma.numero_de_rma.value | escape }}",
+          pago: "{% if rma.pago.value == 'Sí' %}Sí{% else %}No{% endif %}",     
+          modelo: "{{ rma.serie_de_producto.value.nombre_de_producto.value | escape }}",
+          numero_de_serie: "{{ rma.serie_de_producto.value.serie_de_producto.value | escape }}",
+          nombre_cliente: "{{ rma.datos_cliente.value.nombre_y_apellido | escape }}",
+          email_cliente: "{{ rma.datos_cliente.value.email | escape }}",
+          empresa_cliente: "{{ rma.datos_cliente.value.empresa | escape }}",
+          telefono_cliente: "{{ rma.datos_cliente.value.telefono | escape }}",
+          {% assign estado_de_reparacion = "0. SIN SOLICITUD" %}
+           {% if rma.estado_de_reparacion.value %}
+             {% assign estado_de_reparacion = rma.estado_de_reparacion.value | escape %}
+             {% endif %}
+          estado_de_reparacion: "{{ estado_de_reparacion }}",
+          {% assign transito_2_value = "0. Sin Registro" %}
+          {% for evento in rma.eventos_de_transito.value %}
+            {% if evento.transito_2.value %}
+              {% assign transito_2_value = evento.transito_2.value | escape %}
+            {% endif %}
+          {% endfor %}
+          transito_2: "{{ transito_2_value }}",
+          check_in: "{{ fecha_ingreso }}",
+          fecha_creacion: "{{ fecha_creacion }}",
+          accesorios_agregados: {{ rma.accesorios_agregados.value | json }},
+
+          facturas: [
+  {% for factura in facturas_detalle %}
+    {
+      numero_de_factura: "{{ factura.numero_de_factura.value | escape }}",
+      archivos: [
+        {% if factura.archivos.value %}
+          {% for archivo in factura.archivos.value %}
+        {
+            nombre: "Descargar",
+            {% assign archivo_tipo = archivo | file_url %}
+            {% if archivo_tipo contains 'files/files' %}
+              {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+            {% endif %}
+            url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+            tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+          }{% unless forloop.last %},{% endunless %}{% endfor %}
+        {% else %}
+          {
+            archivos_vacios: true
+          }
+        {% endif %}
+      ]
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+],
+
+          
+guias_de_despacho: [
+
+  {% for guia in guias_detalle %}
+    {
+      archivos: [        
+        {% if guia.archivos.value %}
+           {% for archivo in guia.archivos.value %}
+          {
+            nombre: "Descargar",
+            {% assign archivo_tipo = archivo | file_url %}
+            {% if archivo_tipo contains 'files/files' %}
+              {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+            {% endif %}
+            url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+            tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+          }{% unless forloop.last %},{% endunless %}
+             {% endfor %}
+        {% else %}
+          {
+            archivos_vacios: true
+          }
+        {% endif %}
+      ]
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+],
+
+          
+        
+observaciones: {{ rma.observaciones.value | json }},
+          
+          presupuestos: "{{ rma.presupuestos.value | escape }}",
+  presupuesto_acepta: "{{ presupuesto_acepta }}",
+presupuestos_detalle: [
+  {% for presupuesto in presupuestos_detalle %}
+    {
+      fecha: "{{ presupuesto.fecha.value | date: "%Y-%m-%dT%H:%M:%S" | escape }}",
+      numero_de_presupuesto: "{{ presupuesto.numero_de_presupuesto.value | escape }}",
+      monto: "{{ presupuesto.monto.value | escape }}",
+      tipo_de_pago: "{{ presupuesto.tipo_de_pago.value | escape }}",
+      archivos: 
+        [{
+          nombre: "Descargar",
+          {% assign archivo_tipo = presupuesto.archivo_adjunto.value | file_url %}
+          {% if archivo_tipo contains 'files/files' %}
+            {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+          {% endif %}
+          url: "{% if archivo_tipo contains 'VideoDrop' %}{{ presupuesto.archivo_adjunto.value.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ presupuesto.archivo_adjunto.value.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+          tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+        }],
+      comprobante: [
+        {% if presupuesto.comprobante.value %}
+          {% for archivo in presupuesto.comprobante.value %}
+            {
+              nombre: "Descargar",
+              {% assign archivo_tipo = archivo | file_url %}
+              {% if archivo_tipo contains 'files/files' %}
+                {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+              {% endif %}
+              url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+              tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+            },
+          {% endfor %}
+        {% endif %}
+      ],      
+      acepta: "{{ presupuesto.acepta.value | escape }}",
+      comentario_de_cliente: "{{ presupuesto.comentario_de_cliente.value | escape }}",
+      numero_de_orden_de_compra: "{{ presupuesto.numero_de_orden_de_compra.value | escape }}"
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+],
+
+          archivos: [
+            {% if rma.archivos_del_cliente.value %}
+              {% for archivo in rma.archivos_del_cliente.value %}
+                {
+                  nombre: "Descargar",
+                  {% assign archivo_tipo = archivo | file_url %}
+                  {% if archivo_tipo contains 'files/files' %}
+                    {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+                  {% endif %}
+                  url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+                  tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+                }{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            {% else %}
+              {
+                archivos_vacios: true
+              }
+            {% endif %}
+          ],
+
+          anotaciones: [
+            {% for anotacion in anotaciones_internas %}
+              {
+                usuario: "{{ anotacion.usuario.value | escape }}",
+                fecha: "{{ anotacion.fecha.value | date: "%Y-%m-%dT%H:%M:%S" | escape }}",
+                anotacion: "{{ anotacion.anotacion.value | escape }}",
+                ubicacion: "{{ anotacion.ubicacion.value | escape }}",
+                archivos: [
+                  {% if anotacion.archivos.value %}
+                    {% for archivo in anotacion.archivos.value %}
+                      {
+                        nombre: "Descargar",
+                        {% assign archivo_tipo = archivo | file_url %}
+                        {% if archivo_tipo contains 'files/files' %}
+                          {% assign archivo_tipo = archivo_tipo | replace: 'files/files', 'files' %}
+                        {% endif %}
+                        url: "{% if archivo_tipo contains 'VideoDrop' %}{{ archivo.sources[0].url }}{% elsif archivo_tipo contains 'GenericFileDrop' %}https://{{ archivo.url }}{% else %}{{ archivo_tipo }}{% endif %}",
+                        tipo: "{% if archivo_tipo contains 'VideoDrop' %}video{% elsif archivo_tipo contains 'GenericFileDrop' %}generic{% else %}image{% endif %}"
+                      }{% unless forloop.last %},{% endunless %}
+                    {% endfor %}
+                  {% else %}
+                    {
+                      archivos_vacios: true
+                    }
+                  {% endif %}
+                ]
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ],
+          id: "{{ rma.system.id | escape }}"
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ];
+
+    console.log("Datos de RMAs:", data); // Depuración
+
+    // Función de utilidad para parsear fechas correctamente
+    function parseDateLocal(dateStr) {
+      if (!dateStr) return null;
+      return new Date(dateStr);
+    }
+  
+
+    // Función para calcular días transcurridos desde una fecha
+    function calcularDiasDesde(fechaStr) {
+      if (!fechaStr) return '';
+      const fecha = parseDateLocal(fechaStr);
+      if (!fecha || isNaN(fecha)) return '';
+      const hoy = new Date();
+      const diffTime = hoy - fecha;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return `(${diffDays} días)`;
+    }
+
+    // Función para formatear fechas en 24 horas y agregar días transcurridos
+    function formatDateWithDays(dateStr) {
+      if (!dateStr) return 'Sin Fecha';
+      const date = parseDateLocal(dateStr);
+      if (!date || isNaN(date)) return 'Fecha Inválida';
+      const dias = calcularDiasDesde(dateStr);
+      return `${date.toLocaleDateString('es-ES')} ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })} ${dias}`;
+    }
+
+    // Inicializar Grid.js con las columnas requeridas en el nuevo orden
+    const grid = new gridjs.Grid({
+      columns: [
+        {
+          id: 'numero',
+          name: '#RMA', // Número RMA -> #RMA
+          sort: true,
+          formatter: (cell, row) => {
+    return gridjs.html(`<a href="#" class="ver-mas" data-id="${row.cells[12].data}">${cell}</a>`);
+          }
+        },
+        {
+          id: 'empresa_cliente',
+          name: 'Empresa',
+          sort: true
+        },
+        {
+          id: 'modelo',
+          name: 'Modelo',
+          sort: true
+        },
+        {
+          id: 'numero_de_serie',
+          name: 'Número de Serie',
+          sort: true
+        },
+        {
+          id: 'estado_de_reparacion',
+          name: 'Estado de Reparación',
+          sort: true
+        },
+        {
+          id: 'transito_2',
+          name: 'Ubicación Actual',
+          sort: true
+        },
+        {
+          id: 'nombre_cliente',
+          name: 'Nombre',
+          sort: true
+        },
+        {
+          id: 'email_cliente',
+          name: 'Email',
+          sort: true
+        },
+        {
+          id: 'telefono_cliente',
+          name: 'Teléfono',
+          sort: true
+        },
+        {
+          id: 'fecha_creacion',
+          name: 'Fecha de creación',
+          sort: true,
+          formatter: (cell) => {
+            if (cell && cell !== '') {
+              return gridjs.html(formatDateWithDays(cell));
+            } else {
+              return 'Sin Fecha';
+            }
+          }
+        },
+        {
+          id: 'check_in',
+          name: 'Check-in',
+          sort: true,
+          formatter: (cell) => {
+            if (cell && cell !== '') {
+              return gridjs.html(formatDateWithDays(cell));
+            } else {
+              return 'Sin Fecha';
+            }
+          }
+        },
+        {
+  id: 'pago',
+  name: 'Pago',
+  sort: true,
+  formatter: (cell) => {
+    return cell === 'Sí' ? '🟢Sí' : '🔴No';
+  }
+},
+
+        {
+          id: 'id',
+          name: 'ID',
+          hidden: true // Oculta la columna
+        }
+      ],
+      search: {
+        enabled: true,
+        selector: (cell, rowIndex, cellIndex) => {
+          // Para permitir búsquedas por fecha en Fecha de creación y Check-in
+          if (cellIndex === 9 || cellIndex === 10) { // fecha_creacion y check_in
+            return cell ? cell.split(' ')[0] : ''; // Extraer solo la fecha, ignorar la hora y los días
+          }
+          return cell;
+        }
+      },
+      sort: {
+        enabled: true,
+        initial: {
+          column: 0,
+          direction: 'asc'
+        }
+      },
+      data: data.map(item => [
+        item.numero,               // #RMA
+        item.empresa_cliente,     // Empresa
+        item.modelo,              // Modelo
+        item.numero_de_serie,     // Número de serie
+        item.estado_de_reparacion,// Estado de Reparación
+        item.transito_2,          // Ubicación Actual
+        item.nombre_cliente,      // Nombre
+        item.email_cliente,       // Email
+        item.telefono_cliente,    // Teléfono
+        item.fecha_creacion,      // Fecha de creación
+        item.check_in,            // Check-in
+        item.pago,
+        item.id                   // ID (oculto)
+      ]),
+      pagination: {
+        enabled: true,
+        limit: 50
+      },
+      language: {
+        'search': {
+          'placeholder': 'Buscar...'
+        },
+        'pagination': {
+          'previous': 'Anterior',
+          'next': 'Siguiente',
+          'showing': 'Mostrando',
+          'results': () => 'registros'
+        }
+      }
+    }).render(document.getElementById('grid'));
+
+
+    // Función para filtrar por rango de fechas y tipos adicionales
+function filterData() {
+  const fromDate = document.getElementById('from-date').value;
+  const toDate = document.getElementById('to-date').value;
+  const selectedField = document.getElementById('date-field-selector').value;
+
+  // Obtener valores seleccionados para Ubicación Actual
+  const transitoCheckboxes = document.querySelectorAll('#transito-options input[type="checkbox"]');
+  const selectedTransitos = Array.from(transitoCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  // Obtener valores seleccionados para Estado de Reparación
+  const estadoCheckboxes = document.querySelectorAll('#estado-options input[type="checkbox"]');
+  const selectedEstados = Array.from(estadoCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  // Obtener valores seleccionados para Factura
+  const facturaCheckboxes = document.querySelectorAll('#adicionales-options .sub-filter:nth-child(1) input[type="checkbox"]');
+  const selectedFactura = Array.from(facturaCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  // Obtener valores seleccionados para Guía de Despacho
+  const guiaCheckboxes = document.querySelectorAll('#adicionales-options .sub-filter:nth-child(2) input[type="checkbox"]');
+  const selectedGuia = Array.from(guiaCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  // Obtener valores seleccionados para Pago
+  const pagoCheckboxes = document.querySelectorAll('#adicionales-options .sub-filter:nth-child(3) input[type="checkbox"]');
+  const selectedPago = Array.from(pagoCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  // Actualizar el indicador de filtros activos
+  updateActiveFilters(selectedTransitos, selectedEstados, fromDate, toDate, selectedField, selectedFactura, selectedGuia, selectedPago);
+
+  // Parsear las fechas de inicio y fin
+  let from = null;
+  if (fromDate) {
+    from = parseDateLocal(fromDate);
+    console.log("Fecha Desde (from):", from);
+  }
+
+  let to = null;
+  if (toDate) {
+    to = parseDateLocal(toDate);
+    to.setHours(23, 59, 59, 999); // Ajustar al final del día en hora local
+    console.log("Fecha Hasta (to) ajustada:", to);
+  }
+
+  // Filtrar los datos
+  const filteredData = data.filter(item => {
+    // Filtro de Fecha
+    let dateMatch = true;
+    if (from || to) {
+      if (selectedField) {
+        const itemDateStr = item[selectedField] || null;
+        if (itemDateStr) {
+          const itemDate = parseDateLocal(itemDateStr.split('T')[0]);
+          console.log("Fecha del Item:", itemDate);
+          if (!itemDate) {
+            dateMatch = false;
+          } else {
+            if (from) {
+              dateMatch = dateMatch && (itemDate >= from);
+              console.log(`Comparando si ${itemDate} >= ${from}:`, itemDate >= from);
+            }
+
+            if (to) {
+              dateMatch = dateMatch && (itemDate <= to);
+              console.log(`Comparando si ${itemDate} <= ${to}:`, itemDate <= to);
+            }
+          }
+        } else {
+          dateMatch = false;
+        }
+      }
+    }
+
+    // Filtro de Ubicación Actual
+    let transitoMatch = true;
+    if (selectedTransitos.length < initialUniqueTransitos.length) {
+      transitoMatch = selectedTransitos.includes(item.transito_2 || 'Sin Información');
+    }
+
+    // Filtro de Estado de Reparación
+    let estadoMatch = true;
+    if (selectedEstados.length < initialUniqueEstados.length) {
+      estadoMatch = selectedEstados.includes(item.estado_de_reparacion || 'Sin Información');
+    }
+
+    // Filtro Factura
+    let facturaMatch = true;
+    if (selectedFactura.length < totalFacturaOptions.length) {
+      facturaMatch = selectedFactura.includes((item.facturas && item.facturas.length > 0) ? 'Sí' : 'No');
+    }
+
+    // Filtro Guía de Despacho
+    let guiaMatch = true;
+    if (selectedGuia.length < totalGuiaOptions.length) {
+      guiaMatch = selectedGuia.includes((item.guias_de_despacho && item.guias_de_despacho.length > 0) ? 'Sí' : 'No');
+    }
+
+    // Filtro Pago
+    let pagoMatch = true;
+    if (selectedPago.length < totalPagoOptions.length) {
+      pagoMatch = selectedPago.includes(item.pago === 'Sí' ? 'Sí' : 'No');
+    }
+
+    return dateMatch && transitoMatch && estadoMatch && facturaMatch && guiaMatch && pagoMatch;
+  });
+
+  // Actualizar la tabla
+  grid.updateConfig({
+    data: filteredData.map(item => [
+      item.numero,
+      item.empresa_cliente,
+      item.modelo,
+      item.numero_de_serie,
+      item.estado_de_reparacion,
+      item.transito_2,
+      item.nombre_cliente,
+      item.email_cliente,
+      item.telefono_cliente,
+      item.fecha_creacion,
+      item.check_in,
+      item.pago,
+      item.id
+    ])
+  }).forceRender();
+}
+
+
+// Función para actualizar el indicador de filtros activos
+function updateActiveFilters(transitos, estados, fromDate, toDate, selectedField, selectedFactura, selectedGuia, selectedPago) {
+  const activeFiltersDiv = document.getElementById('active-filters');
+  let filters = [];
+
+  // Filtros de Ubicación Actual
+  if (transitos.length > 0 && transitos.length < getUniqueValues('transito_2').length) {
+    filters.push(`Ubicación Actual: ${transitos.join(', ')}`);
+  }
+
+  // Filtros de Estado de Reparación
+  if (estados.length > 0 && estados.length < getUniqueValues('estado_de_reparacion').length) {
+    filters.push(`Estado de Reparación: ${estados.join(', ')}`);
+  }
+
+  // Filtros Adicionales: Factura, Guía de Despacho y Pago
+  // Factura
+  if (selectedFactura.length > 0 && selectedFactura.length < 2) { // 2 opciones: Sí y No
+    filters.push(`Factura: ${selectedFactura.join(', ')}`);
+  }
+
+  // Guía de Despacho
+  if (selectedGuia.length > 0 && selectedGuia.length < 2) { // 2 opciones: Sí y No
+    filters.push(`Guía de Despacho: ${selectedGuia.join(', ')}`);
+  }
+
+  // Pago
+  if (selectedPago.length > 0 && selectedPago.length < 2) { // 2 opciones: Sí y No
+    filters.push(`Pago: ${selectedPago.join(', ')}`);
+  }
+
+  // Filtros de Fecha
+  if (fromDate || toDate) {
+    let dateFilter = 'Fecha de ';
+    dateFilter += selectedField === 'check_in' ? 'Check-in' : 'Creación';
+    dateFilter += ': ';
+    dateFilter += fromDate ? `Desde ${fromDate} ` : '';
+    dateFilter += toDate ? `Hasta ${toDate}` : '';
+    filters.push(dateFilter.trim());
+  }
+
+  if (filters.length > 0) {
+    activeFiltersDiv.textContent = `Filtros Activos: ${filters.join(' | ')}`;
+  } else {
+    activeFiltersDiv.textContent = 'Filtros Activos: Ninguno';
+  }
+}
+
+
+    // Función para obtener valores únicos de una propiedad
+    function getUniqueValues(property) {
+  return [...new Set(data.map(item => item[property] || 'Sin Información'))];
+    }
+
+    // Generar los Checkboxes para los filtros
+    function generateFilterOptions() {
+      // Filtro de Ubicación Actual
+      const transitoOptionsDiv = document.getElementById('transito-options');
+      const uniqueTransitos = getUniqueValues('transito_2').sort();
+      uniqueTransitos.forEach(transito => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${transito}" checked> ${transito}`;
+        transitoOptionsDiv.appendChild(label);
+      });
+
+      // Filtro de Estado de Reparación
+      const estadoOptionsDiv = document.getElementById('estado-options');
+      const uniqueEstados = getUniqueValues('estado_de_reparacion').sort();
+      uniqueEstados.forEach(estado => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${estado}" checked> ${estado}`;
+        estadoOptionsDiv.appendChild(label);
+      });
+    }
+
+    // Inicializar los Checkboxes de Filtros
+    generateFilterOptions();
+
+// Almacenar los valores únicos iniciales
+const initialUniqueTransitos = getUniqueValues('transito_2');
+const initialUniqueEstados = getUniqueValues('estado_de_reparacion');
+const totalFacturaOptions = ['Sí', 'No'];
+const totalGuiaOptions = ['Sí', 'No'];
+const totalPagoOptions = ['Sí', 'No'];
+
+
+  
+
+// Agregar eventos a todos los Checkboxes, incluyendo Factura, Guía de Despacho y Pago
+document.querySelectorAll('#transito-options input[type="checkbox"], #estado-options input[type="checkbox"], #adicionales-options input[type="checkbox"]').forEach(cb => {
+  cb.addEventListener('change', filterData);
+});
+
+
+    // Agregar eventos a los filtros de fecha
+    document.getElementById('from-date').addEventListener('change', filterData);
+    document.getElementById('to-date').addEventListener('change', filterData);
+    document.getElementById('date-field-selector').addEventListener('change', filterData);
+
+    // Manejo de evento para resetear el filtro
+document.getElementById('reset-filter').addEventListener('click', function() {
+  document.getElementById('from-date').value = '';
+  document.getElementById('to-date').value = '';
+  document.getElementById('date-field-selector').value = 'check_in'; // Por defecto, Check-in
+  // Resetear los checkboxes de todas las categorías
+  document.querySelectorAll('#transito-options input[type="checkbox"], #estado-options input[type="checkbox"], #adicionales-options input[type="checkbox"]').forEach(cb => {
+    cb.checked = true;
+  });
+  // Actualizar los filtros
+  updateActiveFilters(
+    initialUniqueTransitos,
+    initialUniqueEstados,
+    '',
+    '',
+    'check_in',
+    ['Sí', 'No'], // selectedFactura
+    ['Sí', 'No'], // selectedGuia
+    ['Sí', 'No']  // selectedPago
+  );
+  // Filtrar los datos
+  grid.updateConfig({
+    data: data.map(item => [
+      item.numero,
+      item.empresa_cliente,
+      item.modelo,
+      item.numero_de_serie,
+      item.estado_de_reparacion,
+      item.transito_2,
+      item.nombre_cliente,
+      item.email_cliente,
+      item.telefono_cliente,
+      item.fecha_creacion,
+      item.check_in,
+      item.pago,
+      item.id
+    ])
+  }).forceRender();
+  // Actualizar el indicador de filtros
+  document.getElementById('active-filters').textContent = 'Filtros Activos: Ninguno';
+});
+
+
+
+
+    // Manejo de eventos para ver más detalles
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.classList.contains('ver-mas')) {
+        e.preventDefault();
+        const rmaId = e.target.getAttribute('data-id');
+        const rma = data.find(r => r.id === rmaId);
+        if (rma) {
+          showModal(rma);
+        }
+      }
+    });
+
+
+    function showModal(rma) {
+      console.log("Anotaciones para esta RMA:", rma.anotaciones);
+
+
+      
+      const modalOverlay = document.getElementById('modal-overlay');
+      const modalContent = document.getElementById('modal-content');
+
+      // Formatear la fecha de check-in con días transcurridos
+      let formattedCheckIn = 'Sin Fecha';
+      if (rma.check_in && rma.check_in !== '') {
+        formattedCheckIn = formatDateWithDays(rma.check_in);
+      }
+
+      // Formatear la fecha de creación con días transcurridos
+      let formattedCreationDate = 'Sin Fecha';
+      if (rma.fecha_creacion && rma.fecha_creacion !== '') {
+        formattedCreationDate = formatDateWithDays(rma.fecha_creacion);
+      }
+
+      // Construir la sección de archivos
+      let archivosContent = '<h3>Archivos Subidos Por el Cliente</h3>';
+      if (rma.archivos && rma.archivos.length > 0 && !rma.archivos[0].archivos_vacios) {
+        archivosContent += '<div style="text-align:center;">';
+        archivosContent += `${renderArchivos(rma.archivos)}`;
+        archivosContent += '</div>';
+      }
+
+      // Construir la sección de anotaciones
+      let anotacionesContent = '<h3>Anotaciones Internas</h3>';
+      if (rma.anotaciones && rma.anotaciones.length > 0) {
+        anotacionesContent += '<div class="anotaciones-container">';
+        rma.anotaciones.forEach(anotacion => {
+          anotacionesContent += `
+            <div class="anotacion-card">
+              <div class="anotacion-header">
+                <span class="anotacion-usuario">${anotacion.usuario}<span class="anotacion-ubicacion"> (${anotacion.ubicacion})</span></span>
+                <span class="anotacion-fecha">${formatDateWithDays(anotacion.fecha)}</span>
+              </div>
+              <div class="anotacion-body">
+                <p class="anotacion-texto" style="white-space: pre-wrap; word-wrap: break-word;">${anotacion.anotacion}</p>
+              </div>
+              <div class="anotacion-archivos" style="text-align: left;">
+                ${renderArchivos(anotacion.archivos)}
+              </div>
+            </div>
+          `;
+        });
+        anotacionesContent += '</div>';
+      } else {
+        anotacionesContent += '<p>No hay anotaciones internas.</p>';
+      }
+
+      // Construir la sección de campos adicionales
+let camposAdicionales = `
+  <div class="info-box">
+    <div class="info-column">
+      <p><strong>📄Presupuesto Enviado:</strong> ${rma.presupuestos && rma.presupuestos.length > 0 ? '🟢Sí' : '🔴No'}</p>
+      <p><strong>👤Presupuesto Respuesta:</strong> ${rma.presupuesto_acepta}</p>
+    </div>
+    <div class="info-column">
+      <p><strong>✈️Guía de Despacho:</strong> ${rma.guias_de_despacho && rma.guias_de_despacho.length > 0 ? '🟢Sí' : '🔴No'}</p>
+      <p><strong>🧾Factura:</strong> ${rma.facturas && rma.facturas.length > 0 ? '🟢Sí' : '🔴No'}</p>
+      <p><strong>💰Pago:</strong> ${rma.pago === 'Sí' ? '🟢Sí' : '🔴No'}</p>      
+    </div>
+  </div>
+
+  <p style="white-space: pre-wrap; word-wrap: break-word;"><strong>Accesorios Agregados:</strong><br>${rma.accesorios_agregados || 'No disponible'}</p>
+  <p style="white-space: pre-wrap; word-wrap: break-word;"><strong>Observaciones del Cliente:</strong><br>${rma.observaciones || 'No disponible'}</p>
+
+`;
+
+
+      modalContent.innerHTML = `
+        <div class="modal-header">
+         <button style="position: absolute; top: -25px; text-align: right; right: -17px;" class="close-modal">&times;</button>
+          <div>
+            <h2 class="modal-title">RMA #${rma.numero}</h2>
+            <div class="modal-subtitles">
+              <span><strong>🔧Estado de Reparación:</strong> ${rma.estado_de_reparacion}</span>
+            </div>
+            <div class="modal-subtitles">
+              <span><strong>📍Ubicación Actual:</strong> ${rma.transito_2}</span>
+            </div>            
+          </div>
+          <div class="modal-qrcode">
+            <div id="qrcode"></div>
+          </div>
+
+        </div>
+        <div class="modal-body">
+          <table>
+            <tr>
+              <td><strong>Empresa</strong></td>
+              <td>${rma.empresa_cliente}</td>
+            </tr>
+            <tr>
+              <td><strong>Modelo</strong></td>
+              <td>${rma.modelo}</td>
+            </tr>
+            <tr>
+              <td><strong>Número de Serie</strong></td>
+              <td>${rma.numero_de_serie}</td>
+            </tr>
+            <tr>
+              <td><strong>Nombre</strong></td>
+              <td>${rma.nombre_cliente}</td>
+            </tr>
+            <tr>
+              <td><strong>Email</strong></td>
+              <td>${rma.email_cliente}</td>
+            </tr>
+            <tr>
+              <td><strong>Teléfono</strong></td>
+              <td>${rma.telefono_cliente}</td>
+            </tr>
+            <tr>
+              <td><strong>Check-in</strong></td>
+              <td>${formattedCheckIn}</td>
+            </tr>
+            <tr>
+              <td><strong>Fecha de creación</strong></td>
+              <td>${formattedCreationDate}</td>
+            </tr>
+          </table>
+          ${camposAdicionales}
+          ${anotacionesContent} <!-- Sección de Anotaciones Internas -->
+          ${archivosContent}
+        </div>
+        <div class="modal-footer">
+          <button class="print-button">🖨️Imprimir</button>
+          <button class="registrar-transito-button">🛻Registrar Tránsito</button>
+          <button class="agregar-anotacion-button">✍️Agregar Anotación</button>
+          <button class="actualizar-estado-button">🔧Actualizar Estado Reparación</button>
+          <button class="ver-presupuestos-button">📄Ver Presupuestos</button>
+          <button class="ver-facturas-button">🧾Ver Facturas</button>
+          <button class="ver-guias-button">✈️Ver Guías de Despacho</button>
+  
+
+          
+        </div>
+      `;
+
+      modalOverlay.style.display = 'block';
+
+      // Generar el código QR con la URL específica de la RMA
+      const qrCodeContainer = modalContent.querySelector('#qrcode');
+      // Limpiar cualquier código QR existente
+      qrCodeContainer.innerHTML = '';
+      const qrText = `${window.location.origin}${window.location.pathname}?${encodeURIComponent(rma.numero)}`;
+      new QRCode(qrCodeContainer, {
+        text: qrText,
+        width: 128,
+        height: 128,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      // Actualizar la URL con el parámetro de la RMA (por ejemplo, ?1001)
+      const newUrl = `${window.location.origin}${window.location.pathname}?${encodeURIComponent(rma.numero)}`;
+      window.history.pushState({ rma: rma.numero }, '', newUrl);
+
+      // Event listener para cerrar el modal
+      modalContent.querySelector('.close-modal').addEventListener('click', function() {
+        modalOverlay.style.display = 'none';
+        // Remover el parámetro de la RMA de la URL
+        window.history.pushState({}, '', window.location.pathname);
+      });
+
+      // Cerrar modal al hacer clic fuera del contenido
+      modalOverlay.addEventListener('click', function(event) {
+        if (event.target === modalOverlay) {
+          modalOverlay.style.display = 'none';
+          // Remover el parámetro de la RMA de la URL
+          window.history.pushState({}, '', window.location.pathname);
+        }
+      });
+
+      // Event listener para el botón de imprimir
+      modalContent.querySelector('.print-button').addEventListener('click', function() {
+        printModalContent();
+      });
+
+      // Agregar el botón "Registrar Tránsito" y su evento
+      modalContent.querySelector('.registrar-transito-button').addEventListener('click', function() {
+        showTransitoModal(rma.id);
+      });
+
+      // Agregar el botón "Agregar Anotación" y su evento
+      modalContent.querySelector('.agregar-anotacion-button').addEventListener('click', function() {
+        showAnotacionModal(rma.id);
+      });
+
+      // Agregar el botón "Actualizar Estado Reparación" y su evento
+      modalContent.querySelector('.actualizar-estado-button').addEventListener('click', function() {
+        showEstadoModal(rma.id, rma.estado_de_reparacion);
+      });
+
+
+
+      // Agregar el botón "Ver Presupuestos" y su evento
+      modalContent.querySelector('.ver-presupuestos-button').addEventListener('click', function() {
+        showPresupuestosModal(rma);
+      });
+      
+      // Agregar el botón "Ver Facturas" y su evento
+      modalContent.querySelector('.ver-facturas-button').addEventListener('click', function() {
+        showFacturasModal(rma);
+      });
+
+      // Agregar el botón "Ver Guías de Despacho" y su evento
+      modalContent.querySelector('.ver-guias-button').addEventListener('click', function() {
+        showGuiasModal(rma);
+      });
+
+
+      
+
+      
+    }
+
+
+function showPresupuestosModal(rma) {
+  const presupuestosModalOverlay = document.getElementById('presupuestos-modal-overlay');
+  const presupuestosModalContent = document.getElementById('presupuestos-modal-content');
+
+  // Construir el contenido del modal con la tabla de presupuestos
+  let tablaPresupuestos = `
+    <div class="modal-header">
+      <h2>Presupuestos de RMA #${rma.numero}</h2>
+      <button class="close-presupuestos-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Monto</th>
+            <th>Tipo de Pago</th>
+            <th>Presupuesto</th>
+            <th>Comprobante</th>
+            <th>Respuesta</th>
+            <th>Comentario</th>
+            <th>#Orden de Compra</th>
+            <th>Fecha</th>            
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  // Iterar sobre los presupuestos y construir las filas de la tabla
+  if (rma.presupuestos_detalle && rma.presupuestos_detalle.length > 0) {
+    rma.presupuestos_detalle.forEach(presupuesto => {
+      tablaPresupuestos += `
+        <tr>
+          <td>${presupuesto.numero_de_presupuesto}</td>
+          <td>${presupuesto.monto}</td>
+          <td>${presupuesto.tipo_de_pago}</td>
+          <td>${renderArchivos(presupuesto.archivos)}</td>
+          <td>${renderArchivos(presupuesto.comprobante)}</td>
+          <td>${presupuesto.acepta}</td>
+          <td>${presupuesto.comentario_de_cliente || ''}</td>
+          <td>${presupuesto.tipo_de_pago === 'Orden de Compra' ? presupuesto.numero_de_orden_de_compra || 'No Aplica' : 'No Aplica'}</td>
+          <td>${formatDateWithDays(presupuesto.fecha)}</td>          
+        </tr>
+      `;
+    });
+  } else {
+    tablaPresupuestos += `
+      <tr>
+        <td colspan="9">No hay presupuestos disponibles.</td>
+      </tr>
+    `;
+  }
+
+  tablaPresupuestos += `
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="agregar-presupuesto-button">Agregar Presupuesto</button>
+    </div>
+  `;
+
+  presupuestosModalContent.innerHTML = tablaPresupuestos;
+  presupuestosModalOverlay.style.display = 'block';
+
+  // Event listener para cerrar el modal
+  presupuestosModalContent.querySelector('.close-presupuestos-modal').addEventListener('click', function() {
+    presupuestosModalOverlay.style.display = 'none';
+  });
+
+  // Cerrar modal al hacer clic fuera del contenido
+  presupuestosModalOverlay.addEventListener('click', function(event) {
+    if (event.target === presupuestosModalOverlay) {
+      presupuestosModalOverlay.style.display = 'none';
+    }
+  });
+
+  // Event listener for "Agregar Presupuesto" button
+  presupuestosModalContent.querySelector('.agregar-presupuesto-button').addEventListener('click', function() {
+    // Cerrar el modal de presupuestos
+    presupuestosModalOverlay.style.display = 'none';
+    // Mostrar el modal para agregar presupuesto
+    showAgregarPresupuestoModal(rma);
+
+  });
+}
+
+
+
+
+function renderArchivos(archivos) {
+  if (!archivos || archivos.length === 0 || (archivos.length === 1 && archivos[0].archivos_vacios)) {
+    return '<p></p>';
+  }
+
+  let archivosHTML = '<div>';
+  
+  archivos.forEach(archivo => {
+    if (archivo.tipo === 'image') {
+      archivosHTML += `<a href="${archivo.url}" target="_blank"><img style="max-width: 100px; padding: 5px;" src="${archivo.url}&width=100" alt="Archivo ${archivo.nombre}" loading="lazy" /></a>`;
+    } else if (archivo.tipo === 'video') {
+      archivosHTML += `<video style="max-width: 100px; padding: 5px;" controls preload="metadata" class="anotacion-video" loading="lazy">
+        <source src="${archivo.url}" type="video/mp4">
+        Tu navegador no soporta la reproducción de videos.
+      </video>`;
+    } else if (archivo.tipo === 'generic') {
+      // Lista de extensiones de imagen
+      const extensionesImagen = ['.jpg', '.jpeg', '.png', '.gif', '.heic', '.webp'];
+
+      // Comprobar si la URL contiene alguna de las extensiones
+      const esImagen = extensionesImagen.some(ext => archivo.url.toLowerCase().includes(ext));
+
+      if (esImagen) {
+        archivosHTML += `<a href="${archivo.url}" target="_blank"><img style="width: 100%; max-width: 100px; padding: 5px;" src="${archivo.url}&width=100" alt="Archivo ${archivo.nombre}" loading="lazy" /></a>`;
+      } else {
+        archivosHTML += `<p>🗂️Documento: <a href="${archivo.url}" target="_blank">${archivo.nombre}</a></p>`;
+      }
+    }
+  });
+
+  archivosHTML += '</div>';
+  return archivosHTML;
+}
+
+
+
+
+
+
+
+  
+
+
+function showAgregarPresupuestoModal(rma) {
+  const agregarPresupuestoModalOverlay = document.getElementById('agregar-presupuesto-modal-overlay');
+  const agregarPresupuestoModalContent = document.getElementById('agregar-presupuesto-modal-content');
+
+  // Construir el contenido del modal
+  agregarPresupuestoModalContent.innerHTML = `
+    <div class="modal-header">
+      <h2>Agrega un Presupuesto</h2>
+      <button class="close-agregar-presupuesto-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="agregar-presupuesto-form" class="agregar-presupuesto-form" enctype="multipart/form-data" novalidate>
+        <!-- Campo oculto para el rma_id -->
+        <input type="hidden" name="rma_id" value="${rma.id}" />
+        <!-- Campo oculto para fecha (fecha actual en formato ISO) -->
+        <input type="hidden" name="fecha" value="${new Date().toISOString()}" />
+        <!-- Campo oculto para el email del cliente que creó la RMA -->
+        <input type="hidden" name="email_cliente" value="${rma.email_cliente}" />
+
+        <!-- Número de Presupuesto -->
+        <label class="required">Número de Presupuesto</label>
+        <input type="text" name="numero_de_presupuesto" class="agregar-presupuesto-input" required />
+
+        <!-- Monto -->
+        <label class="required">Monto Neto (sin iva)</label>
+        <input type="text" name="monto" class="agregar-presupuesto-input" required />
+
+        <!-- Tipo de Pago -->
+        <label class="required">Tipo de Pago</label>
+        <select name="tipo_de_pago" class="agregar-presupuesto-select" required>
+          <option value="" disabled selected>Seleccione una opción</option>
+          <option value="Orden de Compra">Orden de Compra</option>
+          <option value="Depósito al día">Depósito al día</option>
+        </select>
+
+        <!-- Archivo de Presupuesto -->
+        <label class="required">Presupuesto (Archivo)</label>
+        <div class="agregar-presupuesto-file-drop-area" id="agregar-presupuesto-file-drop-area">
+          <p>Arrastra el archivo de presupuesto aquí</p>
+          <p>o</p>
+          <button type="button" id="agregar-presupuesto-browse-files">Sube tu archivo</button>
+          <input type="file" name="archivo_presupuesto" id="agregar-presupuesto-file-input" required hidden />
+          <p class="explanation">Se permite un archivo de hasta 20MB.</p>
+        </div>
+
+        <ul class="agregar-presupuesto-file-list" id="agregar-presupuesto-file-list"></ul>
+
+        <!-- Botón para enviar el formulario -->
+        <input type="submit" class="agregar-presupuesto-submit" value="Enviar Presupuesto" />
+      </form>
+    </div>
+  `;
+
+  // Mostrar el modal
+  agregarPresupuestoModalOverlay.style.display = 'block';
+
+  // Event listener para cerrar el modal
+  agregarPresupuestoModalContent.querySelector('.close-agregar-presupuesto-modal').addEventListener('click', function() {
+    agregarPresupuestoModalOverlay.style.display = 'none';
+  });
+
+  // Cerrar modal al hacer clic fuera del contenido
+  agregarPresupuestoModalOverlay.addEventListener('click', function(event) {
+    if (event.target === agregarPresupuestoModalOverlay) {
+      agregarPresupuestoModalOverlay.style.display = 'none';
+    }
+  });
+
+  // Inicializar el formulario y la lógica de subida de archivos
+  initAgregarPresupuestoForm();
+}
+
+function showFacturasModal(rma) {
+  const facturasModalOverlay = document.getElementById('facturas-modal-overlay');
+  const facturasModalContent = document.getElementById('facturas-modal-content');
+
+  // Construir el contenido del modal con una tabla de facturas
+  let facturasContent = `
+    <div class="modal-header">
+      <h2>Facturas de RMA #${rma.numero}</h2>
+      <button class="close-facturas-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <table>
+        <thead>
+          <tr>
+            <th># Factura</th>
+            <th>Archivos</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  // Iterar sobre las facturas y construir las filas de la tabla
+  if (rma.facturas && rma.facturas.length > 0) {
+    rma.facturas.forEach(factura => {
+      facturasContent += `
+        <tr>
+          <td>${factura.numero_de_factura}</td>
+          <td>${renderArchivos(factura.archivos)}</td>
+        </tr>
+      `;
+    });
+  } else {
+    facturasContent += `
+      <tr>
+        <td colspan="2">No hay facturas disponibles.</td>
+      </tr>
+    `;
+  }
+
+  facturasContent += `
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="agregar-factura-button">Agregar Factura</button>
+    </div>
+  `;
+
+  facturasModalContent.innerHTML = facturasContent;
+  facturasModalOverlay.style.display = 'block';
+
+  // Listeners para cerrar el modal y agregar una factura
+  facturasModalContent.querySelector('.close-facturas-modal').addEventListener('click', function() {
+    facturasModalOverlay.style.display = 'none';
+  });
+
+  facturasModalContent.querySelector('.agregar-factura-button').addEventListener('click', function() {
+    facturasModalOverlay.style.display = 'none';
+    showAgregarFacturaModal(rma.id);
+  });
+}
+
+
+function showAgregarFacturaModal(rmaId) {
+  const agregarFacturaModalOverlay = document.getElementById('agregar-factura-modal-overlay');
+  const agregarFacturaModalContent = document.getElementById('agregar-factura-modal-content');
+
+  agregarFacturaModalContent.innerHTML = `
+    <div class="modal-header">
+      <h2>Agregar Factura</h2>
+      <button class="close-agregar-factura-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="agregar-factura-form" class="factura-form agregar-factura-form" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="rma_id" value="${rmaId}" />
+
+        <!-- Número de Factura -->
+        <label class="required">Número de Factura</label>
+        <input type="text" name="numero_de_factura" class="agregar-factura-input" required />
+
+        <!-- Archivo de Factura -->
+        <label class="required">Factura (Archivo)</label>
+        <div class="agregar-factura-file-drop-area" id="agregar-factura-file-drop-area">
+          <p>Arrastra el archivo de factura aquí</p>
+          <p>o</p>
+          <button type="button" id="agregar-factura-browse-files">Sube tu archivo</button>
+          <input type="file" name="archivo_factura" id="agregar-factura-file-input" required hidden />
+          <p class="explanation">Se permite un archivo de hasta 20MB.</p>
+        </div>
+        <ul class="agregar-factura-file-list" id="agregar-factura-file-list"></ul>
+
+        <!-- Botón para enviar el formulario -->
+        <input type="submit" class="agregar-factura-submit" value="Agregar Factura" />
+      </form>
+    </div>
+  `;
+
+  agregarFacturaModalOverlay.style.display = 'block';
+
+  // Evento para cerrar el modal
+  agregarFacturaModalContent.querySelector('.close-agregar-factura-modal').addEventListener('click', function() {
+    agregarFacturaModalOverlay.style.display = 'none';
+  });
+
+  // Inicializar el manejo del formulario
+  initAgregarFacturaForm();
+}
+
+
+
+function showGuiasModal(rma) {
+  const guiasModalOverlay = document.getElementById('guias-modal-overlay');
+  const guiasModalContent = document.getElementById('guias-modal-content');
+
+  let guiasContent = `
+    <div class="modal-header">
+      <h2>Guías de Despacho (RMA #${rma.numero})</h2>
+      <button class="close-guias-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Archivos</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  if (rma.guias_de_despacho && rma.guias_de_despacho.length > 0) {
+    rma.guias_de_despacho.forEach(guia => {
+      guiasContent += `
+        <tr>
+          <td>${renderArchivos(guia.archivos)}</td>
+        </tr>
+      `;
+    });
+  } else {
+    guiasContent += `
+      <tr>
+        <td>No hay guías de despacho disponibles.</td>
+      </tr>
+    `;
+  }
+
+  guiasContent += `
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="agregar-guia-button">Agregar Guía de Despacho</button>
+    </div>
+  `;
+
+  guiasModalContent.innerHTML = guiasContent;
+  guiasModalOverlay.style.display = 'block';
+
+  // Listeners para cerrar el modal y agregar una guía
+  guiasModalContent.querySelector('.close-guias-modal').addEventListener('click', function() {
+    guiasModalOverlay.style.display = 'none';
+  });
+
+  guiasModalContent.querySelector('.agregar-guia-button').addEventListener('click', function() {
+    guiasModalOverlay.style.display = 'none';
+    showAgregarGuiaModal(rma.id);
+  });
+}
+
+
+
+function showAgregarGuiaModal(rmaId) {
+  const agregarGuiaModalOverlay = document.getElementById('agregar-guia-modal-overlay');
+  const agregarGuiaModalContent = document.getElementById('agregar-guia-modal-content');
+
+  agregarGuiaModalContent.innerHTML = `
+    <div class="modal-header">
+      <h2>Agregar Guía de Despacho</h2>
+      <button class="close-agregar-guia-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="agregar-guia-form" class="guia-form agregar-guia-form" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="rma_id" value="${rmaId}" />
+
+        <!-- Archivo de Guía de Despacho -->
+        <label class="required">Guía de Despacho (Archivo)</label>
+        <div class="agregar-guia-file-drop-area" id="agregar-guia-file-drop-area">
+          <p>Arrastra el archivo de guía aquí</p>
+          <p>o</p>
+          <button type="button" id="agregar-guia-browse-files">Sube tu archivo</button>
+          <input type="file" name="archivo_guia" id="agregar-guia-file-input" required hidden />
+          <p class="explanation">Se permite un archivo de hasta 20MB.</p>
+        </div>
+        <ul class="agregar-guia-file-list" id="agregar-guia-file-list"></ul>
+
+        <input type="submit" class="agregar-guia-submit" value="Agregar Guía de Despacho" />
+      </form>
+    </div>
+  `;
+
+  agregarGuiaModalOverlay.style.display = 'block';
+
+  // Event listener for closing the modal
+  agregarGuiaModalContent.querySelector('.close-agregar-guia-modal').addEventListener('click', function() {
+    agregarGuiaModalOverlay.style.display = 'none';
+  });
+
+  // Initialize the form handling
+  initAgregarGuiaForm();
+}
+
+
+
+
+
+
+
+
+
+
+
+  
+
+function initAgregarGuiaForm() {
+  const agregarGuiaForm = document.getElementById('agregar-guia-form');
+  const submitButton = agregarGuiaForm.querySelector('.agregar-guia-submit');
+
+  agregarGuiaForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    if (!agregarGuiaForm.reportValidity()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, complete todos los campos obligatorios.',
+      });
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...';
+
+    const formData = new FormData(agregarGuiaForm);
+
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_guia_despacho?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.text();
+    })
+    .then(data => {
+      Swal.fire({
+        position: 'top',
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'La guía de despacho ha sido agregada correctamente. La actualización podría tardar unos segundos en aparecer. Recargue la página si es así.',
+        showConfirmButton: true,
+      }).then(() => {
+        const agregarGuiaModalOverlay = document.getElementById('agregar-guia-modal-overlay');
+        agregarGuiaModalOverlay.style.display = 'none';
+        location.reload();
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al agregar la guía de despacho. Intente nuevamente.',
+      });
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Agregar Guía de Despacho';
+    });
+  });
+
+  // Limpiar la lista de archivos al abrir el modal
+  allAgregarGuiaFiles = [];
+
+  // Llamar a la función para manejar la subida de archivos
+  initAgregarGuiaFileUpload();
+}
+
+
+  
+
+function initAgregarFacturaForm() {
+  const agregarFacturaForm = document.getElementById('agregar-factura-form');
+  const submitButton = agregarFacturaForm.querySelector('.agregar-factura-submit');
+
+  agregarFacturaForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    if (!agregarFacturaForm.reportValidity()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, complete todos los campos obligatorios.',
+      });
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...';
+
+    const formData = new FormData(agregarFacturaForm);
+
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_factura?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+      Swal.fire({
+        position: 'top',
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'La factura ha sido agregada correctamente.',
+        showConfirmButton: true,
+      }).then(() => {
+        const agregarFacturaModalOverlay = document.getElementById('agregar-factura-modal-overlay');
+        agregarFacturaModalOverlay.style.display = 'none';
+        location.reload();
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al agregar la factura. Intente nuevamente.',
+      });
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Agregar Factura';
+    });
+  });
+
+  // Initialize file upload handling similar to previous forms
+  initAgregarFacturaFileUpload();
+}
+
+
+
+  
+
+function renderRespaldoLinks(comprobantes) {
+  if (!comprobantes || comprobantes.length === 0) {
+    return '';
+  }
+  return comprobantes.map(comprobante => {
+    // Ensure the URL is correctly formatted
+    const fileUrl = formatFileUrl(comprobante);
+    return `<a href="${fileUrl}" target="_blank">Ver</a>`;
+  }).join(', ');
+}
+
+function formatFileUrl(url) {
+  // Replace 'files/files' with 'files' if present
+  if (url.includes('files/files')) {
+    url = url.replace('files/files', 'files');
+  }
+  // Check for different types and format accordingly
+  if (url.includes('VideoDrop')) {
+    return url; // Video URL
+  } else if (url.includes('GenericFileDrop')) {
+    return `https://${url}`;
+  } else {
+    return url; // Image or other file type
+  }
+}
+
+
+  
+
+    function printModalContent() {
+      window.print();
+    }
+
+
+function generateKanbanBoard(rmas) {
+  const kanbanBoard = document.getElementById('kanban-board');
+
+  // Agrupar RMAs por estado_de_reparacion
+  const grouped = rmas.reduce((acc, rma) => {
+    const state = rma.estado_de_reparacion || 'Sin Estado';
+    if (!acc[state]) {
+      acc[state] = [];
+    }
+    acc[state].push(rma);
+    return acc;
+  }, {});
+
+  // Obtener los estados únicos y ordenarlos alfabéticamente
+  const estados = Object.keys(grouped).sort();
+
+  // Para cada estado, crear una columna en el Kanban
+  estados.forEach(state => {
+    const column = document.createElement('div');
+    column.classList.add('kanban-column');
+
+    // Título de la columna con contador
+    const columnTitle = document.createElement('h2');
+    columnTitle.textContent = `${state} (${grouped[state].length})`;
+    column.appendChild(columnTitle);
+
+    // Tarjetas de RMAs
+    grouped[state].forEach(rma => {
+      const card = document.createElement('div');
+      card.classList.add('kanban-card');
+      card.setAttribute('data-id', rma.id); // Añade el atributo data-id con el ID de la RMA
+
+      card.innerHTML = `
+        <h3>RMA #${rma.numero}</h3> 
+        
+        <p style="font-size: 16px"><strong>📹Modelo:</strong> ${rma.modelo}</p>
+        <p style="font-size: 16px"><strong>🪪Serie:</strong> ${rma.numero_de_serie}</p>
+
+
+    <div style="padding-top: 10px;">
+      <p style="font-size: 10px;"><strong>Presupuesto:</strong> ${rma.presupuestos && rma.presupuestos.length > 0 ? '🟢Sí' : '🔴No'}</p>
+      <p style="font-size: 10px;"><strong>Respuesta:</strong> ${rma.presupuesto_acepta}</p>
+    </div>
+    
+    <div style="padding-top: 10px; text-align: right;">
+    <p style="font-size: 10px;"><strong>🏢</strong> ${rma.empresa_cliente}</p>
+</div>
+
+        
+
+      `;   //      <p><strong>📄Presupuesto Enviado:</strong> ${rma.presupuestos && rma.presupuestos.length > 0 ? '🟢Sí' : '🔴No'}</p>
+          //  <p><strong>👤Respuesta:</strong> ${rma.presupuesto_acepta}</p>
+         //  <p><strong>✈️Guía de Despacho:</strong> ${rma.guias_de_despacho && rma.guias_de_despacho.length > 0 ? '🟢Sí' : '🔴No'}</p>
+        //   <p><strong>🧾Factura:</strong> ${rma.facturas && rma.facturas.length > 0 ? '🟢Sí' : '🔴No'}</p>
+       //   <p><strong>💰Pago:</strong> ${rma.pago === 'Sí' ? '🟢Sí' : '🔴No'}</p>      
+      // Añadir evento para mostrar detalles al hacer clic //(📍${rma.transito_2}
+      card.addEventListener('click', function() {
+        showModal(rma);
+      });
+      column.appendChild(card);
+    });
+
+    kanbanBoard.appendChild(column);
+  });
+}
+
+        
+// Generar el Tablero Kanban con los datos existentes
+generateKanbanBoard(data);
+
+
+
+
+    {% render 'js-graficos-todas-rma' %}
+
+    // Nueva Funcionalidad: Apertura Automática de la RMA Basada en la URL
+    // Verificar si hay un parámetro de RMA en la URL al cargar la página
+    const urlParams = new URLSearchParams(window.location.search);
+    const rmaNumber = window.location.search.substring(1); // Asumiendo que el parámetro es solo ?1001
+    if (rmaNumber) {
+      const rma = data.find(r => r.numero === rmaNumber);
+      if (rma) {
+        showModal(rma);
+      }
+    }
+
+    // Manejo de eventos de navegación del historial para manejar el botón de retroceso
+    window.addEventListener('popstate', function(event) {
+      if (!event.state || !event.state.rma) {
+        // Si no hay estado o no hay RMA en el estado, cerrar el modal
+        const modalOverlay = document.getElementById('modal-overlay');
+        modalOverlay.style.display = 'none';
+      } else {
+        // Si hay un RMA en el estado, abrir el modal correspondiente
+        const rmaNumber = event.state.rma;
+        const rma = data.find(r => r.numero === rmaNumber);
+        if (rma) {
+          showModal(rma);
+        }
+      }
+    });
+
+    // Event listener for the "Filtro Avanzado" button
+    document.getElementById('toggle-filters')?.addEventListener('click', function() {
+      const advancedFiltersDiv = document.getElementById('advanced-filters');
+      if (advancedFiltersDiv.style.display === 'none') {
+        advancedFiltersDiv.style.display = 'block';
+      } else {
+        advancedFiltersDiv.style.display = 'none';
+      }
+    });
+
+    // Función para manejar la subida de archivos de tránsito
+    function initTransitoFileUpload() {
+      var fileDropArea = document.getElementById('transito-file-drop-area');
+      var fileInput = document.getElementById('transito-file-input');
+      var fileList = document.getElementById('transito-file-list');
+      var browseFilesButton = document.getElementById('transito-browse-files');
+
+      browseFilesButton.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      fileDropArea.addEventListener('dragover', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.add('dragover');
+      });
+
+      fileDropArea.addEventListener('dragleave', function() {
+        fileDropArea.classList.remove('dragover');
+      });
+
+      fileDropArea.addEventListener('drop', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.remove('dragover');
+        var files = event.dataTransfer.files;
+        handleTransitoFiles(files);
+      });
+
+      fileInput.addEventListener('change', function(event) {
+        var files = event.target.files;
+        handleTransitoFiles(files);
+      });
+
+async function handleTransitoFiles(files) {
+  const validTypes = [
+    "image/jpeg", "image/png", "image/heic", "image/heif", "image/gif", "image/webp", "application/pdf",
+    "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "video/mp4", "video/avi", "video/mpeg", "video/quicktime", "video/x-ms-wmv",
+    "video/x-flv", "video/webm", "video/ogg", "video/x-matroska"
+  ];
+
+  const allowedExtensions = ['.heic', '.heif', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.csv', '.txt', '.mp4', '.avi', '.mpeg', '.mov', '.wmv', '.flv', '.webm', '.ogg', '.mkv'];
+
+  const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+  for (const file of files) {
+    // Renombrar el archivo para asegurar unicidad
+    let renamedFile = renameFile(file);
+    
+    // Obtener la extensión del archivo
+    const extension = `.${renamedFile.name.split('.').pop().toLowerCase()}`;
+    
+    // Verificar el tipo MIME
+    console.log(`Archivo: ${renamedFile.name}, Tipo MIME: ${renamedFile.type}, Extensión: ${extension}`);
+    
+    // Verificar si el archivo ya existe en la lista global
+    if (allFiles.some(f => f.name === renamedFile.name && f.size === renamedFile.size)) {
+      continue; // Saltar este archivo y continuar con el siguiente
+    }
+
+    let isValidFile = (validTypes.includes(renamedFile.type) || allowedExtensions.includes(extension)) && renamedFile.size <= maxSize;
+
+    // Si el tipo MIME es HEIC o HEIF, intenta convertirlo
+    if ((renamedFile.type === 'image/heic' || renamedFile.type === 'image/heif') && renamedFile.size <= maxSize) {
+      try {
+        const convertedBlob = await heic2any({
+          blob: renamedFile,
+          toType: "image/jpeg",
+          quality: 0.8
+        });
+        const convertedFile = new File([convertedBlob], renamedFile.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+        
+        // Re-validate el archivo convertido
+        if (validTypes.includes(convertedFile.type) || allowedExtensions.includes('.jpg')) {
+          allFiles.push(convertedFile);
+        } else {
+          throw new Error('Tipo de archivo convertido inválido.');
+        }
+      } catch (error) {
+        console.error("Error al convertir el archivo HEIC:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no pudo ser convertido o es inválido.`,
+        });
+        continue; // Saltar este archivo y continuar con el siguiente
+      }
+    } else {
+      if (!isValidFile) {
+        // Mostrar alerta o mensaje al usuario sobre archivos inválidos
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no es válido o supera los 20 MB.`,
+        });
+        continue; // Saltar este archivo y continuar con el siguiente
+      } else {
+        allFiles.push(renamedFile); // Agregar el archivo renombrado a la lista global
+      }
+    }
+  }
+
+  // Crear un nuevo DataTransfer y agregar todos los archivos de allFiles
+  var dt = new DataTransfer();
+  allFiles.forEach(function(file) {
+    dt.items.add(file);
+  });
+
+  // Actualizar los archivos del input
+  var fileInput = document.getElementById('transito-file-input');
+  fileInput.files = dt.files;
+
+  // Actualizar la lista visual de archivos
+  const fileListElement = document.getElementById('transito-file-list');
+  fileListElement.innerHTML = ''; // Limpiar la lista existente
+
+  allFiles.forEach(function(file) {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<span>${file.name}</span><span class="transito-remove-file">X</span>`;
+    listItem.querySelector('.transito-remove-file').addEventListener('click', function() {
+      removeFileFromInput(file.name);
+    });
+    fileListElement.appendChild(listItem);
+  });
+}
+
+    }
+
+
+
+
+function initAgregarFacturaFileUpload() {
+  var fileDropArea = document.getElementById('agregar-factura-file-drop-area');
+  var fileInput = document.getElementById('agregar-factura-file-input');
+  var fileList = document.getElementById('agregar-factura-file-list');
+  var browseFilesButton = document.getElementById('agregar-factura-browse-files');
+
+  browseFilesButton.addEventListener('click', function() {
+    fileInput.click();
+  });
+
+  fileDropArea.addEventListener('dragover', function(event) {
+    event.preventDefault();
+    fileDropArea.classList.add('dragover');
+  });
+
+  fileDropArea.addEventListener('dragleave', function() {
+    fileDropArea.classList.remove('dragover');
+  });
+
+  fileDropArea.addEventListener('drop', function(event) {
+    event.preventDefault();
+    fileDropArea.classList.remove('dragover');
+    var files = event.dataTransfer.files;
+    handleAgregarFacturaFiles(files);
+  });
+
+  fileInput.addEventListener('change', function(event) {
+    var files = event.target.files;
+    handleAgregarFacturaFiles(files);
+  });
+
+  function handleAgregarFacturaFiles(files) {
+    const validTypes = [
+      "image/jpeg", "image/png", "image/heic", "image/gif", "image/webp", "application/pdf",
+      "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ];
+
+    const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+    Array.from(files).forEach(function(file) {
+      // Renombrar el archivo para asegurar unicidad
+      let renamedFile = renameFile(file);
+
+      // Verificar si el archivo ya existe en la lista global
+      if (allAgregarFacturaFiles.some(f => f.name === renamedFile.name && f.size === renamedFile.size)) {
+        return;
+      }
+
+      var isValidFile = validTypes.includes(renamedFile.type) && renamedFile.size <= maxSize;
+
+      if (!isValidFile) {
+        // Mostrar alerta o mensaje al usuario sobre archivos inválidos
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no es válido o supera los 20 MB.`,
+        });
+        return;
+      } else {
+        allAgregarFacturaFiles.push(renamedFile); // Agregar el archivo renombrado a la lista global
+      }
+    });
+
+    // Crear un nuevo DataTransfer y agregar todos los archivos de allAgregarFacturaFiles
+    var dt = new DataTransfer();
+    allAgregarFacturaFiles.forEach(function(file) {
+      dt.items.add(file);
+    });
+
+    // Actualizar los archivos del input
+    fileInput.files = dt.files;
+
+    // Actualizar la lista visual de archivos
+    const fileListElement = document.getElementById('agregar-factura-file-list');
+    fileListElement.innerHTML = ''; // Limpiar la lista existente
+
+    allAgregarFacturaFiles.forEach(function(file) {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `<span>${file.name}</span><span class="agregar-factura-remove-file">X</span>`;
+      listItem.querySelector('.agregar-factura-remove-file').addEventListener('click', function() {
+        removeAgregarFacturaFileFromInput(file.name);
+      });
+      fileListElement.appendChild(listItem);
+    });
+  }
+}
+
+
+
+function removeAgregarFacturaFileFromInput(fileName) {
+  var dt = new DataTransfer();
+  var input = document.getElementById('agregar-factura-file-input');
+
+  // Filtrar el archivo eliminado de la lista global
+  allAgregarFacturaFiles = allAgregarFacturaFiles.filter(function(file) {
+    return file.name !== fileName;
+  });
+
+  // Agregar los archivos restantes al DataTransfer
+  allAgregarFacturaFiles.forEach(function(file) {
+    dt.items.add(file);
+  });
+
+  input.files = dt.files;
+
+  // Actualizar la lista visual de archivos
+  const fileList = document.getElementById('agregar-factura-file-list');
+  fileList.innerHTML = '';
+  allAgregarFacturaFiles.forEach(function(file) {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<span>${file.name}</span><span class="agregar-factura-remove-file">X</span>`;
+    listItem.querySelector('.agregar-factura-remove-file').addEventListener('click', function() {
+      removeAgregarFacturaFileFromInput(file.name);
+    });
+    fileList.appendChild(listItem);
+  });
+}
+
+
+
+  
+
+    // Función para manejar la subida de archivos de anotación
+    function initAnotacionFileUpload() {
+      var fileDropArea = document.getElementById('anotacion-file-drop-area');
+      var fileInput = document.getElementById('anotacion-file-input');
+      var fileList = document.getElementById('anotacion-file-list');
+      var browseFilesButton = document.getElementById('anotacion-browse-files');
+
+      browseFilesButton.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      fileDropArea.addEventListener('dragover', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.add('dragover');
+      });
+
+      fileDropArea.addEventListener('dragleave', function() {
+        fileDropArea.classList.remove('dragover');
+      });
+
+      fileDropArea.addEventListener('drop', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.remove('dragover');
+        var files = event.dataTransfer.files;
+        handleAnotacionFiles(files);
+      });
+
+      fileInput.addEventListener('change', function(event) {
+        var files = event.target.files;
+        handleAnotacionFiles(files);
+      });
+
+async function handleAnotacionFiles(files) {
+  const validTypes = [
+    "image/jpeg", "image/png", "image/heic", "image/heif", "image/gif", "image/webp", "application/pdf",
+    "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "video/mp4", "video/avi", "video/mpeg", "video/quicktime", "video/x-ms-wmv",
+    "video/x-flv", "video/webm", "video/ogg", "video/x-matroska"
+  ];
+
+  const allowedExtensions = ['.heic', '.heif', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.csv', '.txt', '.mp4', '.avi', '.mpeg', '.mov', '.wmv', '.flv', '.webm', '.ogg', '.mkv'];
+
+  const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+  for (const file of files) {
+    // Renombrar el archivo para asegurar unicidad
+    let renamedFile = renameFile(file);
+    
+    // Obtener la extensión del archivo
+    const extension = `.${renamedFile.name.split('.').pop().toLowerCase()}`;
+    
+    // Verificar el tipo MIME
+    console.log(`Archivo: ${renamedFile.name}, Tipo MIME: ${renamedFile.type}, Extensión: ${extension}`);
+    
+    // Verificar si el archivo ya existe en la lista global
+    if (allAnotacionFiles.some(f => f.name === renamedFile.name && f.size === renamedFile.size)) {
+      continue; // Saltar este archivo y continuar con el siguiente
+    }
+
+    let isValidFile = (validTypes.includes(renamedFile.type) || allowedExtensions.includes(extension)) && renamedFile.size <= maxSize;
+
+    // Si el tipo MIME es HEIC o HEIF, intenta convertirlo
+    if ((renamedFile.type === 'image/heic' || renamedFile.type === 'image/heif') && renamedFile.size <= maxSize) {
+      try {
+        const convertedBlob = await heic2any({
+          blob: renamedFile,
+          toType: "image/jpeg",
+          quality: 0.8
+        });
+        const convertedFile = new File([convertedBlob], renamedFile.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+        
+        // Re-validate el archivo convertido
+        if (validTypes.includes(convertedFile.type) || allowedExtensions.includes('.jpg')) {
+          allAnotacionFiles.push(convertedFile);
+        } else {
+          throw new Error('Tipo de archivo convertido inválido.');
+        }
+      } catch (error) {
+        console.error("Error al convertir el archivo HEIC:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no pudo ser convertido o es inválido.`,
+        });
+        continue; // Saltar este archivo y continuar con el siguiente
+      }
+    } else {
+      if (!isValidFile) {
+        // Mostrar alerta o mensaje al usuario sobre archivos inválidos
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no es válido o supera los 20 MB.`,
+        });
+        continue; // Saltar este archivo y continuar con el siguiente
+      } else {
+        allAnotacionFiles.push(renamedFile); // Agregar el archivo renombrado a la lista global
+      }
+    }
+  }
+
+  // Crear un nuevo DataTransfer y agregar todos los archivos de allAnotacionFiles
+  var dt = new DataTransfer();
+  allAnotacionFiles.forEach(function(file) {
+    dt.items.add(file);
+  });
+
+  // Actualizar los archivos del input
+  fileInput.files = dt.files;
+
+  // Actualizar la lista visual de archivos
+  const fileListElement = document.getElementById('anotacion-file-list');
+  fileListElement.innerHTML = ''; // Limpiar la lista existente
+
+  allAnotacionFiles.forEach(function(file) {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<span>${file.name}</span><span class="anotacion-remove-file">X</span>`;
+    listItem.querySelector('.anotacion-remove-file').addEventListener('click', function() {
+      removeAnotacionFileFromInput(file.name);
+    });
+    fileListElement.appendChild(listItem);
+  });
+}
+
+
+    }
+
+    // Función para manejar la subida de archivos de estado (si se requiere en el futuro)
+    function initEstadoFileUpload() {
+      var fileDropArea = document.getElementById('estado-file-drop-area');
+      var fileInput = document.getElementById('estado-file-input');
+      var fileList = document.getElementById('estado-file-list');
+      var browseFilesButton = document.getElementById('estado-browse-files');
+
+      browseFilesButton.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      fileDropArea.addEventListener('dragover', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.add('dragover');
+      });
+
+      fileDropArea.addEventListener('dragleave', function() {
+        fileDropArea.classList.remove('dragover');
+      });
+
+      fileDropArea.addEventListener('drop', function(event) {
+        event.preventDefault();
+        fileDropArea.classList.remove('dragover');
+        var files = event.dataTransfer.files;
+        handleEstadoFiles(files);
+      });
+
+      fileInput.addEventListener('change', function(event) {
+        var files = event.target.files;
+        handleEstadoFiles(files);
+      });
+
+      function handleEstadoFiles(files) {
+        const validTypes = [
+          "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf",
+          "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "video/mp4", "video/avi", "video/mpeg", "video/quicktime", "video/x-ms-wmv",
+          "video/x-flv", "video/webm", "video/ogg", "video/x-matroska"
+        ];
+
+        const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+        Array.from(files).forEach(function(file) {
+          // Renombrar el archivo para asegurar unicidad
+          let renamedFile = renameFile(file);
+
+          // Verificar si el archivo ya existe en la lista global
+          if (allEstadoFiles.some(f => f.name === renamedFile.name && f.size === renamedFile.size)) {
+            return;
+          }
+
+          var isValidFile = validTypes.includes(renamedFile.type) && renamedFile.size <= maxSize;
+
+          if (!isValidFile) {
+            // Mostrar alerta o mensaje al usuario sobre archivos inválidos
+            Swal.fire({
+              icon: 'error',
+              title: 'Archivo inválido',
+              text: `El archivo ${file.name} no es válido o supera los 20 MB.`,
+            });
+            return;
+          } else {
+            allEstadoFiles.push(renamedFile); // Agregar el archivo renombrado a la lista global
+          }
+        });
+
+        // Crear un nuevo DataTransfer y agregar todos los archivos de allEstadoFiles
+        var dt = new DataTransfer();
+        allEstadoFiles.forEach(function(file) {
+          dt.items.add(file);
+        });
+
+        // Actualizar los archivos del input
+        fileInput.files = dt.files;
+
+        // Actualizar la lista visual de archivos
+        const fileListElement = document.getElementById('estado-file-list');
+        fileListElement.innerHTML = ''; // Limpiar la lista existente
+
+        allEstadoFiles.forEach(function(file) {
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `<span>${file.name}</span><span class="estado-remove-file">X</span>`;
+          listItem.querySelector('.estado-remove-file').addEventListener('click', function() {
+            removeEstadoFileFromInput(file.name);
+          });
+          fileListElement.appendChild(listItem);
+        });
+      }
+    }
+
+    // Función para inicializar el formulario de tránsito
+    function initTransitoForm() {
+      // Manejo del formulario de tránsito
+      var transitoForm = document.getElementById('transito-form');
+      var submitButton = transitoForm.querySelector('.transito-submit');
+
+      transitoForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formIsValid = transitoForm.reportValidity();
+        const fileListItems = document.querySelectorAll('#transito-file-list li');
+        let hasInvalidFiles = false;
+
+        fileListItems.forEach(item => {
+          if (item.textContent.includes('(archivo no válido)') || item.textContent.includes('(sobrepasa los 20 MB)')) {
+            hasInvalidFiles = true;
+          }
+        });
+
+        if (!formIsValid) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, complete todos los campos obligatorios.',
+          });
+          return;
+        }
+
+        if (hasInvalidFiles) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pueden enviar archivos inválidos o que superen los 20 MB. Por favor, elimine los archivos no válidos antes de continuar.',
+          });
+          return;
+        }
+
+        // Deshabilitar el botón y mostrar estado de carga
+        submitButton.disabled = true;
+        submitButton.classList.add('loading');
+        submitButton.value = 'Cargando...';
+
+        var formData = new FormData(transitoForm);
+
+        // Enviar datos al servidor
+        fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_transito?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+          }
+          return response.text();
+        })
+        .then(data => {
+          Swal.fire({
+            position: 'top', // Posicionar la alerta en la parte superior
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'El evento de tránsito ha sido registrado correctamente. La actualización podría tardar unos segundos en aparecer. Recargue la página si es así.',
+            showConfirmButton: true, // Opcional: ocultar el botón de confirmación
+            // timer: 3000 // Opcional: cerrar la alerta automáticamente después de 3 segundos
+          }).then(() => {
+            // Cerrar el modal y actualizar la información si es necesario
+            const transitoModalOverlay = document.getElementById('transito-modal-overlay');
+            transitoModalOverlay.style.display = 'none';
+            // Opcionalmente, recargar la página o actualizar los datos del RMA
+            location.reload();
+          });
+
+        })
+        .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al registrar el evento de tránsito. Intente nuevamente.',
+          });
+          // Rehabilitar el botón
+          submitButton.disabled = false;
+          submitButton.classList.remove('loading');
+          submitButton.value = 'Registrar Evento de Tránsito';
+        });
+      });
+
+      // Limpiar la lista de archivos al abrir el modal
+      allFiles = [];
+
+      // Llamar a la función para manejar la subida de archivos
+      initTransitoFileUpload();
+    }
+
+    // Función para inicializar el formulario de anotación
+    function initAnotacionForm() {
+      // Manejo del formulario de anotación
+      var anotacionForm = document.getElementById('anotacion-form');
+      var submitButton = anotacionForm.querySelector('.anotacion-submit');
+
+      anotacionForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formIsValid = anotacionForm.reportValidity();
+        const fileListItems = document.querySelectorAll('#anotacion-file-list li');
+        let hasInvalidFiles = false;
+
+        fileListItems.forEach(item => {
+          if (item.textContent.includes('(archivo no válido)') || item.textContent.includes('(sobrepasa los 20 MB)')) {
+            hasInvalidFiles = true;
+          }
+        });
+
+        if (!formIsValid) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, complete todos los campos obligatorios.',
+          });
+          return;
+        }
+
+        if (hasInvalidFiles) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pueden enviar archivos inválidos o que superen los 20 MB. Por favor, elimine los archivos no válidos antes de continuar.',
+          });
+          return;
+        }
+
+        // Deshabilitar el botón y mostrar estado de carga
+        submitButton.disabled = true;
+        submitButton.classList.add('loading');
+        submitButton.value = 'Cargando...';
+
+        var formData = new FormData(anotacionForm);
+
+        // Enviar datos al servidor
+        fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_anotacion?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', { // Reemplaza con la URL correcta si difiere
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+          }
+          return response.text();
+        })
+        .then(data => {
+          Swal.fire({
+            position: 'top', // Posicionar la alerta en la parte superior
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'La anotación ha sido agregada correctamente. La actualización podría tardar unos segundos en aparecer. Recargue la página si es así.',
+            showConfirmButton: true, // Opcional: ocultar el botón de confirmación
+            // timer: 3000 // Opcional: cerrar la alerta automáticamente después de 3 segundos
+          }).then(() => {
+            // Cerrar el modal y actualizar la información si es necesario
+            const anotacionModalOverlay = document.getElementById('anotacion-modal-overlay');
+            anotacionModalOverlay.style.display = 'none';
+            // Opcionalmente, recargar la página o actualizar los datos del RMA
+            location.reload();
+          });
+
+        })
+        .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al agregar la anotación. Intente nuevamente.',
+          });
+          // Rehabilitar el botón
+          submitButton.disabled = false;
+          submitButton.classList.remove('loading');
+          submitButton.value = 'Enviar Observación';
+        });
+      });
+
+      // Limpiar la lista de archivos al abrir el modal
+      allAnotacionFiles = [];
+
+      // Llamar a la función para manejar la subida de archivos
+      initAnotacionFileUpload();
+    }
+
+    // Función para inicializar el formulario de estado de reparación
+    function initEstadoForm() {
+      // Manejo del formulario de estado de reparación
+      var estadoForm = document.getElementById('estado-form');
+      var submitButton = estadoForm.querySelector('.estado-submit');
+
+      estadoForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formIsValid = estadoForm.reportValidity();
+
+        if (!formIsValid) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, seleccione un estado de reparación.',
+          });
+          return;
+        }
+
+        // Deshabilitar el botón y mostrar estado de carga
+        submitButton.disabled = true;
+        submitButton.classList.add('loading');
+        submitButton.value = 'Actualizando...';
+
+        var formData = new FormData(estadoForm);
+
+        // Enviar datos al servidor
+        fetch('https://colvinycia-servicios.azurewebsites.net/api/actualizar_estado_reparacion?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', { // Reemplaza YOUR_ACTUALIZAR_ESTADO_FUNCTION_CODE con el código correcto
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+          }
+          return response.text();
+        })
+        .then(data => {
+          Swal.fire({
+            position: 'top', // Posicionar la alerta en la parte superior
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'El estado de reparación ha sido actualizado correctamente.',
+            showConfirmButton: true, // Opcional: ocultar el botón de confirmación
+            // timer: 3000 // Opcional: cerrar la alerta automáticamente después de 3 segundos
+          }).then(() => {
+            // Cerrar el modal y actualizar la información si es necesario
+            const estadoModalOverlay = document.getElementById('estado-modal-overlay');
+            estadoModalOverlay.style.display = 'none';
+            // Opcionalmente, recargar la página o actualizar los datos del RMA
+            location.reload();
+          });
+
+        })
+        .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al actualizar el estado de reparación. Intente nuevamente.',
+          });
+          // Rehabilitar el botón
+          submitButton.disabled = false;
+          submitButton.classList.remove('loading');
+          submitButton.value = 'Actualizar Estado';
+        });
+      });
+    }
+
+
+
+function updateRmaState(rmaId, newState, cardElement) {
+  // Preparar los datos para enviar
+  const formData = new FormData();
+  formData.append('rma_id', rmaId);
+  formData.append('nuevo_estado', newState);
+
+  // Enviar la solicitud para actualizar el estado
+  fetch('https://colvinycia-servicios.azurewebsites.net/api/actualizar_estado_reparacion?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    console.log("Código de Estado HTTP:", response.status);
+    console.log("¿Respuesta OK?", response.ok);
+    const contentType = response.headers.get('content-type');
+    console.log("Tipo de Contenido:", contentType);
+
+    if (!response.ok) {
+      throw new Error('Error en la respuesta del servidor');
+    }
+
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    } else {
+      console.warn("La respuesta no es JSON. Se manejará como un objeto vacío.");
+      return {};
+    }
+  })
+  .then(data => {
+    console.log("Datos de la Respuesta de la API:", data);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Éxito',
+      text: 'El estado de reparación ha sido actualizado correctamente.',
+    });
+
+    // Verificar si 'estado_anterior' está presente
+    const originalState = data.estado_anterior || 'Desconocido';
+    console.log("Estado Anterior:", originalState);
+
+    // Actualizar contadores y mover tarjeta
+    const originalColumn = Array.from(document.querySelectorAll('.kanban-column h2')).find(h2 => h2.textContent.startsWith(originalState));
+    if (originalColumn) {
+      const originalCountMatch = originalColumn.textContent.match(/\((\d+)\)/);
+      if (originalCountMatch) {
+        const originalCount = parseInt(originalCountMatch[1]) - 1;
+        originalColumn.textContent = `${originalState} (${originalCount})`;
+      }
+    }
+
+    const newColumn = Array.from(document.querySelectorAll('.kanban-column h2')).find(h2 => h2.textContent.startsWith(newState));
+    if (newColumn) {
+      const newCountMatch = newColumn.textContent.match(/\((\d+)\)/);
+      if (newCountMatch) {
+        const newCount = parseInt(newCountMatch[1]) + 1;
+        newColumn.textContent = `${newState} (${newCount})`;
+      } else {
+        newColumn.textContent = `${newState} (1)`;
+      }
+
+      const kanbanBoard = document.getElementById('kanban-board');
+      const targetColumn = newColumn.parentElement;
+      targetColumn.appendChild(cardElement);
+    }
+
+  })
+  .catch(error => {
+    console.error("Error en la actualización de la RMA:", error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Hubo un problema al actualizar el estado de reparación. Intente nuevamente.',
+    });
+
+    // Opcional: Revertir movimiento de tarjeta o realizar otra acción
+  });
+}
+
+
+// Inicializar Sortable en cada columna Kanban
+document.querySelectorAll('.kanban-column').forEach(column => {
+  new Sortable(column, {
+    group: 'kanban', // Permite mover entre columnas
+    animation: 150,   // Animación al mover
+    onEnd: function (evt) {
+      const cardEl = evt.item; // Elemento HTML arrastrado
+      const rmaId = cardEl.getAttribute('data-id'); // Obtener el ID de la RMA
+
+      // Extraer el nombre del nuevo estado de la columna de destino
+      const newState = evt.to.querySelector('h2').textContent.split(' (')[0];
+
+      // Llamar a la función para actualizar el estado de la RMA
+      updateRmaState(rmaId, newState, cardEl);
+    },
+  });
+});
+
+
+  
+
+function initAgregarPresupuestoForm() {
+  // Manejo del formulario de agregar presupuesto
+  var agregarPresupuestoForm = document.getElementById('agregar-presupuesto-form');
+  var submitButton = agregarPresupuestoForm.querySelector('.agregar-presupuesto-submit');
+
+  agregarPresupuestoForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formIsValid = agregarPresupuestoForm.reportValidity();
+
+    if (!formIsValid) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, complete todos los campos obligatorios.',
+      });
+      return;
+    }
+
+    // Deshabilitar el botón y mostrar estado de carga
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    submitButton.value = 'Cargando...';
+
+    var formData = new FormData(agregarPresupuestoForm);
+
+    // Enviar datos al servidor
+    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_presupuesto?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.text();
+    })
+    .then(data => {
+      Swal.fire({
+        position: 'top',
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'El presupuesto ha sido agregado correctamente. La actualización podría tardar unos segundos en aparecer. Recargue la página si es así.',
+        showConfirmButton: true,
+      }).then(() => {
+        // Cerrar el modal y actualizar la información si es necesario
+        const agregarPresupuestoModalOverlay = document.getElementById('agregar-presupuesto-modal-overlay');
+        agregarPresupuestoModalOverlay.style.display = 'none';
+        // Opcionalmente, recargar la página o actualizar los datos del RMA
+        location.reload();
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al agregar el presupuesto. Intente nuevamente.',
+      });
+      // Rehabilitar el botón
+      submitButton.disabled = false;
+      submitButton.classList.remove('loading');
+      submitButton.value = 'Enviar Presupuesto';
+    });
+  });
+
+  // Limpiar la lista de archivos al abrir el modal
+  allAgregarPresupuestoFiles = [];
+
+  // Llamar a la función para manejar la subida de archivos
+  initAgregarPresupuestoFileUpload();
+}
+
+
+
+let allAgregarPresupuestoFiles = [];
+
+function initAgregarPresupuestoFileUpload() {
+  var fileDropArea = document.getElementById('agregar-presupuesto-file-drop-area');
+  var fileInput = document.getElementById('agregar-presupuesto-file-input');
+  var fileList = document.getElementById('agregar-presupuesto-file-list');
+  var browseFilesButton = document.getElementById('agregar-presupuesto-browse-files');
+
+  browseFilesButton.addEventListener('click', function() {
+    fileInput.click();
+  });
+
+  fileDropArea.addEventListener('dragover', function(event) {
+    event.preventDefault();
+    fileDropArea.classList.add('dragover');
+  });
+
+  fileDropArea.addEventListener('dragleave', function() {
+    fileDropArea.classList.remove('dragover');
+  });
+
+  fileDropArea.addEventListener('drop', function(event) {
+    event.preventDefault();
+    fileDropArea.classList.remove('dragover');
+    var files = event.dataTransfer.files;
+    handleAgregarPresupuestoFiles(files);
+  });
+
+  fileInput.addEventListener('change', function(event) {
+    var files = event.target.files;
+    handleAgregarPresupuestoFiles(files);
+  });
+
+  function handleAgregarPresupuestoFiles(files) {
+    const validTypes = [
+      "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf",
+      "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ];
+
+    const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+    Array.from(files).forEach(function(file) {
+      // Renombrar el archivo para asegurar unicidad
+      let renamedFile = renameFile(file);
+
+      // Verificar si el archivo ya existe en la lista global
+      if (allAgregarPresupuestoFiles.some(f => f.name === renamedFile.name && f.size === renamedFile.size)) {
+        return;
+      }
+
+      var isValidFile = validTypes.includes(renamedFile.type) && renamedFile.size <= maxSize;
+
+      if (!isValidFile) {
+        // Mostrar alerta o mensaje al usuario sobre archivos inválidos
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no es válido o supera los 20 MB.`,
+        });
+        return;
+      } else {
+        allAgregarPresupuestoFiles.push(renamedFile); // Agregar el archivo renombrado a la lista global
+      }
+    });
+
+    // Crear un nuevo DataTransfer y agregar todos los archivos de allAgregarPresupuestoFiles
+    var dt = new DataTransfer();
+    allAgregarPresupuestoFiles.forEach(function(file) {
+      dt.items.add(file);
+    });
+
+    // Actualizar los archivos del input
+    fileInput.files = dt.files;
+
+    // Actualizar la lista visual de archivos
+    const fileListElement = document.getElementById('agregar-presupuesto-file-list');
+    fileListElement.innerHTML = ''; // Limpiar la lista existente
+
+    allAgregarPresupuestoFiles.forEach(function(file) {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `<span>${file.name}</span><span class="agregar-presupuesto-remove-file">X</span>`;
+      listItem.querySelector('.agregar-presupuesto-remove-file').addEventListener('click', function() {
+        removeAgregarPresupuestoFileFromInput(file.name);
+      });
+      fileListElement.appendChild(listItem);
+    });
+  }
+}
+
+
+
+
+let allAgregarGuiaFiles = [];
+
+function initAgregarGuiaFileUpload() {
+  var fileDropArea = document.getElementById('agregar-guia-file-drop-area');
+  var fileInput = document.getElementById('agregar-guia-file-input');
+  var fileList = document.getElementById('agregar-guia-file-list');
+  var browseFilesButton = document.getElementById('agregar-guia-browse-files');
+
+  browseFilesButton.addEventListener('click', function() {
+    fileInput.click();
+  });
+
+  fileDropArea.addEventListener('dragover', function(event) {
+    event.preventDefault();
+    fileDropArea.classList.add('dragover');
+  });
+
+  fileDropArea.addEventListener('dragleave', function() {
+    fileDropArea.classList.remove('dragover');
+  });
+
+  fileDropArea.addEventListener('drop', function(event) {
+    event.preventDefault();
+    fileDropArea.classList.remove('dragover');
+    var files = event.dataTransfer.files;
+    handleAgregarGuiaFiles(files);
+  });
+
+  fileInput.addEventListener('change', function(event) {
+    var files = event.target.files;
+    handleAgregarGuiaFiles(files);
+  });
+
+  function handleAgregarGuiaFiles(files) {
+    const validTypes = [
+      "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf",
+      "application/msword", "application/vnd.ms-excel", "text/csv", "text/plain",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ];
+
+    const maxSize = 20 * 1024 * 1024; // 20MB en bytes
+
+    Array.from(files).forEach(function(file) {
+      // Renombrar el archivo para asegurar unicidad
+      let renamedFile = renameFile(file);
+
+      // Verificar si el archivo ya existe en la lista global
+      if (allAgregarGuiaFiles.some(f => f.name === renamedFile.name && f.size === renamedFile.size)) {
+        return;
+      }
+
+      var isValidFile = validTypes.includes(renamedFile.type) && renamedFile.size <= maxSize;
+
+      if (!isValidFile) {
+        // Mostrar alerta o mensaje al usuario sobre archivos inválidos
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no es válido o supera los 20 MB.`,
+        });
+        return;
+      } else {
+        allAgregarGuiaFiles.push(renamedFile); // Agregar el archivo renombrado a la lista global
+      }
+    });
+
+    // Crear un nuevo DataTransfer y agregar todos los archivos de allAgregarGuiaFiles
+    var dt = new DataTransfer();
+    allAgregarGuiaFiles.forEach(function(file) {
+      dt.items.add(file);
+    });
+
+    // Actualizar los archivos del input
+    fileInput.files = dt.files;
+
+    // Actualizar la lista visual de archivos
+    const fileListElement = document.getElementById('agregar-guia-file-list');
+    fileListElement.innerHTML = ''; // Limpiar la lista existente
+
+    allAgregarGuiaFiles.forEach(function(file) {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `<span>${file.name}</span><span class="agregar-guia-remove-file">X</span>`;
+      listItem.querySelector('.agregar-guia-remove-file').addEventListener('click', function() {
+        removeAgregarGuiaFileFromInput(file.name);
+      });
+      fileListElement.appendChild(listItem);
+    });
+  }
+}
+
+function removeAgregarGuiaFileFromInput(fileName) {
+  var dt = new DataTransfer();
+  var input = document.getElementById('agregar-guia-file-input');
+
+  // Filtrar el archivo eliminado de la lista global
+  allAgregarGuiaFiles = allAgregarGuiaFiles.filter(function(file) {
+    return file.name !== fileName;
+  });
+
+  // Agregar los archivos restantes al DataTransfer
+  allAgregarGuiaFiles.forEach(function(file) {
+    dt.items.add(file);
+  });
+
+  input.files = dt.files;
+
+  // Actualizar la lista visual de archivos
+  const fileList = document.getElementById('agregar-guia-file-list');
+  fileList.innerHTML = '';
+  allAgregarGuiaFiles.forEach(function(file) {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<span>${file.name}</span><span class="agregar-guia-remove-file">X</span>`;
+    listItem.querySelector('.agregar-guia-remove-file').addEventListener('click', function() {
+      removeAgregarGuiaFileFromInput(file.name);
+    });
+    fileList.appendChild(listItem);
+  });
+}
+
+
+  
+
+function removeAgregarPresupuestoFileFromInput(fileName) {
+  var dt = new DataTransfer();
+  var input = document.getElementById('agregar-presupuesto-file-input');
+
+  // Filtrar el archivo eliminado de la lista global
+  allAgregarPresupuestoFiles = allAgregarPresupuestoFiles.filter(function(file) {
+    return file.name !== fileName;
+  });
+
+  // Agregar los archivos restantes al DataTransfer
+  allAgregarPresupuestoFiles.forEach(function(file) {
+    dt.items.add(file);
+  });
+
+  input.files = dt.files;
+
+  // Actualizar la lista visual de archivos
+  const fileList = document.getElementById('agregar-presupuesto-file-list');
+  fileList.innerHTML = '';
+  allAgregarPresupuestoFiles.forEach(function(file) {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<span>${file.name}</span><span class="agregar-presupuesto-remove-file">X</span>`;
+    listItem.querySelector('.agregar-presupuesto-remove-file').addEventListener('click', function() {
+      removeAgregarPresupuestoFileFromInput(file.name);
+    });
+    fileList.appendChild(listItem);
+  });
+}
+
+
+
+
+
+  
+
+    // Función para mostrar el modal de registro de tránsito
+    function showTransitoModal(rmaId) {
+      const transitoModalOverlay = document.getElementById('transito-modal-overlay');
+      const transitoModalContent = document.getElementById('transito-modal-content');
+
+      // Limpiar la lista de archivos al abrir el modal
+      allFiles = [];
+
+      // Construir el contenido del modal de tránsito
+      transitoModalContent.innerHTML = `
+        <div class="modal-header">
+          <h2>Registrar Evento de Tránsito</h2>
+          <button class="close-transito-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Incluir el formulario de registro de tránsito aquí -->
+          <form id="transito-form" class="transito-form" enctype="multipart/form-data" novalidate>
+            <!-- Campo oculto para el rma_id -->
+            <input type="hidden" name="rma_id" value="${rmaId}" />
+            <!-- Campo oculto para fecha_transito (fecha actual en formato ISO) -->
+            <input type="hidden" name="fecha_transito" value="${new Date().toISOString()}" />
+            <!-- Campo oculto para nombre_responsable_transito -->
+            <input type="hidden" name="nombre_responsable_transito" value="{{ customer.first_name }}" />
+
+            <!-- Transito Ubicación (Dropdown) -->
+            <label class="required">Ubicación del Tránsito</label>
+            <select name="transito_ubicacion" class="transito-select" required>
+              <option value="" disabled selected>Seleccione una opción</option>
+              <option value="1. En Oficina">1. En Oficina</option>
+              <option value="2. De Oficina A Laboratorio">2. De Oficina A Laboratorio</option>
+              <option value="3. En Laboratorio">3. En Laboratorio</option>
+              <option value="4. De Laboratorio a Oficina">4. De Laboratorio a Oficina</option>
+              <option value="5. De Oficina a Cliente">5. De Oficina a Cliente</option>
+              <option value="6. Entregado a Cliente">6. Entregado a Cliente</option>
+            </select>
+
+            <!-- Coincide Transito (Dropdown) -->
+            <label class="required">¿El RMA coincide con lo esperado?</label>
+            <select name="coincide_transito" class="transito-select" required>
+              <option value="" disabled selected>Seleccione una opción</option>
+              <option value="Sí">Sí</option>
+              <option value="No">No</option>
+            </select>
+
+            <!-- Observaciones Transito (Textarea) -->
+            <label class="required">Observaciones</label>
+            <textarea name="observaciones_transito" class="transito-textarea" rows="4" required></textarea>
+
+            <!-- File upload area -->
+            <div class="transito-file-drop-area" id="transito-file-drop-area">
+              <p>Arrastra los archivos que deseas adjuntar</p>
+              <p>o</p>
+              <button type="button" id="transito-browse-files">Sube tus archivos</button>
+              <input type="file" name="archivos_transito" id="transito-file-input" multiple hidden />
+              <!-- Texto explicativo sobre los archivos permitidos -->
+              <p class="explanation">Están permitidos los videos, imágenes y documentos de hasta 20MB.</p>
+            </div>
+
+            <ul class="transito-file-list" id="transito-file-list"></ul>
+
+            <!-- Botón para enviar el formulario -->
+            <input type="submit" class="transito-submit" value="Registrar Evento de Tránsito" />
+          </form>
+        </div>
+      `;
+
+      // Mostrar el modal
+      transitoModalOverlay.style.display = 'block';
+
+      // Event listener para cerrar el modal de tránsito
+      transitoModalContent.querySelector('.close-transito-modal').addEventListener('click', function() {
+        transitoModalOverlay.style.display = 'none';
+      });
+
+      // Cerrar modal al hacer clic fuera del contenido
+      transitoModalOverlay.addEventListener('click', function(event) {
+        if (event.target === transitoModalOverlay) {
+          transitoModalOverlay.style.display = 'none';
+        }
+      });
+
+      // Añadir lógica para manejar el formulario dentro del modal
+      initTransitoForm();
+    }
+
+    // Función para mostrar el modal de anotación
+    function showAnotacionModal(rmaId) {
+      const anotacionModalOverlay = document.getElementById('anotacion-modal-overlay');
+      const anotacionModalContent = document.getElementById('anotacion-modal-content');
+
+      // Limpiar la lista de archivos al abrir el modal
+      allAnotacionFiles = [];
+
+      // Construir el contenido del modal de anotación
+      anotacionModalContent.innerHTML = `
+        <div class="modal-header">
+          <h2>Agrega una nueva Observación</h2>
+          <button class="close-anotacion-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Incluir el formulario de agregar anotación aquí -->
+          <form id="anotacion-form" class="anotacion-form" enctype="multipart/form-data" novalidate>
+            <!-- Campo oculto para el rma_id -->
+            <input type="hidden" name="rma_id" value="${rmaId}" />
+            <!-- Campo oculto para usuario -->
+            <input type="hidden" name="usuario" value="{{ customer.first_name }}" />
+            <!-- Campo oculto para tipo -->
+            <input type="hidden" name="tipo" value="Interno" />
+            <!-- Campo oculto para ubicación (estado de último registro de tránsito) -->
+            <input type="hidden" name="ubicacion" value="" id="anotacion-ubicacion" />
+            <!-- Campo oculto para fecha (fecha actual en formato ISO) -->
+            <input type="hidden" name="fecha" value="${new Date().toISOString()}" />
+
+            <!-- Observación (Textarea) -->
+            <label class="required">Observación</label>
+            <textarea name="observacion" class="anotacion-textarea" rows="4" required></textarea>
+
+            <!-- File upload area -->
+            <div class="anotacion-file-drop-area" id="anotacion-file-drop-area">
+              <p>Arrastra los archivos que deseas adjuntar</p>
+              <p>o</p>
+              <button type="button" id="anotacion-browse-files">Sube tus archivos</button>
+              <input type="file" name="archivos_anotacion" id="anotacion-file-input" multiple hidden />
+              <!-- Texto explicativo sobre los archivos permitidos -->
+              <p class="explanation">Están permitidos los videos, imágenes y documentos de hasta 20MB.</p>
+            </div>
+
+            <ul class="anotacion-file-list" id="anotacion-file-list"></ul>
+
+            <!-- Botón para enviar el formulario -->
+            <input type="submit" class="anotacion-submit" value="Enviar Observación" />
+          </form>
+        </div>
+      `;
+
+      // Obtener la ubicación actual del RMA para el campo oculto
+      const rma = data.find(r => r.id === rmaId);
+      if (rma) {
+        document.getElementById('anotacion-ubicacion').value = rma.transito_2 || '';
+      }
+
+      // Mostrar el modal
+      anotacionModalOverlay.style.display = 'block';
+
+      // Event listener para cerrar el modal de anotación
+      anotacionModalContent.querySelector('.close-anotacion-modal').addEventListener('click', function() {
+        anotacionModalOverlay.style.display = 'none';
+      });
+
+      // Cerrar modal al hacer clic fuera del contenido
+      anotacionModalOverlay.addEventListener('click', function(event) {
+        if (event.target === anotacionModalOverlay) {
+          anotacionModalOverlay.style.display = 'none';
+        }
+      });
+
+      // Añadir lógica para manejar el formulario dentro del modal
+      initAnotacionForm();
+    }
+
+    // Función para mostrar el modal de actualizar estado de reparación
+    function showEstadoModal(rmaId, estadoActual) {
+      const estadoModalOverlay = document.getElementById('estado-modal-overlay');
+      const estadoModalContent = document.getElementById('estado-modal-content');
+
+      // Construir el contenido del modal de estado de reparación
+      estadoModalContent.innerHTML = `
+        <div class="modal-header">
+          <h2>Actualiza el estado de Reparación</h2>
+          <button class="close-estado-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Incluir el formulario de actualizar estado aquí -->
+          <form id="estado-form" class="estado-form" enctype="multipart/form-data" novalidate>
+            <!-- Campo oculto para el rma_id -->
+            <input type="hidden" name="rma_id" value="${rmaId}" />
+
+            <!-- Estado Actual -->
+            <p><strong>Estado Actual:</strong> ${estadoActual}</p>
+
+            <!-- Selector Dropdown para nuevos estados -->
+            <label class="required">Nuevo Estado de Reparación</label>
+            <select name="nuevo_estado" class="estado-select" required>
+              <option value="" disabled selected>Seleccione una opción</option>
+              <option value="0. SIN SOLICITUD">0. SIN SOLICITUD</option>
+              <option value="1. INGRESO">1. INGRESO</option>
+              <option value="2. DIAGNOSTICO EVALUACIÓN">2. DIAGNOSTICO EVALUACIÓN</option>
+              <option value="3. COTIZACIÓN">3. COTIZACIÓN</option>
+              <option value="4. REPARACIÓN">4. REPARACIÓN</option>
+              <option value="5. CALIBRACIÓN">5. CALIBRACIÓN</option>
+              <option value="6. CERTIFICADO">6. CERTIFICADO</option>
+              <option value="7. INSPECCIÓN FINAL">7. INSPECCIÓN FINAL</option>
+              <option value="8. FINALIZADO">8. FINALIZADO</option>
+            </select>
+
+            <!-- Botón para enviar el formulario -->
+            <input type="submit" class="estado-submit" value="Actualizar Estado" />
+          </form>
+        </div>
+      `;
+
+      // Mostrar el modal
+      estadoModalOverlay.style.display = 'block';
+
+      // Event listener para cerrar el modal de estado
+      estadoModalContent.querySelector('.close-estado-modal').addEventListener('click', function() {
+        estadoModalOverlay.style.display = 'none';
+      });
+
+      // Cerrar modal al hacer clic fuera del contenido
+      estadoModalOverlay.addEventListener('click', function(event) {
+        if (event.target === estadoModalOverlay) {
+          estadoModalOverlay.style.display = 'none';
+        }
+      });
+
+      // Añadir lógica para manejar el formulario dentro del modal
+      initEstadoForm();
+    }
+
+  });
+</script>
+
+
+{% else %}
+<!-- Mensaje para usuarios no autorizados -->
+<div class="mensaje-rma">
+  No tienes acceso a esta página. Por favor, contacta al administrador.
+</div>
+
+<style>
+  .mensaje-rma {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .mensaje-rma a {
+    padding: 10px 20px;
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+  }
+
+  .mensaje-rma a:hover {
+    background-color: #0056b3;
+  }
+</style>
+{% endif %}
+
