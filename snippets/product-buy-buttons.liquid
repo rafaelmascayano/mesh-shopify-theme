@@ -42,38 +42,41 @@
   {%- endif -%}
 
   <div class="product-form__payment-container">
-    {%- if product.template_suffix != 'contact' -%}
-      {%- if product.selected_or_first_available_variant == nil -%}
-        <button type="button" class="product-form__add-button button button--disabled" disabled>{{ 'product.form.unavailable' | t }}</button>
-      {%- elsif product.selected_or_first_available_variant.available -%}
-        {%- if product.template_suffix == 'pre-order' -%}
-          <buy-button class="buy-button">
-            <button type="submit" class="product-form__add-button button button--primary">{{ 'product.form.pre_order' | t }}</button>
-          </buy-button>
+    {%- assign price_limit = 500000000 -%}
+    {%- if product.selected_or_first_available_variant.price <= price_limit -%}
+      {%- if product.template_suffix != 'contact' -%}
+        {%- if product.selected_or_first_available_variant == nil -%}
+          <button type="button" class="product-form__add-button button button--disabled" disabled>{{ 'product.form.unavailable' | t }}</button>
+        {%- elsif product.selected_or_first_available_variant.available -%}
+          {%- if product.template_suffix == 'pre-order' -%}
+            <buy-button class="buy-button">
+              <button type="submit" class="product-form__add-button button button--primary">{{ 'product.form.pre_order' | t }}</button>
+            </buy-button>
+          {%- else -%}
+            <buy-button class="buy-button">
+              <button type="submit" class="product-form__add-button button button--primary">{{ 'product.form.add_to_cart' | t }}</button>
+            </buy-button>
+          {%- endif -%}
         {%- else -%}
-          <buy-button class="buy-button">
-            <button type="submit" class="product-form__add-button button button--primary">{{ 'product.form.add_to_cart' | t }}</button>
-          </buy-button>
+          <button type="submit" class="product-form__add-button button button--disabled" disabled>{{ 'product.form.sold_out' | t }}</button>
+        {%- endif -%}
+
+        {%- if block.settings.show_payment_button and recipient_feature_active == false and product.template_suffix != 'pre-order' -%}
+          {{ form | payment_button }}
         {%- endif -%}
       {%- else -%}
-        <button type="submit" class="product-form__add-button button button--disabled" disabled>{{ 'product.form.sold_out' | t }}</button>
+        <a href="mailto:{{ shop.email }}" class="button button--primary">{{ 'product.form.contact_us' | t }}</a>
       {%- endif -%}
 
-      {%- if block.settings.show_payment_button and recipient_feature_active == false and product.template_suffix != 'pre-order' -%}
-        {{ form | payment_button }}
+      {%- if block.settings.show_payment_button -%}
+        {%- unless product.selected_or_first_available_variant.available -%}
+          <style>
+            #shopify-section-{{ section.id }} .shopify-payment-button {
+              display: none;
+            }
+          </style>
+        {%- endunless -%}
       {%- endif -%}
-    {%- else -%}
-      <a href="mailto:{{ shop.email }}" class="button button--primary">{{ 'product.form.contact_us' | t }}</a>
-    {%- endif -%}
-
-    {%- if block.settings.show_payment_button -%}
-      {%- unless product.selected_or_first_available_variant.available -%}
-        <style>
-          #shopify-section-{{ section.id }} .shopify-payment-button {
-            display: none;
-          }
-        </style>
-      {%- endunless -%}
     {%- endif -%}
   </div>
 </div>

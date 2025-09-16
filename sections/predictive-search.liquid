@@ -34,7 +34,7 @@
 
             <div class="search-bar__item-info">
               <p class="search-bar__item-title">{{ product.title | highlight: clean_terms }}</p>
-              <span class="search-bar__item-price">{{ product.price | money }}</span>
+              <!-- <span class="search-bar__item-price">{{ product.price | money }}</span> -->
             </div>
           </a>
         {%- endfor -%}
@@ -115,7 +115,7 @@
 
               <div class="search-bar__item-info">
                 <p class="search-bar__item-title">{{ item.title | highlight: clean_terms }}</p>
-                <span class="search-bar__item-price">{{ item.price | money }}</span>
+                <!-- <span class="search-bar__item-price">{{ item.price | money }}</span> -->
               </div>
             </a>
           {%- endfor -%}
