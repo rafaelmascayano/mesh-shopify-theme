@@ -126,23 +126,23 @@
                                   {%- if line_item.final_price == 0 -%}
                                     <span class="line-item__price line-item__price--highlight">{{ 'cart.general.free' | t }}</span>
                                   {%- else -%}
-                                    <span class="line-item__price line-item__price--highlight">{%- assign price_limit = 500000000 -%}{%- if line_item.final_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.final_price | money }}{%- endif -%}</span>
+                                    <span class="line-item__price line-item__price--highlight">{{ line_item.final_price | money }}</span>
                                   {%- endif -%}
 
-                                  <span class="line-item__price line-item__price--compare">{%- assign price_limit = 500000000 -%}{%- if line_item.original_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.original_price | money }}{%- endif -%}</span>
+                                  <span class="line-item__price line-item__price--compare">{{ line_item.original_price | money }}</span>
                                 {%- elsif line_item.variant.compare_at_price > line_item.variant.price -%}
                                   {%- if line_item.final_price == 0 -%}
                                     <span class="line-item__price line-item__price--highlight">{{ 'cart.general.free' | t }}</span>
                                   {%- else -%}
-                                    <span class="line-item__price line-item__price--highlight">{%- assign price_limit = 500000000 -%}{%- if line_item.final_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.final_price | money }}{%- endif -%}</span>
+                                    <span class="line-item__price line-item__price--highlight">{{ line_item.final_price | money }}</span>
                                   {%- endif -%}
 
-                                  <span class="line-item__price line-item__price--compare">{%- assign price_limit = 500000000 -%}{%- if line_item.variant.compare_at_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.variant.compare_at_price | money }}{%- endif -%}</span>
+                                  <span class="line-item__price line-item__price--compare">{{ line_item.variant.compare_at_price | money }}</span>
                                 {%- else -%}
                                   {%- if line_item.final_price == 0 -%}
                                     <span class="line-item__price">{{ 'cart.general.free' | t }}</span>
                                   {%- else -%}
-                                    <span class="line-item__price">{%- assign price_limit = 500000000 -%}{%- if line_item.final_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.final_price | money }}{%- endif -%}</span>
+                                    <span class="line-item__price">{{ line_item.final_price | money }}</span>
                                   {%- endif -%}
                                 {%- endif -%}
                               </div>
@@ -150,7 +150,7 @@
                               {%- if line_item.unit_price_measurement -%}
                                 <div class="line-item__price-info">
                                   <div class="unit-price-measurement">
-                                    <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if line_item.unit_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.unit_price | money }}{%- endif -%}</span>
+                                    <span class="unit-price-measurement__price">{{ line_item.unit_price | money }}</span>
                                     <span class="unit-price-measurement__separator">/ </span>
 
                                     {%- if line_item.unit_price_measurement.reference_value != 1 -%}
@@ -263,7 +263,7 @@
                           {%- if line_item.final_line_price == 0 -%}
                             {{- 'cart.general.free' | t -}}
                           {%- else -%}
-                            <span>{%- assign price_limit = 500000000 -%}{%- if line_item.final_line_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.final_line_price | money }}{%- endif -%}</span>
+                            <span>{{ line_item.final_line_price | money }}</span>
                           {%- endif -%}
                         </td>
                       </tr>

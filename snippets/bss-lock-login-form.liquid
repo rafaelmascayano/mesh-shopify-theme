@@ -19,8 +19,15 @@
     {%- else -%}
       {%- assign login_default_visibility = 'display: block' -%}
     {%- endif -%}
+    
+    {%- form 'customer_login',
+  name: 'login',
+  class: 'form form--main',
+  id: 'customer_login',
+  style: login_default_visibility,
+  return_to: routes.account_url
+-%}
 
-    {%- form 'customer_login', name: 'login', class: 'form form--main', id: 'customer_login', style: login_default_visibility -%}
       <header class="form__header">
         <h1 class="form__title heading h1">{{ 'customer.login.login' | t }}</h1>
         <p class="form__legend">{{ 'customer.login.description' | t }}</p>

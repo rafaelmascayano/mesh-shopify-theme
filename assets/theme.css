@@ -4879,24 +4879,7 @@ select option {
   margin-top: 20px;
 }
 
-.footer__aside {
-  font-size: calc(var(--base-text-font-size)  - (var(--default-text-font-size)  - 12px));
-  flex-direction: column;
-  margin-top: 10px;
-  display: flex;
-}
 
-.footer__aside-item {
-  margin-top: 34px;
-}
-
-.footer__aside-item--localization, .footer__aside-item--copyright {
-  margin-top: 45px;
-}
-
-.footer__aside-title {
-  margin-bottom: .8em;
-}
 
 .footer__follow-on-shop {
   margin-top: .8em;
@@ -5021,6 +5004,7 @@ select option {
     margin-top: 34px;
   }
 }
+
 
 @media screen and (min-width: 1000px) {
   .footer__block-item {
@@ -12305,5 +12289,59 @@ product-rerender {
 
   .value-picker--auto {
     min-width: 0;
+
+    /* --- Fix scroll horizontal en móvil para Recently viewed / Related --- */
+@media (max-width: 749px) {
+  .scroller {
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; /* scroll fluido en iOS */
+  }
+
+  .scroller__inner {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px; /* espacio entre productos */
+    width: max-content; /* obliga a expandir y permitir scroll */
+  }
+
+  .product-list--scrollable > * {
+    flex: 0 0 auto;
+    min-width: 70vw; /* cada tarjeta ocupa ~70% del ancho de pantalla */
+    scroll-snap-align: start; /* opcional: hace que el scroll "salte" producto a producto */
+  }
+
+  /* opcional: oculta scrollbar en navegadores WebKit */
+  .scroller::-webkit-scrollbar {
+    display: none;
   }
 }
+
+  }
+}
+
+#rfq_product_form #submitRFQForm {
+  padding: 0 !important;
+}
+
+
+[data-handle="termografia-nivel-1"] .product-form__info-item .price-list,
+[data-handle="termografia-nivel-2"] .product-form__info-item .price-list {
+  display: none;
+}
+
+/* Cart page (principal) */
+.template-cart .cart-recap__checkout { margin-bottom: 18px !important; }
+
+/* Botón de la app RFQ (Solicitar cotización) */
+.template-cart #rfq_product_form,
+.template-cart #submitRFQForm {           /* página de carrito */
+  display: block !important;
+  margin-top: 18px !important;
+}
+.cart-drawer #rfq_product_form,
+.cart-drawer #submitRFQForm {             /* mini-cart/drawer */
+  display: block !important;
+  margin-top: 16px !important;
+}
+

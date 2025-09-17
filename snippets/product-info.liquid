@@ -6,7 +6,7 @@
   {%- endif -%}
 
   <div class="card__section">
-    <product-form>
+    <product-form data-handle="{{ product.handle }}">
       {%- form 'product', product, id: product_form_id, class: 'product-form' -%}
         {%- for block in section.blocks -%}{% comment %}start BSS Commerce Hide Price{% endcomment %}{% capture bss_lock_check %}{% render 'bss-lock-condition', scope: 'subject', subject: block, variable: 'transparent' %}{% endcapture %}{% if bss_lock_check contains 'true' %}{% render 'bss-hide-product-design', section: 'snippets/product-info.liquid', subject: block %}{% continue %}{% endif %}{% comment %}end BSS Commerce Hide Price{% endcomment %}
           {%- capture block_content -%}

@@ -163,8 +163,6 @@
             {%- endform -%}
           {%- endif -%}
 
-          {%- capture copyright_info -%}© {{ 'now' | date: '%Y' }} {{ shop.name }}<br>{{ powered_by_link }}{%- endcapture -%}
-          <p class="hidden-pocket">{{ copyright_info }}</p>
         </div>
 
         {%- if section.settings.show_social_media -%}
