@@ -96,19 +96,23 @@
                   {%- comment -%}If we have a Shopify Script, we use the reduced price here, otherwise we check the compare at price{%- endcomment -%}
 
                   <div class="mini-cart__price-list">
-                    {%- if line_item.final_line_price < line_item.original_line_price -%}
-                      {%- if line_item.final_price == 0 -%}
-                        <span class="price price--highlight">{{ 'cart.general.free' | t }}</span>
-                      {%- else -%}
-                        <span class="price price--highlight">{%- assign price_limit = 500000000 -%}{%- if line_item.final_line_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.final_line_price | money }}{%- endif -%}</span>
-                      {%- endif -%}
-
-                      <span class="price price--compare">{%- assign price_limit = 500000000 -%}{%- if line_item.original_line_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.original_line_price | money }}{%- endif -%}</span>
-                    {%- elsif line_item.variant.compare_at_price > line_item.variant.price -%}
-                      <span class="price price--highlight">{{ line_item.final_line_price | money }}</span>
-                      <span class="price price--compare">{%- assign price_limit = 500000000 -%}{%- if line_item.variant.compare_at_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.variant.compare_at_price | times: line_item.quantity | money }}{%- endif -%}</span>
+                    {%- assign price_limit = 500000000 -%}
+                    {%- if line_item.final_price > price_limit -%}
+                      <span class="price-hidden">Consultar precio</span>
                     {%- else -%}
-                      <span class="price">{%- assign price_limit = 500000000 -%}{%- if line_item.final_line_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.final_line_price | money }}{%- endif -%}</span>
+                      {%- if line_item.final_line_price < line_item.original_line_price -%}
+                        {%- if line_item.final_price == 0 -%}
+                          <span class="price price--highlight">{{ 'cart.general.free' | t }}</span>
+                        {%- else -%}
+                          <span class="price price--highlight">{{ line_item.final_line_price | money }}</span>
+                        {%- endif -%}
+                        <span class="price price--compare">{{ line_item.original_line_price | money }}</span>
+                      {%- elsif line_item.variant.compare_at_price > line_item.variant.price -%}
+                        <span class="price price--highlight">{{ line_item.final_line_price | money }}</span>
+                        <span class="price price--compare">{{ line_item.variant.compare_at_price | times: line_item.quantity | money }}</span>
+                      {%- else -%}
+                        <span class="price">{{ line_item.final_line_price | money }}</span>
+                      {%- endif -%}
                     {%- endif -%}
                   </div>
 

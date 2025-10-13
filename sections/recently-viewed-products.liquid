@@ -30,7 +30,10 @@
 
                 {%- for product in search.results -%}{% comment %}start BSS Commerce Hide Price{% endcomment %}{% capture bss_lock_check %}{% render 'bss-lock-condition', scope: 'subject', subject: product, variable: 'transparent' %}{% endcapture %}{% if bss_lock_check contains 'true' %}{% render 'bss-hide-product-design', section: 'sections/recently-viewed-products.liquid', subject: product %}{% continue %}{% endif %}{% comment %}end BSS Commerce Hide Price{% endcomment %}
                   {%- if product.id == id -%}
-                    {%- render 'product-item', product: product, grid_classes: '1/4--lap 1/5--desk 1/6--wide', show_add_to_cart: section.settings.show_quick_buy -%}
+                    {%- assign price_limit = 500000000 -%}
+                    {%- if product.price <= price_limit -%}
+                      {%- render 'product-item', product: product, grid_classes: '1/4--lap 1/5--desk 1/6--wide', show_add_to_cart: section.settings.show_quick_buy -%}
+                    {%- endif -%}
                     {%- break -%}
                   {%- endif -%}
                 {%- endfor -%}
