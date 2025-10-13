@@ -119,7 +119,7 @@
                   {%- if line_item.unit_price_measurement -%}
                     <div class="mini-cart__price-info">
                       <div class="unit-price-measurement">
-                        <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if line_item.unit_price > price_limit -%}Consultar precio{%- else -%}{{ line_item.unit_price | money }}{%- endif -%}</span>
+                        <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if line_item.unit_price > price_limit or line_item.unit_price == 0 -%}Consultar precio{%- else -%}{{ line_item.unit_price | money }}{%- endif -%}</span>
                         <span class="unit-price-measurement__separator">/ </span>
 
                         {%- if line_item.unit_price_measurement.reference_value != 1 -%}

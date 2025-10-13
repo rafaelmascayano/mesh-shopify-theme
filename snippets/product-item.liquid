@@ -66,89 +66,94 @@
 
   <div class="product-item__info">
     <div class="product-item__info-inner">
-
-      {% assign hide_price_sa_request = false %}
-
-<!--
-{% if product.tags contains "Curso" %}
-  {% assign hide_price_sa_request = true %}
-{% elsif product.price > 5000000 %}
-  {% assign hide_price_sa_request = true %}
-{% elsif product.price < 100000 %}
-  {% assign hide_price_sa_request = true %}
-{% endif %}
--->
-
+      {%- if template.name != 'search' -%}
       {%- capture price_list -%}
-        {%- assign price_limit = 500000000 -%}
-        {%- if product.price > price_limit -%}
-          <div class="product-item__price-list price-list">
-            <span class="price-hidden">Consultar precio</span>
-          </div>
-        {%- else -%}
-          <div class="product-item__price-list price-list">
-            {%- if product.price < product.compare_at_price -%}
-              {%- if product.price_varies -%}
-                <span class="price price--highlight">
-                  <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
-                  {{- 'collection.product.from_price_html' | t: price_min: price_min, price_max: price_max -}}
-                </span>
-                <span class="price price--compare">
-                  <span class="visually-hidden">{{ 'product.general.regular_price' | t }}</span>
-                  {%- if settings.currency_code_enabled -%}
-                    {{- product.compare_at_price_min | money_with_currency -}}
-                  {%- else -%}
-                    {{- product.compare_at_price_min | money -}}
-                  {%- endif -%}
-                </span>
+        <div class="product-item__price-list price-list">
+          {%- if product.price < product.compare_at_price -%}
+            {%- if product.price_varies -%}
+              {%- if settings.currency_code_enabled -%}
+                {%- capture price_min -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_min > price_limit or product.price_min == 0 -%}Consultar precio{%- else -%}{{ product.price_min | money_with_currency }}{%- endif -%}{% endif %}{%- endcapture -%}
+                {%- capture price_max -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_max > price_limit or product.price_max == 0 -%}Consultar precio{%- else -%}{{ product.price_max | money_with_currency }}{%- endif -%}{% endif %}{%- endcapture -%}
               {%- else -%}
-                <span class="price price--highlight">
-                  <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
-                  {%- if settings.currency_code_enabled -%}
-                    {{- product.price | money_with_currency -}}
-                  {%- else -%}
-                    {{- product.price | money -}}
-                  {%- endif -%}
-                </span>
-                <span class="price price--compare">
-                  <span class="visually-hidden">{{ 'product.general.regular_price' | t }}</span>
-                  {%- if settings.currency_code_enabled -%}
-                    {{- product.compare_at_price | money_with_currency -}}
-                  {%- else -%}
-                    {{- product.compare_at_price | money -}}
-                  {%- endif -%}
-                </span>
+                {%- capture price_min -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_min > price_limit or product.price_min == 0 -%}Consultar precio{%- else -%}{{ product.price_min | money }}{%- endif -%}{% endif %}{%- endcapture -%}
+                {%- capture price_max -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_max > price_limit or product.price_max == 0 -%}Consultar precio{%- else -%}{{ product.price_max | money }}{%- endif -%}{% endif %}{%- endcapture -%}
               {%- endif -%}
-            {%- elsif product.price_varies -%}
-              <span class="price">
+
+              <span class="price price--highlight">
                 <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
                 {{- 'collection.product.from_price_html' | t: price_min: price_min, price_max: price_max -}}
               </span>
-            {%- else -%}
-              <span class="price">
-                <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
+
+              <span class="price price--compare">
+                <span class="visually-hidden">{{ 'product.general.regular_price' | t }}</span>
+
                 {%- if settings.currency_code_enabled -%}
-                  {{- product.price | money_with_currency -}}
+                  {%- assign price_limit = 500000000 -%}{%- if product.compare_at_price_min > price_limit or product.compare_at_price_min == 0 -%}Consultar precio{%- else -%}{{- product.compare_at_price_min | money_with_currency -}}{%- endif -%}
                 {%- else -%}
-                  {{- product.price | money -}}
+                  {%- assign price_limit = 500000000 -%}{%- if product.compare_at_price_min > price_limit or product.compare_at_price_min == 0 -%}Consultar precio{%- else -%}{{- product.compare_at_price_min | money -}}{%- endif -%}
+                {%- endif -%}
+              </span>
+            {%- else -%}
+              <span class="price price--highlight">
+                <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
+
+                {%- if settings.currency_code_enabled -%}
+                  {% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price > price_limit or product.price == 0 -%}Consultar precio{%- else -%}{{- product.price | money_with_currency -}}{%- endif -%}{% endif %}
+                {%- else -%}
+                  {% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price > price_limit or product.price == 0 -%}Consultar precio{%- else -%}{{- product.price | money -}}{%- endif -%}{% endif %}
+                {%- endif -%}
+              </span>
+
+              <span class="price price--compare">
+                <span class="visually-hidden">{{ 'product.general.regular_price' | t }}</span>
+                {%- if settings.currency_code_enabled -%}
+                  {%- assign price_limit = 500000000 -%}{%- if product.compare_at_price > price_limit or product.compare_at_price == 0 -%}Consultar precio{%- else -%}{{- product.compare_at_price | money_with_currency -}}{%- endif -%}
+                {%- else -%}
+                  {%- assign price_limit = 500000000 -%}{%- if product.compare_at_price > price_limit or product.compare_at_price == 0 -%}Consultar precio{%- else -%}{{- product.compare_at_price | money -}}{%- endif -%}
                 {%- endif -%}
               </span>
             {%- endif -%}
-          </div>
-          {%- if product.selected_or_first_available_variant.unit_price_measurement -%}
-            <div class="product-item__price-info">
-              <div class="unit-price-measurement">
-                <span class="unit-price-measurement__price">{{ product.selected_or_first_available_variant.unit_price | money }}</span>
-                <span class="unit-price-measurement__separator">/ </span>
-                {%- if product.selected_or_first_available_variant.unit_price_measurement.reference_value != 1 -%}
-                  <span class="unit-price-measurement__reference-value">{{ product.selected_or_first_available_variant.unit_price_measurement.reference_value }}</span>
-                {%- endif -%}
-                <span class="unit-price-measurement__reference-unit">{{ product.selected_or_first_available_variant.unit_price_measurement.reference_unit }}</span>
-              </div>
-            </div>
+          {%- elsif product.price_varies -%}
+            {%- if settings.currency_code_enabled -%}
+              {%- capture price_min -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_min > price_limit or product.price_min == 0 -%}Consultar precio{%- else -%}{{ product.price_min | money_with_currency }}{%- endif -%}{% endif %}{%- endcapture -%}
+              {%- capture price_max -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_max > price_limit or product.price_max == 0 -%}Consultar precio{%- else -%}{{ product.price_max | money_with_currency }}{%- endif -%}{% endif %}{%- endcapture -%}
+            {%- else -%}
+              {%- capture price_min -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_min > price_limit or product.price_min == 0 -%}Consultar precio{%- else -%}{{ product.price_min | money }}{%- endif -%}{% endif %}{%- endcapture -%}
+              {%- capture price_max -%}{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price_max > price_limit or product.price_max == 0 -%}Consultar precio{%- else -%}{{ product.price_max | money }}{%- endif -%}{% endif %}{%- endcapture -%}
+            {%- endif -%}
+
+            <span class="price">
+              <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
+              {{- 'collection.product.from_price_html' | t: price_min: price_min, price_max: price_max -}}
+            </span>
+          {%- else -%}
+            <span class="price">
+              <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
+              {%- if settings.currency_code_enabled -%}
+                {% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price > price_limit or product.price == 0 -%}Consultar precio{%- else -%}{{- product.price | money_with_currency -}}{%- endif -%}{% endif %}
+              {%- else -%}
+                {% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if product.price > price_limit or product.price == 0 -%}Consultar precio{%- else -%}{{- product.price | money -}}{%- endif -%}{% endif %}
+              {%- endif -%}
+            </span>
           {%- endif -%}
+        </div>
+
+        {%- if product.selected_or_first_available_variant.unit_price_measurement -%}
+          <div class="product-item__price-info">
+            <div class="unit-price-measurement">
+              <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if product.selected_or_first_available_variant.unit_price > price_limit or product.selected_or_first_available_variant.unit_price == 0 -%}Consultar precio{%- else -%}{{ product.selected_or_first_available_variant.unit_price | money }}{%- endif -%}</span>
+              <span class="unit-price-measurement__separator">/ </span>
+
+              {%- if product.selected_or_first_available_variant.unit_price_measurement.reference_value != 1 -%}
+                <span class="unit-price-measurement__reference-value">{{ product.selected_or_first_available_variant.unit_price_measurement.reference_value }}</span>
+              {%- endif -%}
+
+              <span class="unit-price-measurement__reference-unit">{{ product.selected_or_first_available_variant.unit_price_measurement.reference_unit }}</span>
+            </div>
+          </div>
         {%- endif -%}
       {%- endcapture -%}
+      {%- endif -%}
 
       {%- capture vendor -%}
         {%- if settings.show_vendor -%}
@@ -163,20 +168,15 @@
         {%- endif -%}
       {%- endcapture -%}
 
-<!--
-{%- if settings.product_price_position == 'before_title' and hide_price_sa_request == false -%}
-{{ price_list }}
-{%- endif -%}
+      {%- if settings.product_price_position == 'before_title' -%}
+        {{ price_list }}
+      {%- endif -%}
 
-
-
-{%- if settings.product_price_position == 'after_title' and hide_price_sa_request == false -%}
-  {{ price_list }}
-{%- endif -%}
-    -->   
+      {%- if settings.product_price_position == 'after_title' -%}
+        {{ vendor }}
+      {%- endif -%}
 
       <a href="{{ filtered_variant.url | default: product.url }}" class="product-item__title text--strong link">{{ product.title }}</a>
-{{ price_list }}
 
       {%- if settings.product_price_position == 'before_title' -%}
         {{ vendor }}
@@ -231,11 +231,9 @@
         {%- endif -%}
       {%- endif -%}
 
-<!--
-{%- if settings.product_price_position == 'after_title' and hide_price_sa_request == false -%}
-  {{ price_list }}
-{%- endif -%}
--->   
+      {%- if settings.product_price_position == 'after_title' -%}
+        {{ price_list }}
+      {%- endif -%}
 
       {%- if settings.show_reviews_badge -%}
         <a class="product-item__reviews-badge link" href="{{ product.url }}#product-reviews">
@@ -347,7 +345,7 @@
 
         {%- if complementary_products != true -%}
           {%- assign price_limit = 500000000 -%}
-          {%- if product.price <= price_limit -%}
+          {%- if product.price <= price_limit and product.price > 0 -%}
             {{- quick_buy_form -}}
           {%- endif -%}
         {%- endif -%}
@@ -361,7 +359,7 @@
 
   {%- if complementary_products and show_add_to_cart -%}
     {%- assign price_limit = 500000000 -%}
-    {%- if product.price <= price_limit -%}
+    {%- if product.price <= price_limit and product.price > 0 -%}
       {{- quick_buy_form -}}
     {%- endif -%}
   {%- endif -%}
