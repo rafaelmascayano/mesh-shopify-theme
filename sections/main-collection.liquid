@@ -169,6 +169,11 @@
                       {%- continue -%}
                     {%- endif -%}
 
+                    {%- comment -%}Ocultar filtro de precio{%- endcomment -%}
+                    {%- if filter.type == 'price_range' -%}
+                      {%- continue -%}
+                    {%- endif -%}
+
                     {%- assign filter_label_downcase = filter.label | downcase -%}
                     {%- assign is_filter_expanded = false -%}
 
@@ -672,6 +677,11 @@
 
               {%- for filter in collection.filters -%}
                 {%- if template.suffix == 'brand' and filter.param_name == 'filter.p.vendor' and filter.values.size == 1 -%}
+                  {%- continue -%}
+                {%- endif -%}
+
+                {%- comment -%}Ocultar filtro de precio{%- endcomment -%}
+                {%- if filter.type == 'price_range' -%}
                   {%- continue -%}
                 {%- endif -%}
 

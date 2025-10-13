@@ -170,6 +170,11 @@
 
                         <div class="collection__filter-group-list">
                           {%- for filter in search.filters -%}
+                            {%- comment -%}Ocultar filtro de precio{%- endcomment -%}
+                            {%- if filter.type == 'price_range' -%}
+                              {%- continue -%}
+                            {%- endif -%}
+
                             {%- assign filter_label_downcase = filter.label | downcase -%}
                             {%- assign is_filter_expanded = false -%}
 
@@ -623,6 +628,11 @@
               <p class="collection-drawer__section-title">{{ 'collection.filter.all' | t }}</p>
 
               {%- for filter in search.filters -%}
+                {%- comment -%}Ocultar filtro de precio{%- endcomment -%}
+                {%- if filter.type == 'price_range' -%}
+                  {%- continue -%}
+                {%- endif -%}
+
                 {%- assign filter_label_downcase = filter.label | downcase -%}
 
                 {%- if color_label contains filter_label_downcase and section.settings.show_filter_color_swatch -%}
