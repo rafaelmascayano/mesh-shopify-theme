@@ -220,6 +220,14 @@
           {%- endif -%}
         </div>
 
+        {%- comment -%}Nota de IVA incluido{%- endcomment -%}
+        {%- assign price_limit = 500000000 -%}
+        {%- if selected_variant.price <= price_limit and selected_variant.price > 0 -%}
+          <div class="product-form__price-info" style="margin-top: 0.25rem;">
+            <p style="margin: 0; font-size: 0.875rem; color: #666;">(+ IVA 19%)</p>
+          </div>
+        {%- endif -%}
+
         <div class="product-form__price-info" style="display: {% if selected_variant.unit_price_measurement %}block{% else %}none{% endif %}">
           <div class="unit-price-measurement">
             <span class="unit-price-measurement__price">{% capture bss_lock_check %} {% render 'bss-lock-condition', scope: 'subject', subject: product, subject_parent: product, variable: 'price', bss_lock_action: 'bss_hide_price' %} {% endcapture %} {% if bss_lock_check contains 'bss-lock-element' %} {{ bss_lock_check }}  {% else %}{%- assign price_limit = 500000000 -%}{%- if selected_variant.unit_price > price_limit or selected_variant.unit_price == 0 -%}Consultar precio{%- else -%}{{ selected_variant.unit_price | money }}{%- endif -%}{% endif %}</span>

@@ -404,9 +404,14 @@
                       {%- endfor -%}
                     {%- endif -%}
 
+                    {%- comment -%}Precio con IVA incluido{%- endcomment -%}
+                    {%- assign tax_rate = 0.19 -%}
+                    {%- assign tax_amount = cart.total_price | times: tax_rate -%}
+                    {%- assign total_with_tax = cart.total_price | plus: tax_amount -%}
+
                     <div class="cart-recap__price-line text--pull">
                       <span class="cart-recap__price-line-label">{{ 'cart.general.total' | t }}</span>
-                      <span class="cart-recap__price-line-price">{{ cart.total_price | money_with_currency }}</span>
+                      <span class="cart-recap__price-line-price">{{ total_with_tax | money_with_currency }} <small style="display: block; font-size: 0.75rem; font-weight: normal; color: #666;">(IVA incl.)</small></span>
                     </div>
 
                     {%- comment -%}

@@ -152,6 +152,14 @@
             </div>
           </div>
         {%- endif -%}
+
+        {%- comment -%}Nota de IVA para listados{%- endcomment -%}
+        {%- assign price_limit = 500000000 -%}
+        {%- if product.price <= price_limit and product.price > 0 -%}
+          <div class="product-item__tax-note" style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">
+            (+ IVA 19%)
+          </div>
+        {%- endif -%}
       {%- endcapture -%}
       {%- endif -%}
 
