@@ -97,7 +97,11 @@
 
                   <div class="mini-cart__price-list">
                     {%- assign price_limit = 500000000 -%}
-                    {%- if line_item.final_price > price_limit -%}
+                    {%- assign line_item_hide_price = false -%}
+                    {%- if line_item.product.tags contains 'no-show-price' -%}
+                      {%- assign line_item_hide_price = true -%}
+                    {%- endif -%}
+                    {%- if line_item.final_price > price_limit or line_item_hide_price -%}
                       <span class="price-hidden">Consultar precio</span>
                     {%- else -%}
                       {%- if line_item.final_line_price < line_item.original_line_price -%}
@@ -119,7 +123,7 @@
                   {%- if line_item.unit_price_measurement -%}
                     <div class="mini-cart__price-info">
                       <div class="unit-price-measurement">
-                        <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if line_item.unit_price > price_limit or line_item.unit_price == 0 -%}Consultar precio{%- else -%}{{ line_item.unit_price | money }}{%- endif -%}</span>
+                        <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if line_item.unit_price > price_limit or line_item.unit_price == 0 or line_item_hide_price -%}Consultar precio{%- else -%}{{ line_item.unit_price | money }}{%- endif -%}</span>
                         <span class="unit-price-measurement__separator">/ </span>
 
                         {%- if line_item.unit_price_measurement.reference_value != 1 -%}

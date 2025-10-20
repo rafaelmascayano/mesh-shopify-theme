@@ -43,7 +43,11 @@
 
   <div class="product-form__payment-container">
     {%- assign price_limit = 500000000 -%}
-    {%- if product.selected_or_first_available_variant.price <= price_limit and product.selected_or_first_available_variant.price > 0 -%}
+    {%- assign hide_price = false -%}
+    {%- if product.tags contains 'no-show-price' -%}
+      {%- assign hide_price = true -%}
+    {%- endif -%}
+    {%- if product.selected_or_first_available_variant.price <= price_limit and product.selected_or_first_available_variant.price > 0 and hide_price == false -%}
       {%- if product.template_suffix != 'contact' -%}
         {%- if product.selected_or_first_available_variant == nil -%}
           <button type="button" class="product-form__add-button button button--disabled" disabled>{{ 'product.form.unavailable' | t }}</button>
