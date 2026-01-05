@@ -1,0 +1,431 @@
+{%- comment -%}
+  Directorio de Certificados (Versión Metaobjetos con Buscador)
+  Diseño optimizado con paleta corporativa, tipografía Inter/Figtree.
+  Incluye buscador en tiempo real y paginación con estilo del tema.
+{%- endcomment -%}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&family=Inter:wght@400;700&display=swap');
+
+  .section--directorio-certificados {
+    padding: 60px 0;
+    font-family: 'Figtree', sans-serif;
+    color: #616161;
+    font-size: 16px;
+    background-color: #f5f5f5;
+  }
+
+  .section--directorio-certificados .section__header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 0 20px;
+  }
+
+  .section--directorio-certificados .section__title {
+    font-family: 'Inter', sans-serif;
+    color: #000000;
+    margin: 0 auto 12px auto;
+    font-weight: 400;
+    font-size: 2rem;
+    line-height: 1.2;
+    display: block;
+    max-width: 900px;
+  }
+
+  .section--directorio-certificados .section__description {
+    margin: 0 auto;
+    max-width: 700px;
+    line-height: 1.5;
+    font-size: 1.05rem;
+    color: #616161;
+  }
+
+  /* Estilos del Buscador */
+  .certificados-search {
+    max-width: 500px;
+    margin: 0 auto 50px auto;
+    position: relative;
+    padding: 0 20px;
+  }
+
+  .certificados-search__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .certificados-search__input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    font-family: 'Figtree', sans-serif;
+    font-size: 16px;
+    color: #000000;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+  }
+
+  .certificados-search__input:focus {
+    outline: none;
+    border-color: #c51618;
+    box-shadow: 0 0 0 3px rgba(197, 22, 24, 0.05);
+  }
+
+  .certificados-search__icon {
+    position: absolute;
+    left: 15px;
+    width: 18px;
+    height: 18px;
+    color: #9e9e9e;
+  }
+
+  /* Grid y Tarjetas */
+  .certificados-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+  }
+
+  .certificados-item {
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    padding: 25px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    height: 100%;
+  }
+
+  .certificados-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border-color: #d1d1d1;
+  }
+
+  .certificados-item__header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f5f5f5;
+    padding-bottom: 12px;
+  }
+
+  .certificados-item__avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: #c51618;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 600;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .certificados-item__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .certificados-item__nombre {
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+
+  .certificados-item__cargo {
+    font-size: 0.85rem;
+    color: #c51618;
+    margin: 3px 0 0 0;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .certificados-item__details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+  }
+
+  .certificados-item__detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #616161;
+  }
+
+  .certificados-item__icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #c51618;
+    margin-top: 2px;
+  }
+
+  .certificados-item__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background-color: rgba(197, 22, 24, 0.06);
+    color: #c51618;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 15px;
+    align-self: flex-start;
+  }
+
+  .certificados-pagination {
+    margin-top: 50px;
+  }
+
+  .certificados-no-results {
+    text-align: center;
+    padding: 50px 20px;
+    background: #ffffff;
+    border-radius: 4px;
+    border: 1px solid #e8e8e8;
+    display: none;
+  }
+
+  /* Ajustes Responsivos Refinados */
+  @media screen and (max-width: 989px) {
+    .certificados-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .section--directorio-certificados {
+      padding: 40px 0;
+    }
+    
+    .section--directorio-certificados .section__header {
+      margin-bottom: 30px;
+    }
+
+    .section--directorio-certificados .section__title {
+      font-size: 1.6rem;
+      padding: 0 10px;
+    }
+
+    .section--directorio-certificados .section__description {
+      font-size: 0.95rem;
+    }
+
+    .certificados-search {
+      margin-bottom: 40px;
+    }
+
+    .certificados-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .certificados-item {
+      padding: 20px;
+    }
+
+    .certificados-item__avatar {
+      width: 48px;
+      height: 48px;
+      font-size: 18px;
+    }
+
+    .certificados-item__nombre {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<section class="section section--directorio-certificados">
+  <div class="container--fluid">
+    <div class="container">
+      {%- if section.settings.title != blank -%}
+        <header class="section__header">
+          <h1 class="section__title heading h1">{{ section.settings.title | escape }}</h1>
+          {%- if section.settings.description != blank -%}
+            <div class="section__description rte">
+              {{ section.settings.description }}
+            </div>
+          {%- endif -%}
+        </header>
+      {%- endif -%}
+
+      {%- if section.settings.show_search -%}
+        <div class="certificados-search">
+          <div class="certificados-search__input-wrapper">
+            <svg class="certificados-search__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" 
+                   id="CertificadosSearchInput" 
+                   class="certificados-search__input" 
+                   placeholder="{{ section.settings.search_placeholder | escape }}"
+                   aria-label="{{ section.settings.search_placeholder | escape }}">
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="certificados-list">
+        {%- paginate shop.metaobjects.directorio_alumnos.values by 24 -%}
+          <div class="certificados-grid" id="CertificadosGrid">
+            {%- for alumno in shop.metaobjects.directorio_alumnos.values -%}
+              <div class="certificados-item" data-search-card>
+                <div class="certificados-item__header">
+                  <div class="certificados-item__avatar">
+                    {%- if alumno.foto != blank -%}
+                      <img src="{{ alumno.foto | image_url: width: 200, height: 200, crop: 'center' }}" 
+                           alt="{{ alumno.nombre | escape }}" 
+                           loading="lazy" width="54" height="54">
+                    {%- else -%}
+                      {{ alumno.nombre | slice: 0 | upcase }}
+                  {%- endif -%}
+                  </div>
+                  <div>
+                    <h3 class="certificados-item__nombre" data-search-name>{{ alumno.nombre }}</h3>
+                    {%- if alumno.certificacion != blank -%}
+                      <p class="certificados-item__cargo" data-search-cert>{{ alumno.certificacion }}</p>
+                    {%- endif -%}
+                  </div>
+                </div>
+
+                <div class="certificados-item__details">
+                  {%- if alumno.empresa != blank -%}
+                    <div class="certificados-item__detail-row" data-search-company>
+                      <svg class="certificados-item__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                      <span>{{ alumno.empresa }}</span>
+                    </div>
+                  {%- endif -%}
+
+                  {%- if alumno.ubicacion != blank -%}
+                    <div class="certificados-item__detail-row" data-search-location>
+                      <svg class="certificados-item__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      <span>{{ alumno.ubicacion }}</span>
+                    </div>
+                  {%- endif -%}
+
+                  {%- if alumno.email != blank -%}
+                    <div class="certificados-item__detail-row">
+                      <svg class="certificados-item__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                      <a href="mailto:{{ alumno.email }}" class="link link--accented" style="text-decoration: underline;">{{ alumno.email }}</a>
+                    </div>
+                  {%- endif -%}
+                  
+                  {%- if alumno.fecha != blank -%}
+                    <div class="certificados-item__badge">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      Fecha: {{ alumno.fecha }}
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          <div class="certificados-no-results" id="CertificadosNoResults">
+            <p>No se encontraron resultados para tu búsqueda en esta página.</p>
+          </div>
+
+          <div class="certificados-pagination" id="CertificadosPagination">
+            {%- render 'pagination', paginate: paginate -%}
+          </div>
+        {%- endpaginate -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('CertificadosSearchInput');
+    const cards = document.querySelectorAll('[data-search-card]');
+    const noResults = document.getElementById('CertificadosNoResults');
+    const pagination = document.getElementById('CertificadosPagination');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const name = card.querySelector('[data-search-name]')?.textContent.toLowerCase() || '';
+          const cert = card.querySelector('[data-search-cert]')?.textContent.toLowerCase() || '';
+          const company = card.querySelector('[data-search-company]')?.textContent.toLowerCase() || '';
+          const location = card.querySelector('[data-search-location]')?.textContent.toLowerCase() || '';
+
+          if (name.includes(term) || cert.includes(term) || company.includes(term) || location.includes(term)) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // Manejo de visibilidad de resultados vacíos y paginación
+        if (visibleCount === 0 && term !== '') {
+          noResults.style.display = 'block';
+          if (pagination) pagination.style.opacity = '0';
+        } else {
+          noResults.style.display = 'none';
+          if (pagination) pagination.style.opacity = '1';
+        }
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Directorio Certificados",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la Sección",
+      "default": "Personas Certificadas"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descripción"
+    },
+    {
+      "type": "header",
+      "content": "Buscador"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Mostrar buscador",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Texto del buscador",
+      "default": "Buscar por nombre, empresa, certificación..."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Directorio Certificados (Metaobjetos)"
+    }
+  ]
+}
+{% endschema %}

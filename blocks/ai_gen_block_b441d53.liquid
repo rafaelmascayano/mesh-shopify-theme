@@ -1,0 +1,1108 @@
+{% doc %}
+  @prompt
+    listado de directorio de personas certificadas
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-certified-directory-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: 40px 20px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-certified-directory__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-certified-directory__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .ai-certified-directory__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 16px;
+    font-weight: 600;
+  }
+
+  .ai-certified-directory__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .ai-certified-directory__search-{{ ai_gen_id }} {
+    margin-bottom: 32px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ai-certified-directory__search-input-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    font-size: 16px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-certified-directory__search-input-{{ ai_gen_id }}::placeholder {
+    color: {{ block.settings.text_color | color_modify: 'alpha', 0.5 }};
+  }
+
+  .ai-certified-directory__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+    margin-bottom: 24px;
+  }
+
+  .ai-certified-directory__card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    padding: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ai-certified-directory__card-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-certified-directory__card-header-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .ai-certified-directory__avatar-{{ ai_gen_id }} {
+    width: {{ block.settings.avatar_size }}px;
+    height: {{ block.settings.avatar_size }}px;
+    border-radius: 50%;
+    background-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.card_background }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: {{ block.settings.avatar_size | divided_by: 2 }}px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .ai-certified-directory__avatar-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .ai-certified-directory__card-info-{{ ai_gen_id }} {
+    flex-grow: 1;
+  }
+
+  .ai-certified-directory__name-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 4px;
+  }
+
+  .ai-certified-directory__certification-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.accent_color }};
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .ai-certified-directory__details-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-certified-directory__detail-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-certified-directory__detail-icon-{{ ai_gen_id }} {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-certified-directory__badge-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    background-color: {{ block.settings.accent_color | color_modify: 'alpha', 0.1 }};
+    color: {{ block.settings.accent_color }};
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 8px;
+  }
+
+  .ai-certified-directory__no-results-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 60px 20px;
+    color: {{ block.settings.text_color }};
+    font-size: 16px;
+  }
+
+  .ai-certified-directory__empty-state-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 60px 20px;
+    color: {{ block.settings.text_color | color_modify: 'alpha', 0.6 }};
+    font-size: 16px;
+    font-style: italic;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-certified-directory__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_tablet }}, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-certified-directory-{{ ai_gen_id }} {
+      padding: 32px 16px;
+    }
+
+    .ai-certified-directory__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+      gap: 16px;
+    }
+
+    .ai-certified-directory__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.8 }}px;
+    }
+
+    .ai-certified-directory__card-{{ ai_gen_id }} {
+      padding: 16px;
+    }
+  }
+{% endstyle %}
+
+<certified-directory-{{ ai_gen_id }}
+  class="ai-certified-directory-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-certified-directory__container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank or block.settings.description != blank %}
+      <div class="ai-certified-directory__header-{{ ai_gen_id }}">
+        {% if block.settings.title != blank %}
+          <h2 class="ai-certified-directory__title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+        {% endif %}
+        {% if block.settings.description != blank %}
+          <div class="ai-certified-directory__description-{{ ai_gen_id }}">{{ block.settings.description }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_search %}
+      <div class="ai-certified-directory__search-{{ ai_gen_id }}">
+        <input
+          type="text"
+          class="ai-certified-directory__search-input-{{ ai_gen_id }}"
+          placeholder="{{ block.settings.search_placeholder }}"
+          aria-label="Buscar personas certificadas"
+        >
+      </div>
+    {% endif %}
+
+    <div class="ai-certified-directory__grid-{{ ai_gen_id }}" data-directory-grid>
+      {% assign has_people = false %}
+      {% for i in (1..12) %}
+        {% liquid
+          assign name_key = 'person_' | append: i | append: '_name'
+          assign cert_key = 'person_' | append: i | append: '_certification'
+          assign company_key = 'person_' | append: i | append: '_company'
+          assign location_key = 'person_' | append: i | append: '_location'
+          assign email_key = 'person_' | append: i | append: '_email'
+          assign phone_key = 'person_' | append: i | append: '_phone'
+          assign cert_date_key = 'person_' | append: i | append: '_cert_date'
+          assign image_key = 'person_' | append: i | append: '_image'
+
+          assign person_name = block.settings[name_key]
+          assign person_cert = block.settings[cert_key]
+          assign person_company = block.settings[company_key]
+          assign person_location = block.settings[location_key]
+          assign person_email = block.settings[email_key]
+          assign person_phone = block.settings[phone_key]
+          assign person_cert_date = block.settings[cert_date_key]
+          assign person_image = block.settings[image_key]
+        %}
+
+        {% if person_name != blank %}
+          {% assign has_people = true %}
+          <div class="ai-certified-directory__card-{{ ai_gen_id }}" data-person-card>
+            <div class="ai-certified-directory__card-header-{{ ai_gen_id }}">
+              <div class="ai-certified-directory__avatar-{{ ai_gen_id }}">
+                {% if person_image %}
+                  <img
+                    src="{{ person_image | image_url: width: 200 }}"
+                    alt="{{ person_name | escape }}"
+                    class="ai-certified-directory__avatar-image-{{ ai_gen_id }}"
+                    loading="lazy"
+                    width="200"
+                    height="200"
+                  >
+                {% else %}
+                  {{ person_name | slice: 0 | upcase }}
+                {% endif %}
+              </div>
+              <div class="ai-certified-directory__card-info-{{ ai_gen_id }}">
+                <h3 class="ai-certified-directory__name-{{ ai_gen_id }}" data-person-name>{{ person_name }}</h3>
+                {% if person_cert != blank %}
+                  <p class="ai-certified-directory__certification-{{ ai_gen_id }}" data-person-cert>{{ person_cert }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="ai-certified-directory__details-{{ ai_gen_id }}">
+              {% if person_company != blank %}
+                <div class="ai-certified-directory__detail-{{ ai_gen_id }}" data-person-company>
+                  <svg class="ai-certified-directory__detail-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <span>{{ person_company }}</span>
+                </div>
+              {% endif %}
+
+              {% if person_location != blank %}
+                <div class="ai-certified-directory__detail-{{ ai_gen_id }}" data-person-location>
+                  <svg class="ai-certified-directory__detail-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{{ person_location }}</span>
+                </div>
+              {% endif %}
+
+              {% if person_email != blank %}
+                <div class="ai-certified-directory__detail-{{ ai_gen_id }}" data-person-email>
+                  <svg class="ai-certified-directory__detail-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <a href="mailto:{{ person_email }}" style="color: inherit; text-decoration: underline;">{{ person_email }}</a>
+                </div>
+              {% endif %}
+
+              {% if person_phone != blank %}
+                <div class="ai-certified-directory__detail-{{ ai_gen_id }}" data-person-phone>
+                  <svg class="ai-certified-directory__detail-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <a href="tel:{{ person_phone }}" style="color: inherit; text-decoration: underline;">{{ person_phone }}</a>
+                </div>
+              {% endif %}
+
+              {% if person_cert_date != blank %}
+                <div class="ai-certified-directory__badge-{{ ai_gen_id }}">
+                  <svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Certificado: {{ person_cert_date }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {% unless has_people %}
+        <div class="ai-certified-directory__empty-state-{{ ai_gen_id }}" style="grid-column: 1 / -1;">
+          Agrega personas certificadas en la configuración del bloque
+        </div>
+      {% endunless %}
+    </div>
+
+    <div class="ai-certified-directory__no-results-{{ ai_gen_id }}" data-no-results style="display: none;">
+      No se encontraron resultados para tu búsqueda
+    </div>
+  </div>
+</certified-directory-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class CertifiedDirectory{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.searchInput = this.querySelector('.ai-certified-directory__search-input-{{ ai_gen_id }}');
+        this.cards = this.querySelectorAll('[data-person-card]');
+        this.grid = this.querySelector('[data-directory-grid]');
+        this.noResults = this.querySelector('[data-no-results]');
+
+        if (this.searchInput) {
+          this.setupSearch();
+        }
+      }
+
+      setupSearch() {
+        this.searchInput.addEventListener('input', (e) => {
+          this.filterCards(e.target.value);
+        });
+      }
+
+      filterCards(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let visibleCount = 0;
+
+        this.cards.forEach((card) => {
+          const name = card.querySelector('[data-person-name]')?.textContent.toLowerCase() || '';
+          const cert = card.querySelector('[data-person-cert]')?.textContent.toLowerCase() || '';
+          const company = card.querySelector('[data-person-company]')?.textContent.toLowerCase() || '';
+          const location = card.querySelector('[data-person-location]')?.textContent.toLowerCase() || '';
+
+          const matches = name.includes(term) || 
+                         cert.includes(term) || 
+                         company.includes(term) || 
+                         location.includes(term);
+
+          if (matches || term === '') {
+            card.style.display = '';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (this.noResults) {
+          if (visibleCount === 0 && term !== '') {
+            this.noResults.style.display = 'block';
+            this.grid.style.display = 'none';
+          } else {
+            this.noResults.style.display = 'none';
+            this.grid.style.display = 'grid';
+          }
+        }
+      }
+    }
+
+    customElements.define('certified-directory-{{ ai_gen_id }}', CertifiedDirectory{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Certificados",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Encabezado"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Título",
+      "default": "Personas Certificadas FLIR"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descripción",
+      "default": "<p>Profesionales certificados en tecnología de imagen térmica y medición FLIR</p>"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Tamaño del título",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Tamaño de descripción",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Búsqueda"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Mostrar búsqueda",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Texto de búsqueda",
+      "default": "Buscar por nombre, certificación, empresa o ubicación..."
+    },
+    {
+      "type": "header",
+      "content": "Diseño"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Ancho máximo",
+      "min": 800,
+      "max": 1600,
+      "step": 100,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columnas en escritorio",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Columnas en tablet",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columnas en móvil",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Espacio entre tarjetas",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Radio de borde",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "avatar_size",
+      "label": "Tamaño de avatar",
+      "min": 40,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Fondo de tarjeta",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color de título",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color de texto",
+      "default": "#616161"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#c51618"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Color de borde",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "header",
+      "content": "Persona 1"
+    },
+    {
+      "type": "text",
+      "id": "person_1_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_1_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_1_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_1_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_1_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_1_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_1_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_1_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 2"
+    },
+    {
+      "type": "text",
+      "id": "person_2_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_2_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_2_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_2_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_2_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_2_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_2_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_2_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 3"
+    },
+    {
+      "type": "text",
+      "id": "person_3_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_3_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_3_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_3_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_3_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_3_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_3_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_3_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 4"
+    },
+    {
+      "type": "text",
+      "id": "person_4_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_4_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_4_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_4_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_4_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_4_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_4_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_4_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 5"
+    },
+    {
+      "type": "text",
+      "id": "person_5_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_5_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_5_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_5_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_5_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_5_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_5_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_5_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 6"
+    },
+    {
+      "type": "text",
+      "id": "person_6_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_6_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_6_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_6_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_6_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_6_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_6_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_6_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 7"
+    },
+    {
+      "type": "text",
+      "id": "person_7_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_7_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_7_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_7_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_7_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_7_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_7_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_7_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 8"
+    },
+    {
+      "type": "text",
+      "id": "person_8_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_8_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_8_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_8_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_8_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_8_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_8_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_8_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 9"
+    },
+    {
+      "type": "text",
+      "id": "person_9_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_9_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_9_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_9_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_9_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_9_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_9_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_9_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 10"
+    },
+    {
+      "type": "text",
+      "id": "person_10_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_10_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_10_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_10_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_10_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_10_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_10_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_10_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 11"
+    },
+    {
+      "type": "text",
+      "id": "person_11_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_11_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_11_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_11_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_11_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_11_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_11_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_11_image",
+      "label": "Foto"
+    },
+    {
+      "type": "header",
+      "content": "Persona 12"
+    },
+    {
+      "type": "text",
+      "id": "person_12_name",
+      "label": "Nombre completo"
+    },
+    {
+      "type": "text",
+      "id": "person_12_certification",
+      "label": "Certificación"
+    },
+    {
+      "type": "text",
+      "id": "person_12_company",
+      "label": "Empresa"
+    },
+    {
+      "type": "text",
+      "id": "person_12_location",
+      "label": "Ubicación"
+    },
+    {
+      "type": "text",
+      "id": "person_12_email",
+      "label": "Email"
+    },
+    {
+      "type": "text",
+      "id": "person_12_phone",
+      "label": "Teléfono"
+    },
+    {
+      "type": "text",
+      "id": "person_12_cert_date",
+      "label": "Fecha de certificación"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_12_image",
+      "label": "Foto"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Certificados"
+    }
+  ]
+}
+{% endschema %}

@@ -224,9 +224,9 @@
   {%- if form_style_type == '0' -%}
     <div class="bsscommerce-passcode-container bss-lock-passcode-container-{{ origin_rule_id }} bsscommerce-passcode-form-style-{{ form_style_type }}">
       <div class="bss-commerce-passcode-container-1">
+        <span class="bss-commerce-passcode-message">{{ passcode_message }}</span>
         <div class="bss-commerce-passcode-container-2">
           <div id="BsscommercePasswordForm">
-          <span class="bss-commerce-passcode-message">{{ passcode_message }}</span>
             <div class="bss-commerce-password-form-vertical">
               <span class="bss-commerce-passcode-input-label">{{ passcode_input_label }}</span>
               <form id="bsscommerce-ltap-password" novalidate >
@@ -477,107 +477,6 @@
   
   <script type="text/javascript">
     function mountPasscodePriceEvent() {
-      {% if is_pc_request == "true" %}
-      function isValidEmail(email) {
-        const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-        return emailRegex.test(email);
-      }
-  
-      // button of form
-      let modal = document.querySelector('.modal-dialog__container');
-      let modalSuccess = document.querySelector(".modal-dialog__container.success");
-      let modalError = document.querySelector(".modal-dialog__container.error");
-      let btn = document.querySelector(".bss-btn.bss-passcode-request");
-      let btnsOk = document.querySelectorAll(".bss-btn.ok");
-      let iconCancel = document.querySelector(".modal_icon__close");
-      let btnCancel = document.querySelector(".modal__btn-cancel");
-      let formPasscodeReq = document.querySelector(".form-passcode-request");
-    
-      // field of form
-      let email = document.querySelector(".field-email");
-      let name = document.querySelector(".field-name");
-      let message = document.querySelector(".field-message");
-      let emailError = document.querySelector('.message-email');
-      
-      btn.onclick = function () {
-          modal.style.display = "flex";
-      }
-      
-      iconCancel.onclick = function () {
-        emailError.style.display = "none";
-        modal.style.display = "none";
-      }
-      
-      btnCancel.onclick = function () {
-        emailError.style.display = "none";
-        modal.style.display = "none";
-      }
-      btnsOk.forEach(btn => {
-        btn.addEventListener('click', function() {
-          modalSuccess.style.display = "none";
-          modalError.style.display = "none";
-        })
-      });
-      
-      email.addEventListener('change', function() { 
-        emailError.style.display = 'none';
-      });
-      
-      formPasscodeReq.addEventListener("submit", async function (e) {
-          e.preventDefault();
-          if (!email.value) {
-            emailError.textContent = "Email is required";
-            emailError.style.display = 'block';
-            return;
-          }
-          if (!isValidEmail(email.value)) {
-            emailError.textContent = "Invalid email format";
-            emailError.style.display = 'block';
-            return;
-          }
-    
-          let data = JSON.stringify({
-              domain: `${window.Shopify.shop}`,
-              email: email.value,
-              name: name.value,
-              page: `${window.location.href}`,
-              message: message.value,
-              ruleId: {{ origin_rule_id }},
-          });
-      
-          let url = "{{ create_request_api }}"
-          try {
-            let res = await fetch(url, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authentication': 'Bearer {{ authentication }}'
-                },
-                body: data
-            });
-            if(res.ok) {
-              res = await res.json();
-              modalSuccess.style.display = "flex";
-              message.value = "";
-              {% unless customer %}
-                let passcodeSendTo = document.querySelector('.bss-passcode-sent-to');
-                passcodeSendTo.innerHTML = `Passcode will be sent to ${email.value}`
-              {% endunless %}
-            }
-            modal.style.display = "none";
-            emailError.style.display = "none";
-    
-            if (res.ok == false) {
-              modalError.style.display = "flex";
-              modal.style.display = "none";  
-            }
-          } catch(e) {
-            console.log("ERROR: ", e);
-            modalError.style.display = "flex";
-            modal.style.display = "none";
-          }
-      });
-      {% endif %}
       let conditionId = null;
       let passcodeElement = document.getElementById("bsscommerce-password");
       let formData = new FormData();
@@ -780,8 +679,111 @@
         }
       });
     }
+
     mountPasscodePriceEvent();
+    
     {% if is_pc_request == "true" %}
+      function addPasscodeReqEvent () {
+        function isValidEmail(email) {
+          const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+          return emailRegex.test(email);
+        }
+  
+        // button of form
+        let modal = document.querySelector('.modal-dialog__container');
+        let modalSuccess = document.querySelector(".modal-dialog__container.success");
+        let modalError = document.querySelector(".modal-dialog__container.error");
+        let btn = document.querySelector(".bss-btn.bss-passcode-request");
+        let btnsOk = document.querySelectorAll(".bss-btn.ok");
+        let iconCancel = document.querySelector(".modal_icon__close");
+        let btnCancel = document.querySelector(".modal__btn-cancel");
+        let formPasscodeReq = document.querySelector(".form-passcode-request");
+      
+        // field of form
+        let email = document.querySelector(".field-email");
+        let name = document.querySelector(".field-name");
+        let message = document.querySelector(".field-message");
+        let emailError = document.querySelector('.message-email');
+        
+        btn.onclick = function () {
+            modal.style.display = "flex";
+        }
+        
+        iconCancel.onclick = function () {
+          emailError.style.display = "none";
+          modal.style.display = "none";
+        }
+        
+        btnCancel.onclick = function () {
+          emailError.style.display = "none";
+          modal.style.display = "none";
+        }
+        btnsOk.forEach(btn => {
+          btn.addEventListener('click', function() {
+            modalSuccess.style.display = "none";
+            modalError.style.display = "none";
+          })
+        });
+        
+        email.addEventListener('change', function() { 
+          emailError.style.display = 'none';
+        });
+        
+        formPasscodeReq.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            if (!email.value) {
+              emailError.textContent = "Email is required";
+              emailError.style.display = 'block';
+              return;
+            }
+            if (!isValidEmail(email.value)) {
+              emailError.textContent = "Invalid email format";
+              emailError.style.display = 'block';
+              return;
+            }
+      
+            let data = JSON.stringify({
+                domain: `${window.Shopify.shop}`,
+                email: email.value,
+                name: name.value,
+                page: `${window.location.href}`,
+                message: message.value,
+                ruleId: {{ origin_rule_id }},
+            });
+        
+            let url = "{{ create_request_api }}"
+            try {
+              let res = await fetch(url, {
+                  method: "POST",
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authentication': 'Bearer {{ authentication }}'
+                  },
+                  body: data
+              });
+              if(res.ok) {
+                res = await res.json();
+                modalSuccess.style.display = "flex";
+                message.value = "";
+                {% unless customer %}
+                  let passcodeSendTo = document.querySelector('.bss-passcode-sent-to');
+                  passcodeSendTo.innerHTML = `Passcode will be sent to ${email.value}`
+                {% endunless %}
+              }
+              modal.style.display = "none";
+              emailError.style.display = "none";
+      
+              if (res.ok == false) {
+                modalError.style.display = "flex";
+                modal.style.display = "none";  
+              }
+            } catch(e) {
+              console.log("ERROR: ", e);
+              modalError.style.display = "flex";
+              modal.style.display = "none";
+            }
+          });
+      }
       function movePasscodeRequestToBody() {
         const modal = document.querySelector('.bss-lock-element .modal-dialog__container');
         const modalSuccess = document.querySelector('.bss-lock-element .modal-dialog__container.success');
@@ -796,7 +798,7 @@
           modal.remove();
           modalSuccess.remove();
           modalError.remove();
-          mountPasscodePriceEvent()
+          addPasscodeReqEvent()
         }
       }
       movePasscodeRequestToBody();

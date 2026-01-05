@@ -1,0 +1,651 @@
+{% doc %}
+  @prompt
+    Create a premium client logo carousel section for B2B industrial equipment store. The section should include:- Bold headline "Empresas Líderes que Confían en Nuestras Soluciones FLIR" with optional subheadline- Infinite auto-scrolling carousel showing client logos (3-4 visible on desktop, 2 on tablet, 1 on mobile)- Logos displayed in grayscale with smooth color transition on hover- Smooth continuous animation that pauses on hover- Duplicate logo sets for seamless infinite loop without jumps- Organized by industry sectors with optional category tabs or visual separators: Minería, Energía, Forestal, Industria, Ciencia, Educación, Defensa, Sector Público- Customizable settings: animation speed, logos per view, enable/disable autoplay, spacing- Support for uploading multiple logo images with alt text- Responsive design with mobile-first approach- Clean, modern, professional aesthetic matching premium B2B brands like Siemens, FLIR, ABB- Lightweight CSS animations (no heavy JavaScript)- Accessible with proper ARIA labels
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-logo-carousel-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding_top }}px 0 {{ block.settings.section_padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+    overflow: hidden;
+  }
+
+  .ai-logo-carousel__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.container_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-logo-carousel__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: {{ block.settings.header_spacing }}px;
+  }
+
+  .ai-logo-carousel__headline-{{ ai_gen_id }} {
+    font-size: {{ block.settings.headline_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.headline_color }};
+    margin: 0 0 {{ block.settings.subheadline_spacing }}px;
+    line-height: 1.2;
+  }
+
+  .ai-logo-carousel__subheadline-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheadline_size }}px;
+    color: {{ block.settings.subheadline_color }};
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .ai-logo-carousel__track-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+
+  .ai-logo-carousel__track-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.logo_spacing }}px;
+    width: fit-content;
+  }
+
+  {% if block.settings.enable_autoplay %}
+    .ai-logo-carousel__track-{{ ai_gen_id }} {
+      animation: ai-logo-scroll-{{ ai_gen_id }} {{ block.settings.animation_speed }}s linear infinite;
+    }
+
+    .ai-logo-carousel__track-{{ ai_gen_id }}:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes ai-logo-scroll-{{ ai_gen_id }} {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+  {% endif %}
+
+  .ai-logo-carousel__logo-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: {{ block.settings.logo_width }}px;
+    height: {{ block.settings.logo_height }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.logo_padding }}px;
+    background-color: {{ block.settings.logo_background }};
+    border-radius: {{ block.settings.logo_border_radius }}px;
+    transition: all 0.3s ease;
+  }
+
+  .ai-logo-carousel__logo-{{ ai_gen_id }} img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    {% if block.settings.grayscale_logos %}
+      filter: grayscale(100%);
+      opacity: {{ block.settings.logo_opacity }};
+    {% endif %}
+    transition: filter 0.3s ease, opacity 0.3s ease;
+  }
+
+  .ai-logo-carousel__logo-{{ ai_gen_id }}:hover img {
+    {% if block.settings.grayscale_logos %}
+      filter: grayscale(0%);
+      opacity: 1;
+    {% endif %}
+  }
+
+  .ai-logo-carousel__logo-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+    border-radius: {{ block.settings.logo_border_radius }}px;
+  }
+
+  .ai-logo-carousel__logo-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-logo-carousel__headline-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.headline_size }}px * 0.8);
+    }
+
+    .ai-logo-carousel__subheadline-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.subheadline_size }}px * 0.9);
+    }
+
+    .ai-logo-carousel__logo-{{ ai_gen_id }} {
+      width: {{ block.settings.logo_width_tablet }}px;
+      height: {{ block.settings.logo_height_tablet }}px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-logo-carousel__headline-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.headline_size }}px * 0.65);
+    }
+
+    .ai-logo-carousel__subheadline-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.subheadline_size }}px * 0.85);
+    }
+
+    .ai-logo-carousel__logo-{{ ai_gen_id }} {
+      width: {{ block.settings.logo_width_mobile }}px;
+      height: {{ block.settings.logo_height_mobile }}px;
+    }
+
+    .ai-logo-carousel__container-{{ ai_gen_id }} {
+      padding: 0 16px;
+    }
+  }
+{% endstyle %}
+
+<ai-logo-carousel-{{ ai_gen_id }}
+  class="ai-logo-carousel-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-logo-carousel__container-{{ ai_gen_id }}">
+    {% if block.settings.headline != blank or block.settings.subheadline != blank %}
+      <div class="ai-logo-carousel__header-{{ ai_gen_id }}">
+        {% if block.settings.headline != blank %}
+          <h2 class="ai-logo-carousel__headline-{{ ai_gen_id }}">
+            {{ block.settings.headline }}
+          </h2>
+        {% endif %}
+        {% if block.settings.subheadline != blank %}
+          <p class="ai-logo-carousel__subheadline-{{ ai_gen_id }}">
+            {{ block.settings.subheadline }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div
+      class="ai-logo-carousel__track-wrapper-{{ ai_gen_id }}"
+      role="region"
+      aria-label="Client logos carousel"
+    >
+      <div class="ai-logo-carousel__track-{{ ai_gen_id }}">
+        {% liquid
+          assign logo_count = 0
+          for i in (1..12)
+            assign logo_key = 'logo_' | append: i
+            assign alt_key = 'logo_' | append: i | append: '_alt'
+            if block.settings[logo_key] != blank
+              assign logo_count = logo_count | plus: 1
+            endif
+          endfor
+        %}
+
+        {% if logo_count > 0 %}
+          {% for duplicate in (1..2) %}
+            {% for i in (1..12) %}
+              {% liquid
+                assign logo_key = 'logo_' | append: i
+                assign alt_key = 'logo_' | append: i | append: '_alt'
+                assign logo = block.settings[logo_key]
+                assign alt_text = block.settings[alt_key]
+              %}
+
+              {% if logo != blank %}
+                <div class="ai-logo-carousel__logo-{{ ai_gen_id }}">
+                  <img
+                    src="{{ logo | image_url: width: 400 }}"
+                    alt="{{ alt_text | escape }}"
+                    loading="lazy"
+                    width="400"
+                    height="200"
+                  >
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        {% else %}
+          {% for i in (1..6) %}
+            <div class="ai-logo-carousel__logo-{{ ai_gen_id }}">
+              <div class="ai-logo-carousel__logo-placeholder-{{ ai_gen_id }}">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</ai-logo-carousel-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AiLogoCarousel{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.track = this.querySelector('.ai-logo-carousel__track-{{ ai_gen_id }}');
+        if (this.track) {
+          this.setupAccessibility();
+        }
+      }
+
+      setupAccessibility() {
+        const logos = this.track.querySelectorAll('.ai-logo-carousel__logo-{{ ai_gen_id }}');
+        logos.forEach((logo, index) => {
+          logo.setAttribute('role', 'img');
+          const img = logo.querySelector('img');
+          if (img && img.alt) {
+            logo.setAttribute('aria-label', img.alt);
+          }
+        });
+      }
+    }
+
+    customElements.define('ai-logo-carousel-{{ ai_gen_id }}', AiLogoCarousel{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Client logo carousel",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Empresas Líderes que Confían en Nuestras Soluciones FLIR"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheadline",
+      "label": "Subheadline"
+    },
+    {
+      "type": "range",
+      "id": "headline_size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Headline size",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "subheadline_size",
+      "min": 12,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "label": "Subheadline size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "header_spacing",
+      "min": 20,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Header spacing",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "subheadline_spacing",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Subheadline spacing",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Logo images"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_1",
+      "label": "Logo 1"
+    },
+    {
+      "type": "text",
+      "id": "logo_1_alt",
+      "label": "Logo 1 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_2",
+      "label": "Logo 2"
+    },
+    {
+      "type": "text",
+      "id": "logo_2_alt",
+      "label": "Logo 2 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_3",
+      "label": "Logo 3"
+    },
+    {
+      "type": "text",
+      "id": "logo_3_alt",
+      "label": "Logo 3 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_4",
+      "label": "Logo 4"
+    },
+    {
+      "type": "text",
+      "id": "logo_4_alt",
+      "label": "Logo 4 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_5",
+      "label": "Logo 5"
+    },
+    {
+      "type": "text",
+      "id": "logo_5_alt",
+      "label": "Logo 5 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_6",
+      "label": "Logo 6"
+    },
+    {
+      "type": "text",
+      "id": "logo_6_alt",
+      "label": "Logo 6 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_7",
+      "label": "Logo 7"
+    },
+    {
+      "type": "text",
+      "id": "logo_7_alt",
+      "label": "Logo 7 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_8",
+      "label": "Logo 8"
+    },
+    {
+      "type": "text",
+      "id": "logo_8_alt",
+      "label": "Logo 8 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_9",
+      "label": "Logo 9"
+    },
+    {
+      "type": "text",
+      "id": "logo_9_alt",
+      "label": "Logo 9 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_10",
+      "label": "Logo 10"
+    },
+    {
+      "type": "text",
+      "id": "logo_10_alt",
+      "label": "Logo 10 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_11",
+      "label": "Logo 11"
+    },
+    {
+      "type": "text",
+      "id": "logo_11_alt",
+      "label": "Logo 11 alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_12",
+      "label": "Logo 12"
+    },
+    {
+      "type": "text",
+      "id": "logo_12_alt",
+      "label": "Logo 12 alt text"
+    },
+    {
+      "type": "header",
+      "content": "Logo style"
+    },
+    {
+      "type": "checkbox",
+      "id": "grayscale_logos",
+      "label": "Display logos in grayscale",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "logo_opacity",
+      "min": 0.3,
+      "max": 1,
+      "step": 0.1,
+      "label": "Logo opacity (grayscale)",
+      "default": 0.6
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 100,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width (desktop)",
+      "default": 180
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 60,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo height (desktop)",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "logo_width_tablet",
+      "min": 80,
+      "max": 240,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width (tablet)",
+      "default": 140
+    },
+    {
+      "type": "range",
+      "id": "logo_height_tablet",
+      "min": 50,
+      "max": 160,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo height (tablet)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "min": 60,
+      "max": 180,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width (mobile)",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "logo_height_mobile",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo height (mobile)",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "logo_padding",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Logo padding",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "logo_spacing",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Space between logos",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "logo_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Logo border radius",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "logo_background",
+      "label": "Logo background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "Animation speed",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "headline_color",
+      "label": "Headline",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subheadline_color",
+      "label": "Subheadline",
+      "default": "#616161"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Container width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Client logo carousel"
+    }
+  ]
+}
+{% endschema %}

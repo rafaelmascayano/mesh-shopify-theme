@@ -21,6 +21,7 @@
                   </div>
                 </div>
 
+                
               {%- when 'links' -%}
                 {%- assign menu = linklists[block.settings.menu] -%}
 
@@ -78,7 +79,34 @@
           {%- endfor -%}
         </div>
       {%- endif -%}
+      <!-- BLOQUE COMPACTO: DIRECCIÓN Y TELÉFONO AL LADO -->
+      <div class="footer__aside-item" style="margin-top: 10px; margin-bottom: 5px; padding: 0;">
+        
+        <!-- Contenedor Flex para ponerlos lado a lado -->
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; row-gap: 8px;">
+          
+          <!-- Grupo Dirección -->
+          <div style="display: flex; align-items: center;">
+            <svg style="width: 18px; height: 18px; min-width: 18px; margin-right: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span style="font-size: 0.85em; line-height: 1.2;">
+              {{ shop.address.street }}
+            </span>
+          </div>
 
+          <!-- Grupo Teléfono -->
+          <div style="display: flex; align-items: center;">
+            <svg style="width: 18px; height: 18px; min-width: 18px; margin-right: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <a href="tel:{{ shop.phone }}" style="color: inherit; text-decoration: none; font-size: 0.85em; line-height: 1.2;">{{ shop.phone }}</a>
+          </div>
+
+        </div>
+      </div>
+      <!-- BLOQUE DE CONTACTO (Datos Automáticos) -->
       <aside class="footer__aside">
         {%- if section.settings.show_country_selector and localization.available_countries.size > 1 -%}
           {%- assign country_selector = true -%}
@@ -194,6 +222,8 @@
             </div>
           </div>
         {%- endif -%}
+
+
 
         <div class="footer__aside-item footer__aside-item--copyright hidden-lap-and-up">
           <p>{{ copyright_info }}</p>

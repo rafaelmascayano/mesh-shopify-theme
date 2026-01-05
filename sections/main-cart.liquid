@@ -68,7 +68,7 @@
                     {%- assign gift_wrap_product = section.settings.gift_wrap_product -%}
 
                     {%- for line_item in cart.items -%}
-                      <tr class="line-item line-item--stack">
+                      <tr class="line-item line-item--stack" bss-b2b-cart-item-key="{{ line_item.key }}">
                         <td class="line-item__product-info">
                           <div class="line-item__product-info-wrapper">
                             <div class="line-item__image-wrapper">

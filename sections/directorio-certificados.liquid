@@ -1,362 +1,309 @@
-{%- comment -%}
-  Directorio de Certificados (Versión Metaobjetos con Buscador)
-  Diseño optimizado con paleta corporativa, tipografía Inter/Figtree.
-  Incluye buscador en tiempo real y paginación con estilo del tema.
-{%- endcomment -%}
+{% comment %}
+  Directorio de Alumnos Certificados - CORREGIDO
+  Refactorizado para usar Bloques Dinámicos (Scalable)
+  Fix: Corrección de error de schema en columnas móvil
+{% endcomment %}
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&family=Inter:wght@400;700&display=swap');
-
-  .section--directorio-certificados {
-    padding: 60px 0;
-    font-family: 'Figtree', sans-serif;
-    color: #616161;
-    font-size: 16px;
-    background-color: #f5f5f5;
+{% style %}
+  .directory-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
   }
 
-  .section--directorio-certificados .section__header {
+  .directory-container-{{ section.id }} {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Header Styles */
+  .directory-header-{{ section.id }} {
     text-align: center;
     margin-bottom: 40px;
-    padding: 0 20px;
   }
 
-  .section--directorio-certificados .section__title {
-    font-family: 'Inter', sans-serif;
-    color: #000000;
-    margin: 0 auto 12px auto;
-    font-weight: 400;
-    font-size: 2rem;
-    line-height: 1.2;
-    display: block;
-    max-width: 900px;
+  .directory-title-{{ section.id }} {
+    font-size: {{ section.settings.title_size }}px;
+    color: {{ section.settings.title_color }};
+    margin: 0 0 16px;
+    font-weight: 600;
   }
 
-  .section--directorio-certificados .section__description {
+  .directory-description-{{ section.id }} {
+    font-size: {{ section.settings.description_size }}px;
+    color: {{ section.settings.text_color }};
     margin: 0 auto;
-    max-width: 700px;
-    line-height: 1.5;
-    font-size: 1.05rem;
-    color: #616161;
+    max-width: 800px;
+    line-height: 1.6;
   }
 
-  /* Estilos del Buscador */
-  .certificados-search {
-    max-width: 500px;
-    margin: 0 auto 50px auto;
+  /* Search Styles */
+  .directory-search-{{ section.id }} {
+    margin-bottom: 32px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
     position: relative;
-    padding: 0 20px;
   }
 
-  .certificados-search__input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .certificados-search__input {
+  .directory-search-input-{{ section.id }} {
     width: 100%;
-    padding: 12px 20px 12px 45px;
-    border: 1px solid #e8e8e8;
-    border-radius: 4px;
-    font-family: 'Figtree', sans-serif;
+    padding: 12px 16px;
+    border: 1px solid {{ section.settings.border_color }};
+    border-radius: {{ section.settings.border_radius }}px;
     font-size: 16px;
-    color: #000000;
-    background: #ffffff;
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
+    color: {{ section.settings.text_color }};
+    background: {{ section.settings.card_background }};
   }
 
-  .certificados-search__input:focus {
-    outline: none;
-    border-color: #c51618;
-    box-shadow: 0 0 0 3px rgba(197, 22, 24, 0.05);
-  }
-
-  .certificados-search__icon {
-    position: absolute;
-    left: 15px;
-    width: 18px;
-    height: 18px;
-    color: #9e9e9e;
-  }
-
-  /* Grid y Tarjetas */
-  .certificados-grid {
+  /* Grid Styles */
+  .directory-grid-{{ section.id }} {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+    gap: {{ section.settings.grid_gap }}px;
   }
 
-  .certificados-item {
-    background: #ffffff;
-    border: 1px solid #e8e8e8;
-    padding: 25px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Card Styles */
+  .directory-card-{{ section.id }} {
+    background-color: {{ section.settings.card_background }};
+    border: 1px solid {{ section.settings.border_color }};
+    border-radius: {{ section.settings.border_radius }}px;
+    padding: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
-    border-radius: 4px;
     height: 100%;
   }
 
-  .certificados-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    border-color: #d1d1d1;
+  .directory-card-{{ section.id }}:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  .certificados-item__header {
+  .directory-card-header-{{ section.id }} {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #f5f5f5;
-    padding-bottom: 12px;
+    gap: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid {{ section.settings.border_color | color_modify: 'alpha', 0.3 }};
+    padding-bottom: 16px;
   }
 
-  .certificados-item__avatar {
-    width: 54px;
-    height: 54px;
+  .directory-avatar-{{ section.id }} {
+    width: {{ section.settings.avatar_size }}px;
+    height: {{ section.settings.avatar_size }}px;
     border-radius: 50%;
-    background-color: #c51618;
+    background-color: {{ section.settings.accent_color }};
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: {{ section.settings.avatar_size | divided_by: 2 }}px;
     font-weight: 600;
     flex-shrink: 0;
     overflow: hidden;
   }
 
-  .certificados-item__avatar img {
+  .directory-avatar-img-{{ section.id }} {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .certificados-item__nombre {
-    font-weight: 700;
-    color: #000000;
-    margin: 0;
-    font-size: 1.1rem;
+  .directory-name-{{ section.id }} {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ section.settings.title_color }};
+    margin: 0 0 4px;
     line-height: 1.2;
   }
 
-  .certificados-item__cargo {
-    font-size: 0.85rem;
-    color: #c51618;
-    margin: 3px 0 0 0;
+  .directory-cert-{{ section.id }} {
+    font-size: 14px;
+    color: {{ section.settings.accent_color }};
+    margin: 0;
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
   }
 
-  .certificados-item__details {
+  /* Details Styles */
+  .directory-details-{{ section.id }} {
     display: flex;
     flex-direction: column;
     gap: 10px;
     flex-grow: 1;
   }
 
-  .certificados-item__detail-row {
+  .directory-detail-row-{{ section.id }} {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    font-size: 0.95rem;
-    color: #616161;
+    font-size: 14px;
+    color: {{ section.settings.text_color }};
   }
 
-  .certificados-item__icon {
+  .directory-icon-{{ section.id }} {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    color: #c51618;
     margin-top: 2px;
+    color: {{ section.settings.accent_color }};
   }
 
-  .certificados-item__badge {
+  .directory-badge-{{ section.id }} {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
-    background-color: rgba(197, 22, 24, 0.06);
-    color: #c51618;
+    gap: 4px;
+    padding: 4px 12px;
+    background-color: {{ section.settings.accent_color | color_modify: 'alpha', 0.08 }};
+    color: {{ section.settings.accent_color }};
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 12px;
     font-weight: 600;
-    margin-top: 15px;
+    margin-top: auto;
     align-self: flex-start;
   }
 
-  .certificados-pagination {
-    margin-top: 50px;
-  }
-
-  .certificados-no-results {
+  .directory-no-results-{{ section.id }} {
     text-align: center;
-    padding: 50px 20px;
-    background: #ffffff;
-    border-radius: 4px;
-    border: 1px solid #e8e8e8;
+    padding: 60px 20px;
+    color: {{ section.settings.text_color }};
+    font-size: 18px;
+    grid-column: 1 / -1;
     display: none;
   }
 
-  /* Ajustes Responsivos Refinados */
   @media screen and (max-width: 989px) {
-    .certificados-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+    .directory-grid-{{ section.id }} {
+      grid-template-columns: repeat({{ section.settings.columns_tablet }}, 1fr);
     }
   }
 
-  @media screen and (max-width: 767px) {
-    .section--directorio-certificados {
-      padding: 40px 0;
+  @media screen and (max-width: 749px) {
+    .directory-section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top | divided_by: 2 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | divided_by: 2 }}px;
     }
+    .directory-grid-{{ section.id }} {
+      /* Usamos el valor del select como número */
+      grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr);
+      gap: 16px;
+    }
+    .directory-card-{{ section.id }} {
+      padding: 16px;
+    }
+  }
+{% endstyle %}
+
+<div class="directory-section-{{ section.id }}">
+  <div class="directory-container-{{ section.id }}">
     
-    .section--directorio-certificados .section__header {
-      margin-bottom: 30px;
-    }
+    {% comment %} Header {% endcomment %}
+    {% if section.settings.title != blank or section.settings.description != blank %}
+      <div class="directory-header-{{ section.id }}">
+        {% if section.settings.title != blank %}
+          <h2 class="directory-title-{{ section.id }}">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.description != blank %}
+          <div class="directory-description-{{ section.id }}">{{ section.settings.description }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
 
-    .section--directorio-certificados .section__title {
-      font-size: 1.6rem;
-      padding: 0 10px;
-    }
+    {% comment %} Buscador {% endcomment %}
+    {% if section.settings.show_search %}
+      <div class="directory-search-{{ section.id }}">
+        <input
+          type="text"
+          id="Search-{{ section.id }}"
+          class="directory-search-input-{{ section.id }}"
+          placeholder="{{ section.settings.search_placeholder }}"
+          aria-label="Buscar personas certificadas"
+        >
+      </div>
+    {% endif %}
 
-    .section--directorio-certificados .section__description {
-      font-size: 0.95rem;
-    }
-
-    .certificados-search {
-      margin-bottom: 40px;
-    }
-
-    .certificados-grid {
-      grid-template-columns: 1fr;
-      gap: 15px;
-    }
-
-    .certificados-item {
-      padding: 20px;
-    }
-
-    .certificados-item__avatar {
-      width: 48px;
-      height: 48px;
-      font-size: 18px;
-    }
-
-    .certificados-item__nombre {
-      font-size: 1rem;
-    }
-  }
-</style>
-
-<section class="section section--directorio-certificados">
-  <div class="container--fluid">
-    <div class="container">
-      {%- if section.settings.title != blank -%}
-        <header class="section__header">
-          <h1 class="section__title heading h1">{{ section.settings.title | escape }}</h1>
-          {%- if section.settings.description != blank -%}
-            <div class="section__description rte">
-              {{ section.settings.description }}
-            </div>
-          {%- endif -%}
-        </header>
-      {%- endif -%}
-
-      {%- if section.settings.show_search -%}
-        <div class="certificados-search">
-          <div class="certificados-search__input-wrapper">
-            <svg class="certificados-search__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input type="text" 
-                   id="CertificadosSearchInput" 
-                   class="certificados-search__input" 
-                   placeholder="{{ section.settings.search_placeholder | escape }}"
-                   aria-label="{{ section.settings.search_placeholder | escape }}">
-          </div>
-        </div>
-      {%- endif -%}
-
-      <div class="certificados-list">
-        {%- paginate shop.metaobjects.directorio_alumnos.values by 24 -%}
-          <div class="certificados-grid" id="CertificadosGrid">
-            {%- for alumno in shop.metaobjects.directorio_alumnos.values -%}
-              <div class="certificados-item" data-search-card>
-                <div class="certificados-item__header">
-                  <div class="certificados-item__avatar">
-                    {%- if alumno.foto != blank -%}
-                      <img src="{{ alumno.foto | image_url: width: 200, height: 200, crop: 'center' }}" 
-                           alt="{{ alumno.nombre | escape }}" 
-                           loading="lazy" width="54" height="54">
-                    {%- else -%}
-                      {{ alumno.nombre | slice: 0 | upcase }}
-                  {%- endif -%}
-                  </div>
-                  <div>
-                    <h3 class="certificados-item__nombre" data-search-name>{{ alumno.nombre }}</h3>
-                    {%- if alumno.certificacion != blank -%}
-                      <p class="certificados-item__cargo" data-search-cert>{{ alumno.certificacion }}</p>
-                    {%- endif -%}
-                  </div>
-                </div>
-
-                <div class="certificados-item__details">
-                  {%- if alumno.empresa != blank -%}
-                    <div class="certificados-item__detail-row" data-search-company>
-                      <svg class="certificados-item__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                      <span>{{ alumno.empresa }}</span>
-                    </div>
-                  {%- endif -%}
-
-                  {%- if alumno.ubicacion != blank -%}
-                    <div class="certificados-item__detail-row" data-search-location>
-                      <svg class="certificados-item__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                      <span>{{ alumno.ubicacion }}</span>
-                    </div>
-                  {%- endif -%}
-
-                  {%- if alumno.email != blank -%}
-                    <div class="certificados-item__detail-row">
-                      <svg class="certificados-item__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                      <a href="mailto:{{ alumno.email }}" class="link link--accented" style="text-decoration: underline;">{{ alumno.email }}</a>
-                    </div>
-                  {%- endif -%}
-                  
-                  {%- if alumno.fecha != blank -%}
-                    <div class="certificados-item__badge">
-                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      Fecha: {{ alumno.fecha }}
-                    </div>
-                  {%- endif -%}
-                </div>
+    {% comment %} Grid de Alumnos {% endcomment %}
+    <div class="directory-grid-{{ section.id }}" id="Grid-{{ section.id }}">
+      {% for block in section.blocks %}
+        {% if block.type == 'student' %}
+          <div class="directory-card-{{ section.id }}" data-person-card {{ block.shopify_attributes }}>
+            
+            <div class="directory-card-header-{{ section.id }}">
+              <div class="directory-avatar-{{ section.id }}">
+                {% if block.settings.image != blank %}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 200, height: 200, crop: 'center' }}"
+                    alt="{{ block.settings.name | escape }}"
+                    class="directory-avatar-img-{{ section.id }}"
+                    loading="lazy"
+                    width="200"
+                    height="200"
+                  >
+                {% else %}
+                  {{ block.settings.name | slice: 0 | upcase }}
+                {% endif %}
               </div>
-            {%- endfor -%}
-          </div>
+              <div>
+                <h3 class="directory-name-{{ section.id }}" data-search-name>{{ block.settings.name }}</h3>
+                {% if block.settings.certification != blank %}
+                  <p class="directory-cert-{{ section.id }}" data-search-cert>{{ block.settings.certification }}</p>
+                {% endif %}
+              </div>
+            </div>
 
-          <div class="certificados-no-results" id="CertificadosNoResults">
-            <p>No se encontraron resultados para tu búsqueda en esta página.</p>
-          </div>
+            <div class="directory-details-{{ section.id }}">
+              {% if block.settings.company != blank %}
+                <div class="directory-detail-row-{{ section.id }}" data-search-company>
+                  <svg class="directory-icon-{{ section.id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                  <span>{{ block.settings.company }}</span>
+                </div>
+              {% endif %}
 
-          <div class="certificados-pagination" id="CertificadosPagination">
-            {%- render 'pagination', paginate: paginate -%}
+              {% if block.settings.location != blank %}
+                <div class="directory-detail-row-{{ section.id }}" data-search-location>
+                  <svg class="directory-icon-{{ section.id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <span>{{ block.settings.location }}</span>
+                </div>
+              {% endif %}
+
+              {% if block.settings.email != blank %}
+                <div class="directory-detail-row-{{ section.id }}">
+                  <svg class="directory-icon-{{ section.id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  <a href="mailto:{{ block.settings.email }}" style="color: inherit; text-decoration: underline;">{{ block.settings.email }}</a>
+                </div>
+              {% endif %}
+              
+              {% if block.settings.cert_date != blank %}
+                <div class="directory-badge-{{ section.id }}">
+                  <svg width="14" height="14" style="margin-right:4px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Certificado: {{ block.settings.cert_date }}
+                </div>
+              {% endif %}
+            </div>
+
           </div>
-        {%- endpaginate -%}
+        {% endif %}
+      {% endfor %}
+      
+      {% if section.blocks.size == 0 %}
+         <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">
+            Agrega alumnos haciendo clic en "Agregar Alumno" en el panel de la izquierda.
+         </div>
+      {% endif %}
+
+      <div class="directory-no-results-{{ section.id }}" id="NoResults-{{ section.id }}">
+        No se encontraron resultados para tu búsqueda.
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('CertificadosSearchInput');
-    const cards = document.querySelectorAll('[data-search-card]');
-    const noResults = document.getElementById('CertificadosNoResults');
-    const pagination = document.getElementById('CertificadosPagination');
+    const searchInput = document.getElementById('Search-{{ section.id }}');
+    const cards = document.querySelectorAll('#Grid-{{ section.id }} [data-person-card]');
+    const noResults = document.getElementById('NoResults-{{ section.id }}');
 
     if (searchInput) {
       searchInput.addEventListener('input', function(e) {
@@ -364,11 +311,13 @@
         let visibleCount = 0;
 
         cards.forEach(card => {
+          // Obtener texto de los campos relevantes
           const name = card.querySelector('[data-search-name]')?.textContent.toLowerCase() || '';
           const cert = card.querySelector('[data-search-cert]')?.textContent.toLowerCase() || '';
           const company = card.querySelector('[data-search-company]')?.textContent.toLowerCase() || '';
           const location = card.querySelector('[data-search-location]')?.textContent.toLowerCase() || '';
 
+          // Verificar si coincide alguna
           if (name.includes(term) || cert.includes(term) || company.includes(term) || location.includes(term)) {
             card.style.display = 'flex';
             visibleCount++;
@@ -377,13 +326,11 @@
           }
         });
 
-        // Manejo de visibilidad de resultados vacíos y paginación
+        // Manejar mensaje de "no resultados"
         if (visibleCount === 0 && term !== '') {
           noResults.style.display = 'block';
-          if (pagination) pagination.style.opacity = '0';
         } else {
           noResults.style.display = 'none';
-          if (pagination) pagination.style.opacity = '1';
         }
       });
     }
@@ -395,9 +342,13 @@
   "name": "Directorio Certificados",
   "settings": [
     {
+      "type": "header",
+      "content": "Contenido Principal"
+    },
+    {
       "type": "text",
       "id": "title",
-      "label": "Título de la Sección",
+      "label": "Título",
       "default": "Personas Certificadas"
     },
     {
@@ -407,24 +358,226 @@
     },
     {
       "type": "header",
-      "content": "Buscador"
+      "content": "Configuración de Búsqueda"
     },
     {
       "type": "checkbox",
       "id": "show_search",
-      "label": "Mostrar buscador",
+      "label": "Mostrar barra de búsqueda",
       "default": true
     },
     {
       "type": "text",
       "id": "search_placeholder",
-      "label": "Texto del buscador",
-      "default": "Buscar por nombre, empresa, certificación..."
+      "label": "Placeholder búsqueda",
+      "default": "Buscar por nombre, empresa..."
+    },
+    {
+      "type": "header",
+      "content": "Diseño de Grid"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Ancho máximo contenedor",
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columnas (Escritorio)",
+      "min": 1,
+      "max": 4,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Columnas (Tablet)",
+      "min": 1,
+      "max": 3,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columnas (Móvil)",
+      "options": [
+        { "value": "1", "label": "1 Columna" },
+        { "value": "2", "label": "2 Columnas" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Espacio entre tarjetas",
+      "min": 10,
+      "max": 50,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Estilos"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fondo Sección",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Fondo Tarjeta",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Color Bordes",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Redondeo de bordes",
+      "default": 8,
+      "min": 0,
+      "max": 20
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color Títulos",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color Textos",
+      "default": "#4a4a4a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color Acento",
+      "default": "#c51618"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Tamaño Título Principal",
+      "default": 32,
+      "min": 20,
+      "max": 60
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Tamaño Descripción",
+      "default": 16,
+      "min": 12,
+      "max": 24
+    },
+    {
+      "type": "range",
+      "id": "avatar_size",
+      "label": "Tamaño Avatar",
+      "default": 60,
+      "min": 40,
+      "max": 100
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Superior",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Inferior",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "student",
+      "name": "Alumno",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Foto"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Nombre Completo",
+          "default": "Nombre del Alumno"
+        },
+        {
+          "type": "text",
+          "id": "certification",
+          "label": "Nivel de Certificación",
+          "default": "Termografía Nivel 1"
+        },
+        {
+          "type": "text",
+          "id": "company",
+          "label": "Empresa",
+          "default": "Empresa S.A."
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "Ubicación (País/Ciudad)"
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "Email de contacto"
+        },
+        {
+          "type": "text",
+          "id": "cert_date",
+          "label": "Fecha de Certificación",
+          "default": "Enero 2025"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Directorio Certificados (Metaobjetos)"
+      "name": "Directorio Certificados",
+      "blocks": [
+        {
+          "type": "student"
+        },
+        {
+          "type": "student"
+        },
+        {
+          "type": "student"
+        }
+      ]
     }
   ]
 }

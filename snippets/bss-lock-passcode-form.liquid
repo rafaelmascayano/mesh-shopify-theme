@@ -4,9 +4,8 @@
   100% { transform: rotate(360deg); }
 }
 div#BsscommercePasswordForm {
-  max-width: 100% !important;
+  max-width: 90% !important;
   margin-bottom: 32px;
-  margin-top: 32px;
 }
 
 .form-message.form-message--error {
@@ -238,9 +237,9 @@ div#BsscommercePasswordForm {
 {%- if form_style_type == '0' -%}
   <div class="page-width bsscommerce-passcode-container bss-lock-passcode-container-{{ origin_rule_id }} bsscommerce-passcode-form-style-{{ form_style_type }}">
     <div class="bss-commerce-passcode-container-1" >
+      <span class="bss-commerce-passcode-message">{{ passcode_message }}</span>
       <div class="bss-commerce-passcode-container-2" >
         <div id="BsscommercePasswordForm">
-        <span class="bss-commerce-passcode-message">{{ passcode_message }}</span>
           <div class="bss-commerce-password-form-vertical">
             <span class="bss-commerce-passcode-input-label">{{ passcode_input_label }}</span>
             <form id="bsscommerce-ltap-password" novalidate >

@@ -1,0 +1,951 @@
+{% doc %}
+  @prompt
+    Create a minimalist Custom Liquid block for a technical support page that combines a Shopify customer account login form with informational sections about FLIR technical service.
+    
+    The design should be clean and minimal with:
+    
+    **Login Section (top):**
+    - Simple customer login form using Shopify's customer account system
+    - Email and password fields
+    - Login button and "Create account" link
+    - "Forgot password" link
+    - Clean spacing and typography
+    
+    **Information Sections (below login):**
+    
+    1. Site Map navigation:
+       - Servicio Técnico
+       - Calibración y Reparaciones
+       - Actualización de archivos y Firmware
+       - Garantías y RMA
+       - Soporte y Contacto
+    
+    2. Main heading: "Servicio Técnico FLIR"
+       - Description: Colvin y Cía Ltda. as authorized Teledyne FLIR service center in Chile
+    
+    3. Calibration section with subsections:
+       - What is calibration
+       - Calibration with FLIR Brazil factory parameters
+       - Parameters verified during calibration
+       - Calibration certificate
+       - Recommendations
+    
+    4. Repairs section with:
+       - General description
+       - Types of repairs
+       - Repair procedure (6 steps)
+       - Service warranty
+    
+    5. Contact section:
+       - Steps to register a technical service request
+    
+    Use minimal styling, clean typography, subtle borders or spacing to separate sections, and ensure mobile responsiveness. The login should integrate with Shopify's native customer account system.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-tech-support-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-tech-support-login-{{ ai_gen_id }} {
+    background-color: {{ block.settings.login_bg_color }};
+    padding: 40px;
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    margin-bottom: 60px;
+  }
+
+  .ai-tech-support-login-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 24px 0;
+    font-weight: 600;
+  }
+
+  .ai-tech-support-form-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .ai-tech-support-field-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-tech-support-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.text_color }};
+    font-weight: 500;
+  }
+
+  .ai-tech-support-input-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    font-size: {{ block.settings.text_size }}px;
+    background-color: {{ block.settings.input_bg_color }};
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-tech-support-input-{{ ai_gen_id }}:focus {
+    outline: 2px solid {{ block.settings.accent_color }};
+    outline-offset: 0;
+  }
+
+  .ai-tech-support-button-{{ ai_gen_id }} {
+    padding: 14px 28px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: {{ block.settings.text_size }}px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .ai-tech-support-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-tech-support-links-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .ai-tech-support-link-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.link_color }};
+    text-decoration: underline;
+  }
+
+  .ai-tech-support-error-{{ ai_gen_id }} {
+    color: {{ block.settings.error_color }};
+    font-size: {{ block.settings.text_size }}px;
+    margin-bottom: 16px;
+  }
+
+  .ai-tech-support-content-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .ai-tech-support-section-{{ ai_gen_id }} {
+    padding-bottom: 48px;
+    border-bottom: 1px solid {{ block.settings.border_color }};
+  }
+
+  .ai-tech-support-section-{{ ai_gen_id }}:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .ai-tech-support-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 20px 0;
+    font-weight: 600;
+  }
+
+  .ai-tech-support-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 24px 0 12px 0;
+    font-weight: 600;
+  }
+
+  .ai-tech-support-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+  }
+
+  .ai-tech-support-list-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+  }
+
+  .ai-tech-support-list-item-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: 1.6;
+    padding: 8px 0 8px 24px;
+    position: relative;
+  }
+
+  .ai-tech-support-list-item-{{ ai_gen_id }}::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: {{ block.settings.accent_color }};
+    font-weight: bold;
+  }
+
+  .ai-tech-support-nav-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .ai-tech-support-nav-link-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.link_color }};
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    transition: all 0.2s ease;
+  }
+
+  .ai-tech-support-nav-link-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.button_text_color }};
+    border-color: {{ block.settings.accent_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-tech-support-{{ ai_gen_id }} {
+      padding: 24px 16px;
+    }
+
+    .ai-tech-support-login-{{ ai_gen_id }} {
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .ai-tech-support-content-{{ ai_gen_id }} {
+      gap: 32px;
+    }
+
+    .ai-tech-support-section-{{ ai_gen_id }} {
+      padding-bottom: 32px;
+    }
+
+    .ai-tech-support-nav-{{ ai_gen_id }} {
+      flex-direction: column;
+    }
+
+    .ai-tech-support-nav-link-{{ ai_gen_id }} {
+      text-align: center;
+    }
+  }
+{% endstyle %}
+
+<tech-support-{{ ai_gen_id }} class="ai-tech-support-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-tech-support-login-{{ ai_gen_id }}">
+    <h2 class="ai-tech-support-login-title-{{ ai_gen_id }}">{{ block.settings.login_title }}</h2>
+    
+    {% form 'customer_login' %}
+      {% if form.errors %}
+        <div class="ai-tech-support-error-{{ ai_gen_id }}">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <div class="ai-tech-support-form-{{ ai_gen_id }}">
+        <div class="ai-tech-support-field-{{ ai_gen_id }}">
+          <label for="CustomerEmail-{{ ai_gen_id }}" class="ai-tech-support-label-{{ ai_gen_id }}">
+            {{ block.settings.email_label }}
+          </label>
+          <input
+            type="email"
+            name="customer[email]"
+            id="CustomerEmail-{{ ai_gen_id }}"
+            class="ai-tech-support-input-{{ ai_gen_id }}"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            {% if form.errors %}
+              aria-invalid="true"
+            {% endif %}
+            required
+          >
+        </div>
+
+        <div class="ai-tech-support-field-{{ ai_gen_id }}">
+          <label for="CustomerPassword-{{ ai_gen_id }}" class="ai-tech-support-label-{{ ai_gen_id }}">
+            {{ block.settings.password_label }}
+          </label>
+          <input
+            type="password"
+            name="customer[password]"
+            id="CustomerPassword-{{ ai_gen_id }}"
+            class="ai-tech-support-input-{{ ai_gen_id }}"
+            autocomplete="current-password"
+            {% if form.errors %}
+              aria-invalid="true"
+            {% endif %}
+            required
+          >
+        </div>
+
+        <button type="submit" class="ai-tech-support-button-{{ ai_gen_id }}">
+          {{ block.settings.login_button_text }}
+        </button>
+
+        <div class="ai-tech-support-links-{{ ai_gen_id }}">
+          <a href="{{ routes.account_register_url }}" class="ai-tech-support-link-{{ ai_gen_id }}">
+            {{ block.settings.create_account_text }}
+          </a>
+          <a href="{{ routes.account_recover_url }}" class="ai-tech-support-link-{{ ai_gen_id }}">
+            {{ block.settings.forgot_password_text }}
+          </a>
+        </div>
+      </div>
+    {% endform %}
+  </div>
+
+  <div class="ai-tech-support-content-{{ ai_gen_id }}">
+    {% if block.settings.show_sitemap %}
+      <div class="ai-tech-support-section-{{ ai_gen_id }}">
+        <h3 class="ai-tech-support-heading-{{ ai_gen_id }}">{{ block.settings.sitemap_title }}</h3>
+        <nav class="ai-tech-support-nav-{{ ai_gen_id }}">
+          <a href="{{ block.settings.sitemap_link_1 }}" class="ai-tech-support-nav-link-{{ ai_gen_id }}">
+            {{ block.settings.sitemap_text_1 }}
+          </a>
+          <a href="{{ block.settings.sitemap_link_2 }}" class="ai-tech-support-nav-link-{{ ai_gen_id }}">
+            {{ block.settings.sitemap_text_2 }}
+          </a>
+          <a href="{{ block.settings.sitemap_link_3 }}" class="ai-tech-support-nav-link-{{ ai_gen_id }}">
+            {{ block.settings.sitemap_text_3 }}
+          </a>
+          <a href="{{ block.settings.sitemap_link_4 }}" class="ai-tech-support-nav-link-{{ ai_gen_id }}">
+            {{ block.settings.sitemap_text_4 }}
+          </a>
+          <a href="{{ block.settings.sitemap_link_5 }}" class="ai-tech-support-nav-link-{{ ai_gen_id }}">
+            {{ block.settings.sitemap_text_5 }}
+          </a>
+        </nav>
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_main_section %}
+      <div class="ai-tech-support-section-{{ ai_gen_id }}">
+        <h2 class="ai-tech-support-heading-{{ ai_gen_id }}">{{ block.settings.main_heading }}</h2>
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.main_description }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_calibration %}
+      <div class="ai-tech-support-section-{{ ai_gen_id }}">
+        <h2 class="ai-tech-support-heading-{{ ai_gen_id }}">{{ block.settings.calibration_heading }}</h2>
+        
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.calibration_what_title }}</h3>
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.calibration_what_text }}
+        </div>
+
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.calibration_factory_title }}</h3>
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.calibration_factory_text }}
+        </div>
+
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.calibration_parameters_title }}</h3>
+        <ul class="ai-tech-support-list-{{ ai_gen_id }}">
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.calibration_param_1 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.calibration_param_2 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.calibration_param_3 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.calibration_param_4 }}</li>
+        </ul>
+
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.calibration_certificate_title }}</h3>
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.calibration_certificate_text }}
+        </div>
+
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.calibration_recommendations_title }}</h3>
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.calibration_recommendations_text }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_repairs %}
+      <div class="ai-tech-support-section-{{ ai_gen_id }}">
+        <h2 class="ai-tech-support-heading-{{ ai_gen_id }}">{{ block.settings.repairs_heading }}</h2>
+        
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.repairs_description }}
+        </div>
+
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.repairs_types_title }}</h3>
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.repairs_types_text }}
+        </div>
+
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.repairs_procedure_title }}</h3>
+        <ul class="ai-tech-support-list-{{ ai_gen_id }}">
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.repairs_step_1 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.repairs_step_2 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.repairs_step_3 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.repairs_step_4 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.repairs_step_5 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.repairs_step_6 }}</li>
+        </ul>
+
+        <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">{{ block.settings.repairs_warranty_title }}</h3>
+        <div class="ai-tech-support-text-{{ ai_gen_id }}">
+          {{ block.settings.repairs_warranty_text }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_contact %}
+      <div class="ai-tech-support-section-{{ ai_gen_id }}">
+        <h2 class="ai-tech-support-heading-{{ ai_gen_id }}">{{ block.settings.contact_heading }}</h2>
+        <ul class="ai-tech-support-list-{{ ai_gen_id }}">
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.contact_step_1 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.contact_step_2 }}</li>
+          <li class="ai-tech-support-list-item-{{ ai_gen_id }}">{{ block.settings.contact_step_3 }}</li>
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</tech-support-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class TechSupport{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        const form = this.querySelector('form');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            const email = form.querySelector('input[type="email"]');
+            const password = form.querySelector('input[type="password"]');
+            
+            if (!email.value || !password.value) {
+              e.preventDefault();
+            }
+          });
+        }
+      }
+    }
+
+    customElements.define('tech-support-{{ ai_gen_id }}', TechSupport{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "FLIR technical support",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Login section"
+    },
+    {
+      "type": "text",
+      "id": "login_title",
+      "label": "Login title",
+      "default": "Acceso de clientes"
+    },
+    {
+      "type": "text",
+      "id": "email_label",
+      "label": "Email label",
+      "default": "Correo electrónico"
+    },
+    {
+      "type": "text",
+      "id": "password_label",
+      "label": "Password label",
+      "default": "Contraseña"
+    },
+    {
+      "type": "text",
+      "id": "login_button_text",
+      "label": "Login button text",
+      "default": "Iniciar sesión"
+    },
+    {
+      "type": "text",
+      "id": "create_account_text",
+      "label": "Create account text",
+      "default": "Crear cuenta"
+    },
+    {
+      "type": "text",
+      "id": "forgot_password_text",
+      "label": "Forgot password text",
+      "default": "¿Olvidó su contraseña?"
+    },
+    {
+      "type": "header",
+      "content": "Site map navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sitemap",
+      "label": "Show site map",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "sitemap_title",
+      "label": "Site map title",
+      "default": "Navegación"
+    },
+    {
+      "type": "text",
+      "id": "sitemap_text_1",
+      "label": "Link 1 text",
+      "default": "Servicio Técnico"
+    },
+    {
+      "type": "url",
+      "id": "sitemap_link_1",
+      "label": "Link 1 URL"
+    },
+    {
+      "type": "text",
+      "id": "sitemap_text_2",
+      "label": "Link 2 text",
+      "default": "Calibración y Reparaciones"
+    },
+    {
+      "type": "url",
+      "id": "sitemap_link_2",
+      "label": "Link 2 URL"
+    },
+    {
+      "type": "text",
+      "id": "sitemap_text_3",
+      "label": "Link 3 text",
+      "default": "Actualización de archivos y Firmware"
+    },
+    {
+      "type": "url",
+      "id": "sitemap_link_3",
+      "label": "Link 3 URL"
+    },
+    {
+      "type": "text",
+      "id": "sitemap_text_4",
+      "label": "Link 4 text",
+      "default": "Garantías y RMA"
+    },
+    {
+      "type": "url",
+      "id": "sitemap_link_4",
+      "label": "Link 4 URL"
+    },
+    {
+      "type": "text",
+      "id": "sitemap_text_5",
+      "label": "Link 5 text",
+      "default": "Soporte y Contacto"
+    },
+    {
+      "type": "url",
+      "id": "sitemap_link_5",
+      "label": "Link 5 URL"
+    },
+    {
+      "type": "header",
+      "content": "Main section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_main_section",
+      "label": "Show main section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Main heading",
+      "default": "Servicio Técnico FLIR"
+    },
+    {
+      "type": "richtext",
+      "id": "main_description",
+      "label": "Main description",
+      "default": "<p>Colvin y Cía Ltda. es el centro de servicio técnico autorizado de Teledyne FLIR en Chile, ofreciendo calibración, reparación y soporte especializado para equipos de termografía y medición industrial.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Calibration section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_calibration",
+      "label": "Show calibration section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "calibration_heading",
+      "label": "Calibration heading",
+      "default": "Calibración"
+    },
+    {
+      "type": "text",
+      "id": "calibration_what_title",
+      "label": "What is calibration title",
+      "default": "¿Qué es la calibración?"
+    },
+    {
+      "type": "richtext",
+      "id": "calibration_what_text",
+      "label": "What is calibration text",
+      "default": "<p>La calibración es el proceso de verificar y ajustar la precisión de los equipos de medición según estándares de fábrica.</p>"
+    },
+    {
+      "type": "text",
+      "id": "calibration_factory_title",
+      "label": "Factory calibration title",
+      "default": "Calibración con parámetros de fábrica FLIR Brasil"
+    },
+    {
+      "type": "richtext",
+      "id": "calibration_factory_text",
+      "label": "Factory calibration text",
+      "default": "<p>Realizamos calibraciones utilizando los parámetros oficiales de la fábrica FLIR en Brasil, garantizando la máxima precisión.</p>"
+    },
+    {
+      "type": "text",
+      "id": "calibration_parameters_title",
+      "label": "Parameters title",
+      "default": "Parámetros verificados durante la calibración"
+    },
+    {
+      "type": "text",
+      "id": "calibration_param_1",
+      "label": "Parameter 1",
+      "default": "Precisión de temperatura"
+    },
+    {
+      "type": "text",
+      "id": "calibration_param_2",
+      "label": "Parameter 2",
+      "default": "Uniformidad térmica"
+    },
+    {
+      "type": "text",
+      "id": "calibration_param_3",
+      "label": "Parameter 3",
+      "default": "Sensibilidad del detector"
+    },
+    {
+      "type": "text",
+      "id": "calibration_param_4",
+      "label": "Parameter 4",
+      "default": "Compensación de temperatura ambiente"
+    },
+    {
+      "type": "text",
+      "id": "calibration_certificate_title",
+      "label": "Certificate title",
+      "default": "Certificado de calibración"
+    },
+    {
+      "type": "richtext",
+      "id": "calibration_certificate_text",
+      "label": "Certificate text",
+      "default": "<p>Cada calibración incluye un certificado oficial que documenta los resultados y la trazabilidad del proceso.</p>"
+    },
+    {
+      "type": "text",
+      "id": "calibration_recommendations_title",
+      "label": "Recommendations title",
+      "default": "Recomendaciones"
+    },
+    {
+      "type": "richtext",
+      "id": "calibration_recommendations_text",
+      "label": "Recommendations text",
+      "default": "<p>Se recomienda calibrar los equipos anualmente o según las especificaciones del fabricante para mantener la precisión óptima.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Repairs section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_repairs",
+      "label": "Show repairs section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "repairs_heading",
+      "label": "Repairs heading",
+      "default": "Reparaciones"
+    },
+    {
+      "type": "richtext",
+      "id": "repairs_description",
+      "label": "Repairs description",
+      "default": "<p>Ofrecemos servicio de reparación completo para equipos FLIR con técnicos certificados y repuestos originales.</p>"
+    },
+    {
+      "type": "text",
+      "id": "repairs_types_title",
+      "label": "Types of repairs title",
+      "default": "Tipos de reparaciones"
+    },
+    {
+      "type": "richtext",
+      "id": "repairs_types_text",
+      "label": "Types of repairs text",
+      "default": "<p>Realizamos reparaciones mecánicas, electrónicas, ópticas y de software para toda la línea de productos FLIR.</p>"
+    },
+    {
+      "type": "text",
+      "id": "repairs_procedure_title",
+      "label": "Procedure title",
+      "default": "Procedimiento de reparación"
+    },
+    {
+      "type": "text",
+      "id": "repairs_step_1",
+      "label": "Step 1",
+      "default": "Diagnóstico inicial del equipo"
+    },
+    {
+      "type": "text",
+      "id": "repairs_step_2",
+      "label": "Step 2",
+      "default": "Cotización y aprobación del cliente"
+    },
+    {
+      "type": "text",
+      "id": "repairs_step_3",
+      "label": "Step 3",
+      "default": "Reparación con repuestos originales"
+    },
+    {
+      "type": "text",
+      "id": "repairs_step_4",
+      "label": "Step 4",
+      "default": "Pruebas de funcionamiento"
+    },
+    {
+      "type": "text",
+      "id": "repairs_step_5",
+      "label": "Step 5",
+      "default": "Calibración post-reparación"
+    },
+    {
+      "type": "text",
+      "id": "repairs_step_6",
+      "label": "Step 6",
+      "default": "Entrega con certificado de servicio"
+    },
+    {
+      "type": "text",
+      "id": "repairs_warranty_title",
+      "label": "Warranty title",
+      "default": "Garantía del servicio"
+    },
+    {
+      "type": "richtext",
+      "id": "repairs_warranty_text",
+      "label": "Warranty text",
+      "default": "<p>Todas las reparaciones incluyen garantía de 90 días sobre el trabajo realizado y los repuestos instalados.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Contact section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact",
+      "label": "Show contact section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "Contact heading",
+      "default": "Cómo solicitar servicio técnico"
+    },
+    {
+      "type": "text",
+      "id": "contact_step_1",
+      "label": "Step 1",
+      "default": "Inicie sesión en su cuenta de cliente"
+    },
+    {
+      "type": "text",
+      "id": "contact_step_2",
+      "label": "Step 2",
+      "default": "Complete el formulario de solicitud de servicio técnico"
+    },
+    {
+      "type": "text",
+      "id": "contact_step_3",
+      "label": "Step 3",
+      "default": "Nuestro equipo se pondrá en contacto dentro de 24 horas hábiles"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "login_bg_color",
+      "label": "Login background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#616161"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link",
+      "default": "#c51618"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#c51618"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "color",
+      "id": "input_bg_color",
+      "label": "Input background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input border",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button background",
+      "default": "#c51618"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover background",
+      "default": "#a01214"
+    },
+    {
+      "type": "color",
+      "id": "error_color",
+      "label": "Error",
+      "default": "#c51618"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 18,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 14,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Subheading size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Input border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "FLIR technical support"
+    }
+  ]
+}
+{% endschema %}

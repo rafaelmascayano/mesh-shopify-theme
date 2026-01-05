@@ -44,7 +44,7 @@
           {% endcomment %}
 
           <div class="card">
-            <div class="card__section">
+            <div class="card__section" bss-b2b-quickview-product-form>
               <div class="product-gallery">
                 <div class="product-gallery__carousel-wrapper">
                   <div class="product-gallery__carousel {% if section.settings.enable_image_zoom %}product-gallery__carousel--zoomable{% endif %}" data-image-count="1">
@@ -62,7 +62,7 @@
           </div>
 
           <div class="card card--collapsed">
-            <div class="card__section">
+            <div class="card__section" bss-b2b-quickview-product-form>
               <div class="product-info">
                 {%- for block in section.blocks -%}{% comment %}start BSS Commerce Hide Price{% endcomment %}{% capture bss_lock_check %}{% render 'bss-lock-condition', scope: 'subject', subject: block, variable: 'transparent' %}{% endcapture %}{% if bss_lock_check contains 'true' %}{% render 'bss-hide-product-design', section: 'sections/featured-product.liquid', subject: block %}{% continue %}{% endif %}{% comment %}end BSS Commerce Hide Price{% endcomment %}
                   {%- case block.type -%}
@@ -113,7 +113,7 @@
                           <span class="product-form__info-title text--strong">{{ 'product.form.price' | t }}:</span>
 
                           <div class="product-form__info-content">
-                            <div class="price-list">
+                            <div class="price-list" bss-b2b-product-id="{{ product.id }}" bss-b2b-product-price bss-b2b-variant-price bss-b2b-variant-id="{{ product.selected_or_first_available_variant.id }}" bss-b2b-featured-product="true">
                               <span class="price">{{ 4000 | money }}</span>
                             </div>
                           </div>

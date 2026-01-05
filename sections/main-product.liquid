@@ -233,7 +233,7 @@
                         <h2 class="card__title heading h3">{{ block.settings.title | escape }}</h2>
                       </div>
 
-                      <div class="card__section">
+                      <div class="card__section" bss-b2b-quickview-product-form>
                         <div class="complementary-product-list">
                           {%- for product in recommendations.products -%}{% comment %}start BSS Commerce Hide Price{% endcomment %}{% capture bss_lock_check %}{% render 'bss-lock-condition', scope: 'subject', subject: product, variable: 'transparent' %}{% endcapture %}{% if bss_lock_check contains 'true' %}{% render 'bss-hide-product-design', section: 'sections/main-product.liquid', subject: product %}{% continue %}{% endif %}{% comment %}end BSS Commerce Hide Price{% endcomment %}
                             {%- render 'product-item', product: product, horizontal: true, hide_labels: true, show_add_to_cart: block.settings.show_quick_buy, complementary_products: true -%}
@@ -266,7 +266,7 @@
                         {%- render 'icon', icon: 'lock', width: 22, height: 24 -%}
                       </div>
 
-                      <div class="card__section">
+                      <div class="card__section" bss-b2b-quickview-product-form>
                         {%- if show_payment_icons -%}
                           {%- if block.settings.custom_security_badge -%}
                             <p class="card__subtitle heading h6">{{ 'product.general.payment' | t }}</p>
@@ -318,7 +318,7 @@
                         <h2 class="card__title heading h3">{{ 'product.general.estimate_shipping' | t }}</h2>
                       </div>
 
-                      <div class="card__section">
+                      <div class="card__section" bss-b2b-quickview-product-form>
                         <div class="shipping-estimator form" role="form">
                           <div class="form__input-row">
                             <div class="form__input-wrapper">

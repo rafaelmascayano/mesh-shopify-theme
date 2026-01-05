@@ -41,7 +41,7 @@
 
         <div class="mini-cart__line-item-list">
           {%- for line_item in cart.items -%}
-            <div class="mini-cart__line-item">
+            <div class="mini-cart__line-item" bss-b2b-cart-item-key="{{ line_item.key }}">
               {%- if line_item.image != blank -%}
                 <div class="mini-cart__image-wrapper">
                   {%- comment -%}For vertical images we force to contain them on a square ratio to avoid growing too large{%- endcomment -%}
@@ -108,14 +108,14 @@
                         {%- if line_item.final_price == 0 -%}
                           <span class="price price--highlight">{{ 'cart.general.free' | t }}</span>
                         {%- else -%}
-                          <span class="price price--highlight">{{ line_item.final_line_price | money }}</span>
+                          <span class="price price--highlight" bss-b2b-final-line-price>{{ line_item.final_line_price | money }}</span>
                         {%- endif -%}
                         <span class="price price--compare">{{ line_item.original_line_price | money }}</span>
                       {%- elsif line_item.variant.compare_at_price > line_item.variant.price -%}
-                        <span class="price price--highlight">{{ line_item.final_line_price | money }}</span>
+                        <span class="price price--highlight" bss-b2b-final-line-price>{{ line_item.final_line_price | money }}</span>
                         <span class="price price--compare">{{ line_item.variant.compare_at_price | times: line_item.quantity | money }}</span>
                       {%- else -%}
-                        <span class="price">{{ line_item.final_line_price | money }}</span>
+                        <span class="price" bss-b2b-final-line-price>{{ line_item.final_line_price | money }}</span>
                       {%- endif -%}
                     {%- endif -%}
                   </div>

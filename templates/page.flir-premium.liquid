@@ -1,0 +1,389 @@
+<!-- sections/flir-news.liquid -->
+<div class="flir-news-section">
+
+  <!-- Contenedor de Productos -->
+  <div class="products-container">
+    <div class="container product-grid">
+      
+      <!-- FLIR T1K Series -->
+      <div class="product-card" data-aos="fade-up">
+        <div class="product-content">
+          <div class="product-image">
+            <a href="{{ section.settings.serie-t10xx-1_link | default: '/collections/camaras-termograficas-t1k-hd' }}">
+              <img src="{{ 'T1K-series.png' | file_img_url: '600x400', crop: 'center' }}" alt="FLIR T1K Series" loading="lazy">
+              <div class="product-badge">Nueva Serie</div>
+            </a>
+          </div>
+          <div class="product-info">
+            <h2 class="product-title">FLIR T1K Series</h2>
+            <div class="product-description">
+              <p>Prepárate para un rendimiento térmico excepcional con la serie T1K, el nuevo estándar de referencia de FLIR.</p>
+            </div>
+            <div class="product-features">
+              <span class="feature-tag">3.1 MP UltraMax®</span>
+              <span class="feature-tag">Interfaz Smartphone</span>
+            </div>
+            {% if section.settings.show_cta %}
+              <a href="{{ section.settings.t1k_series_link | default: '/collections/camaras-termograficas-t1k-hd' }}" class="btn-primary">Ver Colección</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- FLIR T800 Series -->
+      <div class="product-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="product-content">
+          <div class="product-image">
+            <a href="{{ section.settings.serie-t800_link | default: '/collections/camaras-termicas-serie-t800' }}">
+              <img src="{{ 'T800-series.png' | file_img_url: '600x400', crop: 'center' }}" alt="FLIR T800 Series" loading="lazy">
+              <div class="product-badge recommended">Recomendada</div>
+            </a>
+          </div>
+          <div class="product-info">
+            <h2 class="product-title">FLIR T800 Series</h2>
+            <div class="product-description">
+              <p>Diseñada para inspecciones exigentes con su bloque óptico rotatorio de 180° y acceso a componentes difíciles.</p>
+            </div>
+            <div class="product-features">
+              <span class="feature-tag">Rotatorio 180°</span>
+              <span class="feature-tag">FlexView™</span>
+            </div>
+            {% if section.settings.show_cta %}
+              <a href="{{ section.settings.t800_series_link | default: '/collections/camaras-termicas-serie-t800' }}" class="btn-primary">Ver Colección</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- FLIR Exx Series -->
+      <div class="product-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="product-content">
+          <div class="product-image">
+            <a href="{{ section.settings.serie-exx_link | default: '/collections/serie-exx-camaras-termograficas' }}">
+              <img src="{{ 'EXX-series.jpg' | file_img_url: '600x400', crop: 'center' }}" alt="FLIR Exx Series" loading="lazy">
+              <div class="product-badge">Serie Compacta</div>
+            </a>
+          </div>
+          <div class="product-info">
+            <h2 class="product-title">FLIR Exx Series</h2>
+            <div class="product-description">
+              <p>Compactas y potentes con resolución de hasta 640×480 px, lentes AutoCal™ y conectividad FLIR Ignite.</p>
+            </div>
+            <div class="product-features">
+              <span class="feature-tag">640×480 px</span>
+              <span class="feature-tag">FLIR Ignite</span>
+            </div>
+            {% if section.settings.show_cta %}
+              <a href="{{ section.settings.exx_series_link | default: '/collections/serie-exx-camaras-termograficas' }}" class="btn-primary">Ver Colección</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- FLIR G Series -->
+      <div class="product-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="product-content">
+          <div class="product-image">
+            <a href="{{ section.settings.corocam_series_link | default: '/collections/camaras-deteccion-gas-flir-serie-g' }}">
+              <img src="{{ 'G-series.png' | file_img_url: '600x400', crop: 'center' }}" alt="FLIR G Series" loading="lazy">
+              <div class="product-badge gas">Detección Gas</div>
+            </a>
+          </div>
+          <div class="product-info">
+            <h2 class="product-title">FLIR G Series</h2>
+            <div class="product-description">
+              <p>Visualiza gases invisibles como VOC, metano y SF6 para identificar fugas industriales de forma segura.</p>
+            </div>
+            <div class="product-features">
+              <span class="feature-tag">VOC Detection</span>
+              <span class="feature-tag">Metano</span>
+            </div>
+            {% if section.settings.show_cta %}
+              <a href="{{ section.settings.g_series_link | default: '/collections/flir-g-series' }}" class="btn-primary">Ver Colección</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- FLIR SI Series -->
+      <div class="product-card" data-aos="fade-up" data-aos-delay="400">
+        <div class="product-content">
+          <div class="product-image">
+            <a href="{{ section.settings.serie_si_link | default: '/collections/camaras-imagenes-acusticas-flir-serie-si' }}">
+              <img src="{{ 'SI-series.png' | file_img_url: '600x400', crop: 'center' }}" alt="FLIR SI Series" loading="lazy">
+              <div class="product-badge acoustic">Serie Acústica</div>
+            </a>
+          </div>
+          <div class="product-info">
+            <h2 class="product-title">FLIR SI Series</h2>
+            <div class="product-description">
+              <p>Cámaras acústicas que capturan ultrasonidos para detectar fugas, descargas eléctricas y fallas mecánicas.</p>
+            </div>
+            <div class="product-features">
+              <span class="feature-tag">IA Integrada</span>
+              <span class="feature-tag">Ultrasonido</span>
+            </div>
+            {% if section.settings.show_cta %}
+              <a href="{{ section.settings.si_series_link | default: '/collections/camaras-imagenes-acusticas-flir-serie-si' }}" class="btn-primary">Ver Colección</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- CoroCAM Series -->
+      <div class="product-card" data-aos="fade-up" data-aos-delay="500">
+        <div class="product-content">
+          <div class="product-image">
+            <a href="{{ section.settings.corocam_series_link | default: '/collections/deteccion-efecto-corona-uv'}}">
+              <img src="{{ 'corocam-series.jpg' | file_img_url: '600x400', crop: 'center' }}" alt="CoroCAM Series" loading="lazy">
+              <div class="product-badge uv">Serie UV</div>
+            </a>
+          </div>
+          <div class="product-info">
+            <h2 class="product-title">CoroCAM Series</h2>
+            <div class="product-description">
+              <p>Diseñada para visualización UV avanzada, la serie CoroCAM detecta descargas eléctricas (corona) en alta tensión.</p>
+            </div>
+            <div class="product-features">
+              <span class="feature-tag">Detección Corona</span>
+              <span class="feature-tag">Alta Tensión</span>
+            </div>
+            {% if section.settings.show_cta %}
+              <a href="{{ section.settings.corocam_series_link | default: '/collections/deteccion-efecto-corona-uv' }}" class="btn-primary">Ver Colección</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  {% if section.settings.show_contact_section %}
+  <div class="contact-section">
+    <div class="container">
+      <div class="contact-content">
+        <h2>¿Necesitas más información?</h2>
+        <p>Somos representantes oficiales de TELEDYNE FLIR en Chile. Contáctanos para conocer más sobre nuestros productos y servicios.</p>
+        <div class="contact-buttons">
+          <a href="{{ section.settings.contact_link | default: '/pages/contacto' }}" class="btn-primary">
+            Contactar Especialista
+          </a>
+          <a href="tel:{{ section.settings.phone | default: '+56222119824' }}" class="btn-outline">
+            <span>📞</span> {{ section.settings.phone | default: '+56 2 2211 9824' }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+/* --- CONFIGURACIÓN GENERAL --- */
+.flir-news-section {
+  --card-bg: #ffffff;
+  --text-main: #333333;
+  --text-light: #666666;
+  --accent-color: #e74c3c; /* Rojo FLIR */
+  font-family: var(--font-body-family, sans-serif);
+}
+
+.container {
+  max-width: var(--page-width, 1200px);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --- ESPACIADO DE LA SECCIÓN --- */
+.products-container {
+  padding: 60px 0; /* Margen superior e inferior entre secciones */
+}
+
+/* --- GRID DE PRODUCTOS --- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+/* --- TARJETAS (CARDS) --- */
+.product-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+}
+
+.product-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* Imagen */
+.product-image {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+/* Badges */
+.product-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--accent-color);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 2;
+}
+.product-badge.recommended { background: #27ae60; }
+.product-badge.gas { background: #f39c12; }
+.product-badge.acoustic { background: #9b59b6; }
+.product-badge.uv { background: #3498db; }
+
+/* Info */
+.product-info {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-title {
+  font-size: 1.25rem;
+  margin: 0 0 10px 0;
+  color: var(--text-main);
+}
+
+.product-description {
+  flex-grow: 1;
+  margin-bottom: 15px;
+}
+
+.product-description p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Tags */
+.product-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.feature-tag {
+  background: #f4f4f4;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: #555;
+}
+
+/* Botones */
+.btn-primary {
+  background: var(--accent-color);
+  color: #fff;
+  text-align: center;
+  padding: 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  color: #fff;
+}
+
+/* --- SECCIÓN DE CONTACTO --- */
+.contact-section {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 80px 0;
+  text-align: center;
+}
+
+.contact-content h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.contact-content p {
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+  opacity: 0.8;
+}
+
+.contact-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-outline {
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn-outline:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .products-container { padding: 40px 0; }
+  .product-grid { grid-template-columns: 1fr; }
+  .contact-buttons { flex-direction: column; align-items: center; }
+  .btn-primary, .btn-outline { width: 100%; max-width: 300px; }
+}
+</style>
+
+<!-- Schema SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Colvin y Cia Ltda",
+  "url": "{{ shop.url }}",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "{{ section.settings.phone | default: '+56222119824' }}",
+    "contactType": "Customer Service"
+  }
+}
+</script>

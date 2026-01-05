@@ -1,0 +1,505 @@
+{% doc %}
+  @prompt
+    Create a minimalist Custom Liquid block for a technical support page that combines a Shopify customer account login form with informational sections about FLIR technical service.
+    
+    The design should be clean and minimal with:
+    
+    **Login Section (top):**
+    - Simple customer login form using Shopify's customer account system
+    - Email and password fields
+    - Login button and "Create account" link
+    - "Forgot password" link
+    - Clean spacing and typography
+    
+    **Information Sections (below login):**
+    
+    1. Site Map navigation:
+       - Servicio Técnico
+       - Calibración y Reparaciones
+       - Actualización de archivos y Firmware
+       - Garantías y RMA
+       - Soporte y Contacto
+    
+    2. Main heading: "Servicio Técnico FLIR"
+       - Description: Colvin y Cía Ltda. as authorized Teledyne FLIR service center in Chile
+    
+    3. Calibration section with subsections:
+       - What is calibration
+       - Calibration with FLIR Brazil factory parameters
+       - Parameters verified during calibration
+       - Calibration certificate
+       - Recommendations
+    
+    4. Repairs section with:
+       - General description
+       - Types of repairs
+       - Repair procedure (6 steps)
+       - Service warranty
+    
+    5. Contact section:
+       - Steps to register a technical service request
+    
+    Use minimal styling, clean typography, subtle borders or spacing to separate sections, and ensure mobile responsiveness. The login should integrate with Shopify's native customer account system.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-tech-support-{{ ai_gen_id }} {
+    display: block;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: {{ settings.text_font.family }}, sans-serif;
+    color: {{ settings.text_color }};
+  }
+
+  .ai-tech-support-login-{{ ai_gen_id }} {
+    background-color: {{ settings.secondary_background }};
+    border: 1px solid {{ settings.border_color }};
+    padding: 40px;
+    margin-bottom: 60px;
+    border-radius: 4px;
+  }
+
+  .ai-tech-support-login-title-{{ ai_gen_id }} {
+    font-family: {{ settings.heading_font.family }}, sans-serif;
+    font-size: 24px;
+    color: {{ settings.heading_color }};
+    margin: 0 0 24px 0;
+    font-weight: 600;
+  }
+
+  .ai-tech-support-form-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-tech-support-field-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-tech-support-label-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 500;
+    color: {{ settings.heading_color }};
+  }
+
+  .ai-tech-support-input-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    border: 1px solid {{ settings.border_color }};
+    border-radius: 4px;
+    font-size: 15px;
+    font-family: {{ settings.text_font.family }}, sans-serif;
+    transition: border-color 0.2s;
+  }
+
+  .ai-tech-support-input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ settings.accent_color }};
+  }
+
+  .ai-tech-support-button-{{ ai_gen_id }} {
+    padding: 14px 24px;
+    background-color: {{ settings.primary_button_background }};
+    color: {{ settings.primary_button_text_color }};
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 8px;
+  }
+
+  .ai-tech-support-button-{{ ai_gen_id }}:hover {
+    opacity: 0.9;
+  }
+
+  .ai-tech-support-links-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid {{ settings.border_color }};
+  }
+
+  .ai-tech-support-link-{{ ai_gen_id }} {
+    color: {{ settings.link_color }};
+    text-decoration: underline;
+    font-size: 14px;
+  }
+
+  .ai-tech-support-error-{{ ai_gen_id }} {
+    color: {{ settings.error_color }};
+    font-size: 14px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: rgba(197, 22, 24, 0.05);
+    border-radius: 4px;
+  }
+
+  .ai-tech-support-sitemap-{{ ai_gen_id }} {
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid {{ settings.border_color }};
+  }
+
+  .ai-tech-support-sitemap-title-{{ ai_gen_id }} {
+    font-family: {{ settings.heading_font.family }}, sans-serif;
+    font-size: 14px;
+    color: {{ settings.heading_color }};
+    margin: 0 0 16px 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-tech-support-sitemap-list-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+
+  .ai-tech-support-sitemap-item-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ settings.text_color }};
+  }
+
+  .ai-tech-support-section-{{ ai_gen_id }} {
+    margin-bottom: 48px;
+  }
+
+  .ai-tech-support-heading-{{ ai_gen_id }} {
+    font-family: {{ settings.heading_font.family }}, sans-serif;
+    font-size: 28px;
+    color: {{ settings.heading_color }};
+    margin: 0 0 16px 0;
+    font-weight: 600;
+  }
+
+  .ai-tech-support-subheading-{{ ai_gen_id }} {
+    font-family: {{ settings.heading_font.family }}, sans-serif;
+    font-size: 20px;
+    color: {{ settings.heading_color }};
+    margin: 32px 0 12px 0;
+    font-weight: 600;
+  }
+
+  .ai-tech-support-text-{{ ai_gen_id }} {
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+  }
+
+  .ai-tech-support-list-{{ ai_gen_id }} {
+    margin: 0 0 16px 0;
+    padding-left: 24px;
+  }
+
+  .ai-tech-support-list-{{ ai_gen_id }} li {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .ai-tech-support-steps-{{ ai_gen_id }} {
+    counter-reset: step-counter;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+  }
+
+  .ai-tech-support-step-{{ ai_gen_id }} {
+    counter-increment: step-counter;
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .ai-tech-support-step-{{ ai_gen_id }}::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 28px;
+    height: 28px;
+    background-color: {{ settings.accent_color }};
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-tech-support-{{ ai_gen_id }} {
+      padding: 24px 16px;
+    }
+
+    .ai-tech-support-login-{{ ai_gen_id }} {
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .ai-tech-support-login-title-{{ ai_gen_id }} {
+      font-size: 20px;
+    }
+
+    .ai-tech-support-heading-{{ ai_gen_id }} {
+      font-size: 24px;
+    }
+
+    .ai-tech-support-subheading-{{ ai_gen_id }} {
+      font-size: 18px;
+    }
+
+    .ai-tech-support-sitemap-list-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+{% endstyle %}
+
+<tech-support-{{ ai_gen_id }} class="ai-tech-support-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if customer %}
+    <div class="ai-tech-support-login-{{ ai_gen_id }}">
+      <h2 class="ai-tech-support-login-title-{{ ai_gen_id }}">Bienvenido, {{ customer.first_name }}</h2>
+      <p class="ai-tech-support-text-{{ ai_gen_id }}">Ya has iniciado sesión en tu cuenta.</p>
+      <a href="{{ routes.account_logout_url }}" class="ai-tech-support-link-{{ ai_gen_id }}">Cerrar sesión</a>
+    </div>
+  {% else %}
+    <div class="ai-tech-support-login-{{ ai_gen_id }}">
+      <h2 class="ai-tech-support-login-title-{{ ai_gen_id }}">Iniciar sesión</h2>
+      
+      {% form 'customer_login' %}
+        {% if form.errors %}
+          <div class="ai-tech-support-error-{{ ai_gen_id }}">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <div class="ai-tech-support-form-{{ ai_gen_id }}">
+          <div class="ai-tech-support-field-{{ ai_gen_id }}">
+            <label for="CustomerEmail-{{ ai_gen_id }}" class="ai-tech-support-label-{{ ai_gen_id }}">
+              Correo electrónico
+            </label>
+            <input
+              type="email"
+              name="customer[email]"
+              id="CustomerEmail-{{ ai_gen_id }}"
+              class="ai-tech-support-input-{{ ai_gen_id }}"
+              autocomplete="email"
+              autocorrect="off"
+              autocapitalize="off"
+              {% if form.errors %}
+                aria-invalid="true"
+              {% endif %}
+              required
+            >
+          </div>
+
+          <div class="ai-tech-support-field-{{ ai_gen_id }}">
+            <label for="CustomerPassword-{{ ai_gen_id }}" class="ai-tech-support-label-{{ ai_gen_id }}">
+              Contraseña
+            </label>
+            <input
+              type="password"
+              name="customer[password]"
+              id="CustomerPassword-{{ ai_gen_id }}"
+              class="ai-tech-support-input-{{ ai_gen_id }}"
+              autocomplete="current-password"
+              {% if form.errors %}
+                aria-invalid="true"
+              {% endif %}
+              required
+            >
+          </div>
+
+          <button type="submit" class="ai-tech-support-button-{{ ai_gen_id }}">
+            Iniciar sesión
+          </button>
+        </div>
+
+        <div class="ai-tech-support-links-{{ ai_gen_id }}">
+          <a href="{{ routes.account_register_url }}" class="ai-tech-support-link-{{ ai_gen_id }}">
+            Crear cuenta
+          </a>
+          <a href="{{ routes.account_recover_url }}" class="ai-tech-support-link-{{ ai_gen_id }}">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
+      {% endform %}
+    </div>
+  {% endif %}
+
+
+  <div class="ai-tech-support-section-{{ ai_gen_id }}">
+    <h1 class="ai-tech-support-heading-{{ ai_gen_id }}">Servicio Técnico FLIR</h1>
+    <p class="ai-tech-support-text-{{ ai_gen_id }}">
+      Colvin y Cía Ltda. es el centro de servicio técnico autorizado de Teledyne FLIR en Chile, 
+      ofreciendo calibración, reparación y soporte especializado para todos los equipos de la marca.
+    </p>
+  </div>
+
+  <div class="ai-tech-support-section-{{ ai_gen_id }}">
+    <h2 class="ai-tech-support-subheading-{{ ai_gen_id }}">Calibración</h2>
+    
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">¿Qué es la calibración?</h3>
+    <p class="ai-tech-support-text-{{ ai_gen_id }}">
+      La calibración es el proceso mediante el cual se ajustan los parámetros de medición de un equipo 
+      para garantizar la precisión y exactitud de sus lecturas, comparándolas con estándares de referencia trazables.
+    </p>
+
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">Calibración con parámetros de fábrica FLIR Brasil</h3>
+    <p class="ai-tech-support-text-{{ ai_gen_id }}">
+      Nuestro servicio de calibración se realiza siguiendo los parámetros establecidos por la fábrica de 
+      Teledyne FLIR en Brasil, garantizando que su equipo cumpla con las especificaciones originales del fabricante.
+    </p>
+
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">Parámetros verificados durante la calibración</h3>
+    <ul class="ai-tech-support-list-{{ ai_gen_id }}">
+      <li>Exactitud de temperatura en múltiples rangos</li>
+      <li>Uniformidad térmica del detector</li>
+      <li>Respuesta espectral</li>
+      <li>Enfoque y nitidez de imagen</li>
+      <li>Funciones de medición y análisis</li>
+    </ul>
+
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">Certificado de calibración</h3>
+    <p class="ai-tech-support-text-{{ ai_gen_id }}">
+      Al finalizar el proceso, se emite un certificado de calibración oficial que documenta los resultados 
+      obtenidos, las condiciones de prueba y la trazabilidad a estándares internacionales.
+    </p>
+
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">Recomendaciones</h3>
+    <ul class="ai-tech-support-list-{{ ai_gen_id }}">
+      <li>Calibrar anualmente o según las especificaciones de su industria</li>
+      <li>Calibrar después de reparaciones mayores</li>
+      <li>Mantener registro de calibraciones para auditorías de calidad</li>
+      <li>Proteger el equipo de golpes y condiciones extremas entre calibraciones</li>
+    </ul>
+  </div>
+
+  <div class="ai-tech-support-section-{{ ai_gen_id }}">
+    <h2 class="ai-tech-support-subheading-{{ ai_gen_id }}">Reparaciones</h2>
+    <p class="ai-tech-support-text-{{ ai_gen_id }}">
+      Ofrecemos servicio de reparación especializado para equipos Teledyne FLIR, realizado por técnicos 
+      certificados utilizando repuestos originales y siguiendo los procedimientos establecidos por el fabricante.
+    </p>
+
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">Tipos de reparaciones</h3>
+    <ul class="ai-tech-support-list-{{ ai_gen_id }}">
+      <li>Reparación de detectores térmicos</li>
+      <li>Reemplazo de componentes ópticos</li>
+      <li>Actualización de firmware y software</li>
+      <li>Reparación de circuitos electrónicos</li>
+      <li>Mantenimiento preventivo</li>
+      <li>Limpieza y ajuste de lentes</li>
+    </ul>
+
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">Procedimiento de reparación</h3>
+    <ol class="ai-tech-support-steps-{{ ai_gen_id }}">
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Recepción y registro del equipo en nuestro sistema
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Diagnóstico técnico completo y evaluación de fallas
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Cotización detallada de la reparación y aprobación del cliente
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Ejecución de la reparación con repuestos originales
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Pruebas de funcionamiento y control de calidad
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Entrega del equipo con informe técnico y garantía de servicio
+      </li>
+    </ol>
+
+    <h3 class="ai-tech-support-subheading-{{ ai_gen_id }}">Garantía del servicio</h3>
+    <p class="ai-tech-support-text-{{ ai_gen_id }}">
+      Todas nuestras reparaciones incluyen garantía de 90 días sobre el trabajo realizado y los repuestos 
+      instalados, respaldando la calidad de nuestro servicio técnico.
+    </p>
+  </div>
+
+  <div class="ai-tech-support-section-{{ ai_gen_id }}">
+    <h2 class="ai-tech-support-subheading-{{ ai_gen_id }}">Contacto para servicio técnico</h2>
+    <p class="ai-tech-support-text-{{ ai_gen_id }}">
+      Para registrar una solicitud de servicio técnico, siga estos pasos:
+    </p>
+    <ol class="ai-tech-support-steps-{{ ai_gen_id }}">
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Crear Cuenta
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Iniciar sesión
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Ir a Mis Solicites de Servicio Técnico
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Crear Nueva Solicitud de Servicio Técnico (RMA)
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Empaque el equipo de forma segura y envíelo a nuestras instalaciones
+      </li>
+      <li class="ai-tech-support-step-{{ ai_gen_id }}">
+        Reciba actualizaciones sobre el estado de su servicio técnico
+      </li>
+    </ol>
+  </div>
+</tech-support-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class TechSupport{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        const form = this.querySelector('form');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            const email = form.querySelector('input[type="email"]');
+            const password = form.querySelector('input[type="password"]');
+            
+            if (!email.value || !password.value) {
+              e.preventDefault();
+            }
+          });
+        }
+      }
+    }
+
+    customElements.define('tech-support-{{ ai_gen_id }}', TechSupport{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Technical support",
+  "tag": null,
+  "settings": [],
+  "presets": [
+    {
+      "name": "Technical support"
+    }
+  ]
+}
+{% endschema %}
