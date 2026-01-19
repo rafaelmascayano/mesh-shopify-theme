@@ -49,7 +49,7 @@
     {% render 'social-meta-tags' %}
     {% render 'css-variables' %}
 
-    {{ content_for_header }}
+    {%- if tinyscript -%}{{ content_for_header }}{%- else -%}{% render 'tiny-script-control' %}{%- endif -%}
 
     <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
 
@@ -155,5 +155,6 @@
     <script crossorigin="anonymous" src="{{ 'jquery-3.6.0.min.js' | asset_url }}"></script>
     {{ 'jquery-3.6.0.min.js' | asset_url | script_tag }}
     {{ 'jquery-3.5.1.min.js' | asset_url | script_tag }}
-  </body>
+  <script src="{{ 'tiny-img-link-preloader.js' | asset_url }}" defer></script>
+</body>
 </html>
