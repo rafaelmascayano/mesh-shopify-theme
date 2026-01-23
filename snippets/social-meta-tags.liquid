@@ -25,7 +25,7 @@ Validate your Pinterest rich pins
     <meta property="product:availability" content="{% if product.available %}in stock{% else %}out of stock{% endif %}">
   {%- endif -%}
 
-  <meta property="product:price:amount" content="{{ product.selected_or_first_available_variant.price | money_without_currency | strip_html | escape }}">
+  <meta property="product:price:amount" content="{{ product.selected_or_first_available_variant.price | times: 1.19 | money_without_currency | strip_html | escape }}">
   <meta property="product:price:currency" content="{{ cart.currency.iso_code }}">
 {%- elsif request.page_type == 'article' -%}
   <meta property="og:type" content="article">

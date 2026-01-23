@@ -8,12 +8,13 @@
     {%- if settings.cart_show_free_shipping_threshold -%}
       {%- assign threshold_in_cents = settings.cart_free_shipping_threshold | times: 100 -%}
 
-      {%- if cart.total_price >= threshold_in_cents -%}
-        <p class="alert alert--tight alert--center text--strong">{{ 'cart.general.free_shipping' | t }}</p>
-      {%- else -%}
-        {%- capture remaining_amount -%}<span>{{ cart.total_price | minus: threshold_in_cents | abs | money }}</span>{%- endcapture -%}
-        <p class="alert alert--tight alert--center text--strong">{{ 'cart.general.free_shipping_remaining_html' | t: remaining_amount: remaining_amount }}</p>
-      {%- endif -%}
+        {%- assign total_with_tax = cart.total_price | times: 1.19 -%}
+        {%- if total_with_tax >= threshold_in_cents -%}
+          <p class="alert alert--tight alert--center text--strong">{{ 'cart.general.free_shipping' | t }}</p>
+        {%- else -%}
+          {%- capture remaining_amount -%}<span>{{ threshold_in_cents | minus: total_with_tax | abs | money }}</span>{%- endcapture -%}
+          <p class="alert alert--tight alert--center text--strong">{{ 'cart.general.free_shipping_remaining_html' | t: remaining_amount: remaining_amount }}</p>
+        {%- endif -%}
     {%- endif -%}
   {%- endcapture -%}
 
@@ -108,14 +109,14 @@
                         {%- if line_item.final_price == 0 -%}
                           <span class="price price--highlight">{{ 'cart.general.free' | t }}</span>
                         {%- else -%}
-                          <span class="price price--highlight" bss-b2b-final-line-price>{{ line_item.final_line_price | money }}</span>
+                          <span class="price price--highlight" bss-b2b-final-line-price>{{ line_item.final_line_price | times: 1.19 | money }} <span style="font-size: 0.7em;">({{ 'product.general.iva_included' | t }})</span></span>
                         {%- endif -%}
-                        <span class="price price--compare">{{ line_item.original_line_price | money }}</span>
+                        <span class="price price--compare">{{ line_item.original_line_price | times: 1.19 | money }} <span style="font-size: 0.7em;">({{ 'product.general.iva_included' | t }})</span></span>
                       {%- elsif line_item.variant.compare_at_price > line_item.variant.price -%}
-                        <span class="price price--highlight" bss-b2b-final-line-price>{{ line_item.final_line_price | money }}</span>
-                        <span class="price price--compare">{{ line_item.variant.compare_at_price | times: line_item.quantity | money }}</span>
+                        <span class="price price--highlight" bss-b2b-final-line-price>{{ line_item.final_line_price | times: 1.19 | money }} <span style="font-size: 0.7em;">({{ 'product.general.iva_included' | t }})</span></span>
+                        <span class="price price--compare">{{ line_item.variant.compare_at_price | times: line_item.quantity | times: 1.19 | money }} <span style="font-size: 0.7em;">({{ 'product.general.iva_included' | t }})</span></span>
                       {%- else -%}
-                        <span class="price" bss-b2b-final-line-price>{{ line_item.final_line_price | money }}</span>
+                        <span class="price" bss-b2b-final-line-price>{{ line_item.final_line_price | times: 1.19 | money }} <span style="font-size: 0.7em;">({{ 'product.general.iva_included' | t }})</span></span>
                       {%- endif -%}
                     {%- endif -%}
                   </div>
@@ -123,7 +124,7 @@
                   {%- if line_item.unit_price_measurement -%}
                     <div class="mini-cart__price-info">
                       <div class="unit-price-measurement">
-                        <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if line_item.unit_price > price_limit or line_item.unit_price == 0 or line_item_hide_price -%}Consultar precio{%- else -%}{{ line_item.unit_price | money }}{%- endif -%}</span>
+                        <span class="unit-price-measurement__price">{%- assign price_limit = 500000000 -%}{%- if line_item.unit_price > price_limit or line_item.unit_price == 0 or line_item_hide_price -%}Consultar precio{%- else -%}{{ line_item.unit_price | times: 1.19 | money }}{%- endif -%}</span>
                         <span class="unit-price-measurement__separator">/ </span>
 
                         {%- if line_item.unit_price_measurement.reference_value != 1 -%}
@@ -139,7 +140,7 @@
                     <ul class="mini-cart__discount-list" role="list">
                       {%- for discount_allocation in line_item.line_level_discount_allocations -%}
                         <li class="mini-cart__discount">
-                          {%- render 'icon', icon: 'sale' -%}{{ discount_allocation.discount_application.title }} (-{{ discount_allocation.amount | money }})
+                          {%- render 'icon', icon: 'sale' -%}{{ discount_allocation.discount_application.title }} (-{{ discount_allocation.amount | times: 1.19 | money }})
                         </li>
                       {%- endfor -%}
                     </ul>
@@ -202,7 +203,7 @@
 
         <div class="mini-cart__recap-price-line">
           <span>{{ 'cart.general.total' | t }}</span>
-          <span>{{ total_with_tax | money_with_currency }} <small style="display: block; font-size: 0.75rem; font-weight: normal; color: #666;">(IVA incl.)</small></span>
+          <span>{{ total_with_tax | money_with_currency }} <span style="font-size: 0.7em;">({{ 'product.general.iva_included' | t }})</span></span>
         </div>
 
         {%- comment -%}To calculate the total discount, we take both into account the Shopify Script (for Plus merchants), but we also add the compare at price{%- endcomment -%}
