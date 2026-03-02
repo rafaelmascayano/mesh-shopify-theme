@@ -1814,7 +1814,7 @@ function initAgregarGuiaForm() {
 
     const formData = new FormData(agregarGuiaForm);
 
-    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_guia_despacho?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+    fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_guia_despacho?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
       method: 'POST',
       body: formData
     })
@@ -1881,7 +1881,7 @@ function initAgregarFacturaForm() {
 
     const formData = new FormData(agregarFacturaForm);
 
-    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_factura?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+    fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_factura?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
       method: 'POST',
       body: formData
     })
@@ -2587,7 +2587,7 @@ async function handleAnotacionFiles(files) {
         var formData = new FormData(transitoForm);
 
         // Enviar datos al servidor
-        fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_transito?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+        fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_transito?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
           method: 'POST',
           body: formData
         })
@@ -2679,7 +2679,7 @@ async function handleAnotacionFiles(files) {
         var formData = new FormData(anotacionForm);
 
         // Enviar datos al servidor
-        fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_anotacion?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', { // Reemplaza con la URL correcta si difiere
+        fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_anotacion?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), { // Reemplaza con la URL correcta si difiere
           method: 'POST',
           body: formData
         })
@@ -2754,7 +2754,7 @@ async function handleAnotacionFiles(files) {
         var formData = new FormData(estadoForm);
 
         // Enviar datos al servidor
-        fetch('https://colvinycia-servicios.azurewebsites.net/api/actualizar_estado_reparacion?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', { // Reemplaza YOUR_ACTUALIZAR_ESTADO_FUNCTION_CODE con el código correcto
+        fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/actualizar_estado_reparacion?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), { // Reemplaza YOUR_ACTUALIZAR_ESTADO_FUNCTION_CODE con el código correcto
           method: 'POST',
           body: formData
         })
@@ -2804,7 +2804,7 @@ function updateRmaState(rmaId, newState, cardElement) {
   formData.append('nuevo_estado', newState);
 
   // Enviar la solicitud para actualizar el estado
-  fetch('https://colvinycia-servicios.azurewebsites.net/api/actualizar_estado_reparacion?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+  fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/actualizar_estado_reparacion?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
     method: 'POST',
     body: formData
   })
@@ -2925,7 +2925,7 @@ function initAgregarPresupuestoForm() {
     var formData = new FormData(agregarPresupuestoForm);
 
     // Enviar datos al servidor
-    fetch('https://colvinycia-servicios.azurewebsites.net/api/crear_presupuesto?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+    fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_presupuesto?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
       method: 'POST',
       body: formData
     })

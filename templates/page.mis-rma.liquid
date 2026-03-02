@@ -866,7 +866,7 @@ function showPresupuestoModal(presupuesto, rmaId) { // Añadido el parámetro rm
       });
 
       // Enviar datos a Azure Function
-      fetch('https://colvinycia-servicios.azurewebsites.net/api/cambiar_estado_de_presupuesto_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+      fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/cambiar_estado_de_presupuesto_cliente?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
         method: 'POST',
         body: formData
       })
@@ -952,7 +952,7 @@ function showPresupuestoModal(presupuesto, rmaId) { // Añadido el parámetro rm
   // Manejo de archivos
   setupFileUpload(
     '#agregar-archivos-form',
-    'https://colvinycia-servicios.azurewebsites.net/api/procesar_archivos_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D',
+    'https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/procesar_archivos_cliente?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''),
     { 
       rma_id: rmaId, 
       accion: 'agregar_archivos',
@@ -1007,7 +1007,7 @@ function showPresupuestoModal(presupuesto, rmaId) { // Añadido el parámetro rm
         };
       
         // Enviar datos a Azure Function
-        fetch('https://colvinycia-servicios.azurewebsites.net/api/agregar_comentario_cliente?code=4yzDv-kxo0meShy98zCb24xw-ysVbo7jXaMzxM5eqJXEAzFuczFQFA%3D%3D', {
+        fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/agregar_comentario_cliente?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
