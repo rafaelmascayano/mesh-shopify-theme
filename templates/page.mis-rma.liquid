@@ -1000,19 +1000,15 @@ function showPresupuestoModal(presupuesto, rmaId) { // Añadido el parámetro rm
         submitButton.textContent = 'Enviando...';
       
         // Preparar datos para enviar
-        const dataToSend = {
-          numero: rmaNumero,
-          id: rmaId,
-          comentario: `${comentario}`
-        };
+        const dataToSend = new FormData();
+        dataToSend.append('numero', rmaNumero);
+        dataToSend.append('id', rmaId);
+        dataToSend.append('comentario', `${comentario}`);
       
         // Enviar datos a Azure Function
         fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/agregar_comentario_cliente?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dataToSend)
+          body: dataToSend
         })
         .then(response => {
           if (!response.ok) {

@@ -353,15 +353,7 @@
       // Enviar datos al servidor
       fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_empresa?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
         method: 'POST',
-        body: JSON.stringify({
-          nombre_empresa: formData.get('nombre_empresa'),
-          rut_empresa: formData.get('rut_empresa'),
-          telefono: formData.get('telefono'),
-          customer_id: formData.get('customer_id')
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        body: formData
       })
       .then(response => {
         if (!response.ok) {

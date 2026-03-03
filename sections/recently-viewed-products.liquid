@@ -30,7 +30,7 @@
 
                 {%- for product in search.results -%}{% comment %}start BSS Commerce Hide Price{% endcomment %}{% capture bss_lock_check %}{% render 'bss-lock-condition', scope: 'subject', subject: product, variable: 'transparent' %}{% endcapture %}{% if bss_lock_check contains 'true' %}{% render 'bss-hide-product-design', section: 'sections/recently-viewed-products.liquid', subject: product %}{% continue %}{% endif %}{% comment %}end BSS Commerce Hide Price{% endcomment %}
                   {%- if product.id == id -%}
-                    {%- assign price_limit = 500000000 -%}
+                    {%- assign price_limit = 1000000000 -%}
                     {%- assign hide_price = false -%}
                     {%- if product.tags contains 'no-show-price' -%}
                       {%- assign hide_price = true -%}

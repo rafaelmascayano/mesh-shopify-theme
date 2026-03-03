@@ -502,14 +502,12 @@
     submitButton.value = 'Cargando...';
 
     // Enviar datos al servidor para verificar si el cliente existe
+    const verificarClienteFormData = new FormData();
+    verificarClienteFormData.append('email', email);
+
     fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/verificar_cliente?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
       method: 'POST',
-      body: JSON.stringify({
-        email: email
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      body: verificarClienteFormData
     })
     .then(response => {
       if (!response.ok) {
@@ -584,17 +582,15 @@
     submitButton.value = 'Cargando...';
 
     // Enviar datos al servidor para crear el cliente
+    const crearClienteFormData = new FormData();
+    crearClienteFormData.append('first_name', formData.get('first_name'));
+    crearClienteFormData.append('last_name', formData.get('last_name'));
+    crearClienteFormData.append('email', window.customerEmail);
+    crearClienteFormData.append('phone', formData.get('phone'));
+
     fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_cliente?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
       method: 'POST',
-      body: JSON.stringify({
-        first_name: formData.get('first_name'),
-        last_name: formData.get('last_name'),
-        email: window.customerEmail,
-        phone: formData.get('phone')
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      body: crearClienteFormData
     })
     .then(response => {
       if (!response.ok) {
@@ -667,15 +663,13 @@
     submitButton.value = 'Cargando...';
 
     // Enviar datos al servidor para verificar si la empresa existe
+    const verificarEmpresaFormData = new FormData();
+    verificarEmpresaFormData.append('rut_empresa', rutEmpresa);
+    verificarEmpresaFormData.append('customer_id', window.customerId);
+
     fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/verificar_empresa?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
       method: 'POST',
-      body: JSON.stringify({
-        rut_empresa: rutEmpresa,
-        customer_id: window.customerId
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      body: verificarEmpresaFormData
     })
     .then(response => {
       if (!response.ok) {
@@ -753,15 +747,7 @@
     // Enviar datos al servidor para crear la empresa
     fetch('https://colvinycia-servicios-lion-dtcaf4hdgmf5hwch.eastus2-01.azurewebsites.net/api/crear_empresa?code=' + encodeURIComponent(window.COLVIN_AZURE_FUNCTION_KEY || ''), {
       method: 'POST',
-      body: JSON.stringify({
-        nombre_empresa: formData.get('nombre_empresa'),
-        rut_empresa: window.rutEmpresa,
-        telefono: formData.get('telefono'),
-        customer_id: window.customerId
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      body: formData
     })
     .then(response => {
       if (!response.ok) {
