@@ -8,21 +8,22 @@ from google import genai
 from google.genai import types
 
 # ---------------------------------------------------------
-# CONFIGURACIÓN (V2026.03 - ELITE GEO)
+# CONFIGURACIÓN (V2026.03 - RECURSIVE SCAN)
 # ---------------------------------------------------------
-# Rutas dinámicas para ejecución desde Skill o Root
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# Cargar .env buscando en carpetas superiores si es necesario
-search_paths = [
-    os.path.join(SCRIPT_DIR, ".env"),
-    os.path.join(SCRIPT_DIR, "../../.env"),
-    os.path.join(SCRIPT_DIR, "../../../.env"),
-    os.path.join(SCRIPT_DIR, "../../../scripts/.env")
-]
-for p in search_paths:
-    if os.path.exists(p):
-        load_dotenv(p)
-        break
+
+def load_env_recursive():
+    curr = SCRIPT_DIR
+    while curr != os.path.dirname(curr): # Till root /
+        p = os.path.join(curr, ".env")
+        if os.path.exists(p):
+            load_dotenv(p)
+            print(f"✅ .env cargado desde: {p}")
+            return True
+        curr = os.path.dirname(curr)
+    return False
+
+load_env_recursive()
 
 # Shopify
 raw_shop = os.getenv("SHOPIFY_STORE", "colvinycia")
@@ -30,7 +31,7 @@ SHOP = f"{raw_shop.split('.')[0]}.myshopify.com" if "." in raw_shop else f"{raw_
 ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")
 HEADERS = {"X-Shopify-Access-Token": ACCESS_TOKEN, "Content-Type": "application/json"}
 
-# Gemini (Versión 2.5 Flash - Estándar Q1 2026)
+# Gemini (V2.5 Flash - Estándar 2026)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip().strip('"').strip("'")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
@@ -79,9 +80,16 @@ def update_shopify_product(product_id, new_html):
     return resp.json()
 
 def run_enrichment_cycle(limit=1):
-    input_file = os.path.join(SCRIPT_DIR, '../../../../shopify_seo_audit.csv')
+    # PRIORIDAD: Si existe un CSV de prioridad local
+    priority_file = os.path.join(SCRIPT_DIR, '../../../../.agents/priority_products.csv')
+    if os.path.exists(priority_file):
+        input_file = priority_file
+        print(f"🎯 Usando Segmento Prioritario: {priority_file}")
+    else:
+        # Fallback al audit general
+        input_file = os.path.join(SCRIPT_DIR, '../../../../shopify_seo_audit.csv')
+    
     if not os.path.exists(input_file):
-        # Intento fallback
         input_file = 'shopify_seo_audit.csv'
     
     if not os.path.exists(input_file):

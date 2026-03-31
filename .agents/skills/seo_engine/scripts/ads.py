@@ -39,8 +39,20 @@ import sys
 from datetime import datetime, timedelta
 
 import pandas as pd
+from dotenv import load_dotenv
 from google.ads.googleads.client import GoogleAdsClient
 from google.ads.googleads.errors import GoogleAdsException
+
+# Carga .env (busca en el directorio del script y ancestros)
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+for _env_path in [
+    os.path.join(_SCRIPT_DIR, ".env"),
+    os.path.join(_SCRIPT_DIR, "../../../.env"),
+    os.path.join(_SCRIPT_DIR, "../../../../.env"),
+]:
+    if os.path.exists(_env_path):
+        load_dotenv(_env_path)
+        break
 
 
 def parse_args():
@@ -150,12 +162,24 @@ def main():
         datetime.strptime(args.start_date, "%Y-%m-%d").date() if args.start_date else (end_date - timedelta(days=30))
     )
 
-    # IDs
+    # IDs — CLI args tienen prioridad, .env como fallback
     explicit_ids = []
     if args.customer_ids:
         explicit_ids = [x.strip().replace("-", "") for x in args.customer_ids.split(",") if x.strip()]
+
     customer_id = args.customer_id.replace("-", "") if args.customer_id else None
+    if not customer_id:
+        env_cid = os.getenv("GOOGLE_ADS_CUSTOMER_ID", "").strip().replace("-", "")
+        if env_cid:
+            customer_id = env_cid
+            print(f"[INFO] Customer ID desde .env: {customer_id}")
+
     login_cid = args.login_customer_id.replace("-", "") if args.login_customer_id else None
+    if not login_cid:
+        env_login = os.getenv("GOOGLE_ADS_LOGIN_CUSTOMER_ID", "").strip().replace("-", "")
+        if env_login:
+            login_cid = env_login
+            print(f"[INFO] Login Customer ID (MCC) desde .env: {login_cid}")
 
     client = load_client(login_cid)
 
@@ -173,7 +197,8 @@ def main():
             )
     else:
         print(
-            "ERROR: Debes indicar --customer-id, --customer-ids o --login-customer-id (MCC).",
+            "ERROR: Debes indicar --customer-id, --customer-ids, --login-customer-id (MCC),\n"
+            "       o definir GOOGLE_ADS_CUSTOMER_ID en tu .env",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -281,6 +306,47 @@ def main():
         FROM asset_group_asset
         WHERE segments.date BETWEEN '{start_date}' AND '{end_date}'
     """
+    # 7) Quality Score por keyword
+    quality_score_gaql = f"""
+        SELECT
+          customer.id,
+          campaign.id,
+          campaign.name,
+          ad_group.id,
+          ad_group.name,
+          ad_group_criterion.keyword.text,
+          ad_group_criterion.keyword.match_type,
+          ad_group_criterion.quality_info.quality_score,
+          ad_group_criterion.quality_info.creative_quality_score,
+          ad_group_criterion.quality_info.post_click_quality_score,
+          ad_group_criterion.quality_info.search_predicted_ctr,
+          metrics.impressions,
+          metrics.clicks,
+          metrics.conversions,
+          metrics.cost_micros
+        FROM keyword_view
+        {date_filter}
+    """
+    # 8) Ad Copy (Responsive Search Ads)
+    ad_copy_gaql = f"""
+        SELECT
+          customer.id,
+          campaign.id,
+          campaign.name,
+          ad_group.id,
+          ad_group.name,
+          ad_group_ad.ad.id,
+          ad_group_ad.ad.responsive_search_ad.headlines,
+          ad_group_ad.ad.responsive_search_ad.descriptions,
+          ad_group_ad.ad.final_urls,
+          ad_group_ad.ad.type,
+          metrics.impressions,
+          metrics.clicks,
+          metrics.conversions,
+          metrics.cost_micros
+        FROM ad_group_ad
+        {date_filter}
+    """
 
     # Output aggregations
     all_campaigns, all_terms, all_device, all_geo_c, all_pmax_g, all_pmax_a = (
@@ -291,6 +357,7 @@ def main():
         [],
         [],
     )
+    all_quality_score, all_ad_copy = [], []
 
     for cid in target_customers:
         print(f"\n=== Procesando customer {cid} ===")
@@ -416,6 +483,59 @@ def main():
         )
         all_pmax_a.append(df)
 
+        # quality score
+        rows = run_query(client, cid, quality_score_gaql)
+        df = rows_to_dataframe(
+            rows,
+            {
+                "customer_id": lambda r: r.customer.id,
+                "campaign_id": lambda r: r.campaign.id,
+                "campaign_name": lambda r: r.campaign.name,
+                "ad_group_id": lambda r: r.ad_group.id,
+                "ad_group_name": lambda r: r.ad_group.name,
+                "keyword": lambda r: r.ad_group_criterion.keyword.text,
+                "match_type": lambda r: r.ad_group_criterion.keyword.match_type.name,
+                "quality_score": lambda r: r.ad_group_criterion.quality_info.quality_score,
+                "creative_quality": lambda r: r.ad_group_criterion.quality_info.creative_quality_score.name,
+                "landing_page_quality": lambda r: r.ad_group_criterion.quality_info.post_click_quality_score.name,
+                "predicted_ctr": lambda r: r.ad_group_criterion.quality_info.search_predicted_ctr.name,
+                "impr": lambda r: r.metrics.impressions,
+                "clicks": lambda r: r.metrics.clicks,
+                "conversions": lambda r: r.metrics.conversions,
+                "cost": lambda r: float(r.metrics.cost_micros) / 1e6 if r.metrics.cost_micros else 0.0,
+            },
+        )
+        all_quality_score.append(df)
+
+        # ad copy
+        rows = run_query(client, cid, ad_copy_gaql)
+        df = rows_to_dataframe(
+            rows,
+            {
+                "customer_id": lambda r: r.customer.id,
+                "campaign_id": lambda r: r.campaign.id,
+                "campaign_name": lambda r: r.campaign.name,
+                "ad_group_id": lambda r: r.ad_group.id,
+                "ad_group_name": lambda r: r.ad_group.name,
+                "ad_id": lambda r: r.ad_group_ad.ad.id,
+                "ad_type": lambda r: r.ad_group_ad.ad.type_.name if r.ad_group_ad.ad.type_ else None,
+                "headlines": lambda r: "|||".join(
+                    [h.text for h in r.ad_group_ad.ad.responsive_search_ad.headlines]
+                ) if r.ad_group_ad.ad.responsive_search_ad and r.ad_group_ad.ad.responsive_search_ad.headlines else None,
+                "descriptions": lambda r: "|||".join(
+                    [d.text for d in r.ad_group_ad.ad.responsive_search_ad.descriptions]
+                ) if r.ad_group_ad.ad.responsive_search_ad and r.ad_group_ad.ad.responsive_search_ad.descriptions else None,
+                "final_urls": lambda r: "|||".join(
+                    list(r.ad_group_ad.ad.final_urls)
+                ) if r.ad_group_ad.ad.final_urls else None,
+                "impr": lambda r: r.metrics.impressions,
+                "clicks": lambda r: r.metrics.clicks,
+                "conversions": lambda r: r.metrics.conversions,
+                "cost": lambda r: float(r.metrics.cost_micros) / 1e6 if r.metrics.cost_micros else 0.0,
+            },
+        )
+        all_ad_copy.append(df)
+
     # Concatenate & export
     def concat_and_export(dfs, name):
         if not dfs:
@@ -430,6 +550,8 @@ def main():
     paths.append(concat_and_export(all_geo_c, "geo_country_weekly.csv"))
     paths.append(concat_and_export(all_pmax_g, "pmax_asset_groups_weekly.csv"))
     paths.append(concat_and_export(all_pmax_a, "pmax_assets_weekly.csv"))
+    paths.append(concat_and_export(all_quality_score, "quality_score_keywords.csv"))
+    paths.append(concat_and_export(all_ad_copy, "ad_copy_performance.csv"))
 
     print("\nListo. Archivos generados en:", outdir)
     for p in paths:

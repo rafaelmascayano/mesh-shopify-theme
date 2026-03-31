@@ -16,7 +16,15 @@ Este skill transforma catálogos técnicos (ej. FLIR) en **Fuentes de Datos Auto
 
 ### 📈 Inteligencia de Performance
 - **`growth_orchestration_cycle.py`** (en `growth-orchestrator`): Une GSC + Shopify para priorizar productos con alto tráfico pero contenido pobre.
-- **`ads.py`**: Feedback de búsquedas pagadas para enriquecer el long-tail orgánico.
+- **`ads.py`**: Exportación de datos de Google Ads (campañas, search terms, device, geo, PMax, Quality Score, Ad Copy).
+- **`ads_diagnostic.py`**: **Motor de diagnóstico de campañas.** Lee los CSVs exportados por `ads.py` y genera un reporte Markdown con:
+  - 🚫 Candidatos a keywords negativas (gasto sin conversión)
+  - 🏆 Keywords ganadoras a expandir
+  - ⚔️ Detección de canibalización entre campañas
+  - 📋 Análisis de Quality Score y acciones por keyword
+  - 📱 Recomendaciones de bid por dispositivo y geografía
+  - ✍️ Análisis de rendimiento de ad copy (RSA)
+  - 🤖 Diagnóstico de assets de Performance Max
 
 ### 🔍 Diagnóstico y Conectividad
 - **`test_shopify_graphql.py`**: Validación de Admin API.
@@ -27,8 +35,9 @@ Este skill transforma catálogos técnicos (ej. FLIR) en **Fuentes de Datos Auto
 
 1. **Auditoría de Salud:** Ejecutar `seo_audit_colvinycia.py` para identificar productos "Thin Content" o sin Schema.
 2. **Priorización:** Ejecutar `growth_orchestration_cycle.py` para cruzar con clics reales.
-3. **Enriquecimiento GEO:** Lanzar `product_enricher_engine.py` con las prioridades detectadas.
-4. **Inyección de Confianza:** Validar que el trust snippet de "Distribuidor Oficial" esté presente en el HTML final.
+3. **Diagnóstico de Ads:** Ejecutar `ads.py` → `ads_diagnostic.py` para identificar mejoras en campañas pagadas.
+4. **Enriquecimiento GEO:** Lanzar `product_enricher_engine.py` con las prioridades detectadas.
+5. **Inyección de Confianza:** Validar que el trust snippet de "Distribuidor Oficial" esté presente en el HTML final.
 
 ## Estándares 2026 (Refactorizados)
 - **Umbral de Citación:** Mínimo 1000 caracteres de contenido técnico útil.
