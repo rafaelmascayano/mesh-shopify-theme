@@ -1,0 +1,18 @@
+# Credentials and secrets
+gsc-service-account*.json
+*-service-account*.json
+*.key
+*.pem
+
+# Cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# Temporary files
+*.tmp
+*.log
+*.csv
+output/

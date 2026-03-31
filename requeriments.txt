@@ -1,0 +1,6 @@
+requests>=2.25.0
+python-dotenv
+pandas
+google-ads
+google-genai
+google-api-python-client

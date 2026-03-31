@@ -1,0 +1,4 @@
+*.env
+.env
+scripts/.env
+.agents/skills/growth-orchestrator/scripts/gsc-service-account.json

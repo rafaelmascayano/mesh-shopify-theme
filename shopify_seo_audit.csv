@@ -1,0 +1,251 @@
+id,title,handle,vendor,status,desc_len,has_tags,distributor_snippet
+6173444243637,1196398ACC / T199361 Acc,1196398acc-t199361-acc,Flir,archived,0,0,0
+4506137329706,24° Lens with Case (T199589),24-lens-with-case-t199589,Flir,active,202,1,0
+4510580211754,A-Series Connection Board (T300268ACC),a-series-connection-board-t300268acc,Flir,active,205,1,0
+4386524135466,A310 PT（automation）,a310-pt-automation,Flir,active,1310,0,0
+6180874584245,A310PT,a310-p-t-15,Flir,active,590,0,0
+8835313893614,A3xx - Ajuste de Calibración,a3xx-ajuste-de-calibracion,Flir,active,56,1,0
+8835313959150,A3xx - Ajuste de Calibración Filtro Alta T°,a3xx-ajuste-de-calibracion-filtro-alta-talta-t,Flir,active,71,1,0
+8835313926382,A3xx - Ajuste de Calibración Lente Extra,a3xx-ajuste-de-calibracion-lente-extra,Flir,active,68,1,0
+8835314024686,A3xx - Hora de mantención Limpieza interior exterior,a3xx-hora-de-mantencion-limpieza-interior-exterior,Flir,active,80,1,0
+8835313991918,A3xx - Revisión Equipo,a3xx-revision-equipo,Flir,active,50,1,0
+4506164428842,Accessory Box II for Exx-Series (T199557ACC),accessory-box-ii-for-exx-series-t199557acc,Flir,active,0,1,0
+9030375932142,Adaptador de montaje en esquina FLIR A500F/A700F,adaptador-de-montaje-en-esquina-flir-a500f-a700f,Flir,active,0,0,0
+8926762762478,Adaptador de montaje en poste FLIR A500F/A700F,adaptador-de-montaje-en-poste,Flir,active,0,0,0
+8926763745518,"Adaptador de poste Ø 210 mm, máx. 225 mm",adaptador-de-poste-o-210-mm-max-225-mm,Flir,active,0,0,0
+8727264985326,Adaptador para Trípode FLIR T198486 - Compatible Cámaras Termográficas Serie E40/E50/E60,tripod-adapter-t198486,Flir,active,1577,1,0
+8913666638062,ADVANCE IMAGEN STREAMING FLIR A70-50,imagen-streaming-flir-a70-copia,Flir,active,0,0,0
+8835315957998,"AGEMA, PM-Series - Ajuste de Calibración",agema-pm-series-ajuste-de-calibracion,Flir,active,68,1,0
+8835316023534,"AGEMA, PM-Series - Hora de mantención Limpieza interior exterior",agema-pm-series-hora-de-mantencion-limpieza-interior-exterior,Flir,active,92,1,0
+8835315990766,"AGEMA, PM-Series - Revisión Equipo",agema-pm-series-revision-equipo,Flir,active,62,1,0
+4475622326314,Agentase C2,agentase-c2,Flir,active,7480,1,0
+4510570774570,Antenna for WLAN 2.45 GHz (T911850ACC),antenna-for-wlan-2-45-ghz-t911850acc,Flir,active,196,1,0
+4506167083050,Aplicación FLIR InSite,aplicacion-flir-insite,Flir,active,833,1,0
+4387335274538,ARIEL 3MP CORNER CAMERA,ariel-3mp-corner-camera,Flir,archived,2093,0,0
+4387335831594,Ariel 4K UHD BULLET,ariel-4k-uhd-bullet,Flir,archived,2589,0,0
+4387336519722,Ariel 4K UHD Mini-Dome,ariel-4k-uhd-mini-dome,Flir,archived,8881,0,0
+4387336847402,ARIEL FULL HD BULLET,ariel-full-hd-bullet,Flir,archived,2296,0,0
+4387337502762,ARIEL FULL HD MINI-DOME,ariel-full-hd-mini-dome,Flir,archived,1995,0,0
+4387338059818,ARIEL QUAD HD BULLET,ariel-quad-hd-bullet,Flir,archived,2149,0,0
+4387338485802,ARIEL QUAD HD MINI-DOME,ariel-quad-hd-mini-dome,Flir,archived,1897,0,0
+8815623209198,"Batería FLIR  Serie GF3xx incluyendo la GF300, GF309 y GF320",bateria-flir-serie-gf3xx-incluyendo-la-gf300-gf309-y-gf320,Flir,active,502,0,0
+4506175176746,"Batería Flir para E53, E75, E85 y E95",battery-t199330acc,Flir,active,991,1,0
+6076593766581,Batería FLIR para T5XX,bateria-para-t5xx-t199300acc,Flir,active,101,1,0
+8809577316590,"Batería FLIR T199361ACC para Cámaras Termográficas i40, i50, T4xx",bateria-para-camaras-flir-series-i40-i50-t4xx-legacy-n-º-de-parte-anterior-1196398acc,Flir,active,1010,1,0
+8815623405806,"Batería FLIR T199376ACC para Cámaras Termográficas i3, i5, i7",bateria-flir-t199376acc-para-camaras-serie-i3-i5-i7-bateria-recargable-de-ion-de-litio-disenada-para-las-camaras-flir-i3-i5-e-i7,Flir,active,1298,1,0
+4506338754602,"Batería Li-ion 3.6 V, 2.6 Ah, 9.4 Wh",battery-li-ion-3-6-v-2-6-ah-9-4-wh-t199362acc,Flir,active,55,1,0
+8809577021678,Bateria para cámaras FLIR Series Pxx / P65 (Legacy),bateria-para-camaras-flir-series-pxx-p65-legacy,Flir,draft,58,0,0
+8815622521070,"Batería Recargable FLIR T199183ACC - Compatible Cámaras Ópticas de Gas GF Series (GF77, GF300, GF320, GF620, GFx320)",bateria-flir-compatible-con-todas-las-camaras-flir-gf-incluye-gf300-gf320-gf620-gfx320-gf77-entre-otras,Flir,active,2036,1,0
+8809577545966,Batería Recargable FLIR T199363ACC - Compatible Cámaras Termográficas E40 y E60 Legacy (Reemplaza T198487),baterias-para-camaras-flir-series-e40-y-e60-legacy-n-de-parte-anterior-t198487,Flir,active,2063,1,0
+8039650885870,Batería Recargable FLIR T199364ACC - Cámaras Termográficas T6xx y T1020 Series,bateria-camaras-flir-series-t6xx-t1020-t199364acc,Flir,active,2130,1,0
+8815625208046,"Batería Recargable FLIR T199423ACC para Cámaras Serie K (K33, K45, K53, K55, K65)",bateria-flir-para-camaras-serie-kx-utilizadas-en-operaciones-de-emergencia-y-combate-contra-incendios,Flir,active,1917,1,0
+8815624945902,Batería T199369ACC,bateria-t199369acc,Flir,archived,0,0,0
+4506175504426,Battery Charger (T199425ACC),battery-charger-t199425acc,Flir,active,113,1,0
+6174735827125,"Battery charger, incl. power supply with multi plugs (T197692)",t197692,Flir,active,110,0,0
+8921888227566,Bisagra doble para carcasa IP67/IP69,bisagra-doble-para-carcasa-ip67-ip69,Flir,active,0,0,0
+4506176159786,Bluetooth Headset (T197771ACC),bluetooth-headset-t197771acc,Flir,active,92,1,0
+4507813609514,Bolso Nylon cámaras T5xx / T8xx / GF77 – (P/N T198495),nylon-pouch-with-shoulder-strap-t198495,Flir,active,166,1,0
+6753906655413,Bolso para accesorios generales (TA12),bolso-para-accesorios-generales-ta12,Flir,active,746,1,0
+6753911931061,Bolso Para TG (TA13),bolso-para-tg-ta13,Flir,active,612,1,0
+6753902395573,Bolso Protector para DM9x y TA7x (TA10-F),bolso-protector-para-dm9x-y-ta7x-ta10-f,Flir,active,848,1,0
+6753936507061,Bolso Serie EX - EXT - EXPro,bolso-serie-ex-exx-t911689acc-1,Flir,active,469,1,0
+6753931198645,Bolso Universal (TA15),bolso-universal-ta15,Flir,active,573,1,0
+8835315368174,C2/C3 - Ajuste de Calibración,c2-c3-ajuste-de-calibracion,Colvin,active,57,1,0
+8835315466478,C2/C3 - Hora de mantención Limpieza interior exterior,c2-c3-hora-de-mantencion-limpieza-interior-exterior,Colvin,active,81,1,0
+8835315433710,C2/C3 - Revisión Equipo,c2-c3-revision-equipo,Colvin,active,51,1,0
+8891077132526,Cable de alimentación de radar a Pamp/T 10 metro R20SS,cable-de-alimentacion-de-radar-a-pamp-t-10-metro-r20ss,Flir,draft,0,0,0
+8871107494126,Cable Ethernet - M12 a RJ45 2 metros,cable-ethernet-m12-a-rj45-2-metros,Flir,active,85,0,0
+8911889367278,"Cable Ethernet M12 a RJ45, 10 m",flir-a70-is-95-89995-0101-copia-1,Flir,active,0,0,0
+8913695015150,"Cable M12 a pigtail, 10 m",cable-m12-a-pigtail-10-m,Flir,active,0,0,0
+4510579818538,"Cable M12 to pigtail, 10 m (T911853ACC)",cable-m12-to-pigtail-10-m-t911853acc,Flir,active,847,1,0
+4510573690922,"Cable M12 to pigtail, 2 m (T911852ACC)",cable-m12-to-pigtail-2-m-t911852acc,Flir,active,229,1,0
+8891133001966,"Cable power AC outdoor 15 m, US type",g009098n-15-cable-power-ac-outdoor-15-m-u,Flir,active,0,1,0
+8891073167598,Cable Radar Pigtail 16''/40cm,cable-radar-pigtail-16-40cm,Flir,active,154,0,0
+8891133296878,CABLE/SHORT PTH – JPC3,g012968-cableshort-pth-jpc3,Flir,active,0,1,0
+8835314778350,Calibración Lente Extra – Series FLIR Exx,e75-85-95-ajuste-de-calibracion-lente-extra,Colvin,active,75,1,0
+9055481069806,Calibración Profesional Certificada FLIR,calibracion-profesional-flir-10-de-descuento,Flir,active,2386,1,0
+9055482314990,Calibración Profesional FLIR + 1 Lente Adicional Gratis,calibracion-profesional-flir-lente-gratis,Flir,active,1959,1,0
+8821433827566,Calibración T10XX,calibracion-t10xx,Flir,active,0,0,0
+4387378495530,Cámara COROCAM 6D,corocam-6d,Flir,archived,3732,0,0
+8630993289454,Cámara de Efecto Corona CoroCAM® UVS - Detección UV Solar-Blind para Inspección de Alta Tensión,corocam-®-uvs,UVIRCO,active,2122,1,0
+4387339337770,CÁMARA FIJA QUASAR 4K,camara-fija-quasar-4k,Flir,archived,8081,0,0
+4386371174442,Cámara FLIR E53/24°,flir-e53,Flir,active,4157,1,0
+8888476958958,Cámara FLIR FC-610 AI -,camara-flir-fc-610-ai,Flir,active,0,0,0
+9150989861102,Cámara FLIR Quasar™ CF-6408 Ultra HD para Baja Iluminación,camara-flir-quasar™-cf-6408-ultra-hd-para-baja-iluminacion,FLIR,active,158,1,0
+9150990745838,Cámara Mini-Domo 4K FLIR Ariel CM-3508-11-I con Análisis de Video,camara-mini-domo-4k-flir-ariel-cm-3508-11-i-con-analisis-de-video,FLIR,active,652,1,0
+8913686528238,CAMARA MSX MODULO AXX Y AXXX,camara-msx-modulo-a50-a70,Flir,active,1423,0,0
+8809566470382,Cámara Multiespectral CoroCAM® 8HD UVS para Drones - Corona UV Solar-Blind + Térmica + HD Visual,corocam-8hd-uvs,UVIRCO,active,2342,1,0
+4387340222506,CÁMARA QUASAR 4K IR PTZ,camara-quasar-4k-ir-ptz,Flir,archived,9812,0,0
+8823368122606,Camara Termografica 1,item-de-prueba,Flir,active,0,0,0
+8828248162542,Cámara Termográfica de Prueba 2,item-de-prueba-2,Flir,draft,0,0,0
+4386306588714,Cámara Termográfica Detección de Gas FLIR G300 A Series - OGI Profesional,camara-deteccion-gas-flir-g300-a-series-ogi-profesional,Flir,active,2030,0,0
+8597808349422,Cámara Termográfica Detección de Gas FLIR G304 - OGI Portátil,camara-deteccion-gas-flir-g304-ogi-portatil,Flir,active,1802,1,0
+8809549136110,Cámara Termográfica Detección de Gas FLIR G306 14.5° - OGI,camara-deteccion-gas-flir-g306-14-5-ogi,Flir,active,1755,1,0
+8809560735982,Cámara Termográfica Detección de Gas FLIR G306 24° - OGI,camara-deteccion-gas-flir-g306-24-ogi,Flir,active,1798,1,0
+8597796061422,Cámara Termográfica Detección de Gas FLIR G343 - OGI SF6,camara-deteccion-sf6-flir-g343-ogi-refrigerantes,Flir,active,2050,1,0
+8597813395694,Cámara Termográfica Detección de Gas FLIR G620a - OGI Refrigerada,camara-deteccion-gas-flir-g620a-ogi-refrigerada,Flir,active,2008,0,0
+4386286338090,Cámara Termográfica Detección de Gas FLIR GF300 - OGI Hidrocarburos VOC,camara-deteccion-hidrocarburos-flir-gf300-ogi-voc,Flir,active,2017,0,0
+4386291318826,Cámara Termográfica Detección de Gas FLIR GF304 14.5° - OGI Portátil,camara-deteccion-gas-flir-gf304-14-5-ogi-portatil,Flir,active,1943,1,0
+4386293219370,Cámara Termográfica Detección de Gas FLIR GF306 24° - OGI Metano,camara-deteccion-gas-flir-gf306-24-ogi-metano,Flir,active,1856,0,0
+4386400993322,Cámara Termográfica Detección de Gas FLIR GF309 - OGI Sulfuros,camara-deteccion-sulfuros-flir-gf309-ogi-h2s,Flir,active,2144,0,0
+4386298134570,Cámara Termográfica Detección de Gas FLIR GF320 - OGI Hidrocarburos,camara-deteccion-hidrocarburos-flir-gf320-ogi-metano,Flir,active,2016,1,0
+4386300493866,Cámara Termográfica Detección de Gas FLIR GF343 - OGI SF6 Refrigerantes,camara-deteccion-sf6-gases-refrigerantes-flir-gf343-ogi,Flir,active,2052,0,0
+4386304294954,Cámara Termográfica Detección de Gas FLIR GF346 - OGI Amoníaco,camara-deteccion-amoniaco-flir-gf346-ogi-nh3,Flir,active,2096,1,0
+4386321367082,Cámara Termográfica Detección de Gas FLIR GF620 - OGI Alta Sensibilidad,camara-deteccion-gas-flir-gf620-ogi-alta-sensibilidad,Flir,active,2170,1,0
+4386334343210,Cámara Termográfica Detección de Gas FLIR GF77 - OGI Metano Portátil,camara-deteccion-metano-flir-gf77-ogi-portatil,Flir,active,1795,1,0
+4386335588394,Cámara Termográfica Detección de Gas FLIR GF77a - OGI Metano No Refrigerada,camara-deteccion-metano-flir-gf77a-ogi-no-refrigerada,Flir,active,1877,1,0
+4386282373162,Cámara Termográfica Detección de Gas FLIR GFX320 - OGI Extendida,camara-deteccion-gas-flir-gfx320-ogi-extendida,Flir,active,1990,1,0
+8809575940334,Cámara Termográfica FLIR E76 Dual FOV 14° + 24°,flir-e76-dual-fov-14-24,Flir,active,7090,1,0
+8923416461550,Cámara Termográfica FLIR T1020 HD 1024×768 con Lentes 28° y 12° - UltraMax™ y OSX™,flir-t1020-28-12,Flir,active,1548,1,0
+8923417247982,Cámara Termográfica FLIR T1020 HD 1024×768 con Lentes 28° y 45° - UltraMax™ y OSX™,flir-t1020-28-12-copia,Flir,active,1518,1,0
+8891041349870,Cameleon Software Tactic,cameleon-software-tactic,Flir,active,0,0,0
+4386563293226,CAMELEON V5 ENTERPRISE,cameleon-v5-enterprise,Flir,active,1741,0,0
+9150992351470,Cameleon™ Tactical Perimeter Intrusion Detection Software,cameleon™-tactical-perimeter-intrusion-detection-software,FLIR,active,281,1,0
+8837511282926,Capacitación en Terreno,capacitacion-en-terreno,Flir,active,0,0,0
+8903204962542,Carcasa Axx IP69k (T912302) AXX INOX (41.9MM),carcasa-axx-ip69k-t912302-axx-inox,Flir,active,0,0,0
+8903216038126,Carcasa Axxx IP67 T912366  (39mm),carcasa-axxx-ip67-t912366-39mm,Flir,active,0,0,0
+8853363196142,Carcasa de protección con cortina de viento,carcasa-de-proteccion-con-cortina-de-viento,Flir,active,3196,0,0
+8903210991854,Carcasa protectora IP67 para Axx,carcasa-axx-ip69k-t912301-inox-43mm,Flir,active,0,0,0
+4506358579242,Cargador 12V para Automóvil FLIR,car-charger-t198532,Flir,active,98,1,0
+4506440302634,Cargador de Batería T6xx y T1020,battery-charger-t198126,Flir,active,235,1,0
+8815617179886,"Cargador de Baterías Dual FLIR T199610 - Compatible Series T5xx, T8xx y GF77 (Requiere Fuente T911633ACC)",cargador-de-baterias-flir-para-series-t5xx-t8xx-y-gf77-requiere-fuente-t911633acc-se-vende-por-separado,Flir,active,2217,1,0
+8727265116398,Cargador Dual FLIR T197650 para Baterías Cámaras Termográficas T4xx,2-bay-battery-charger-incl-power-supply-with-multi-plugs-t197650,Flir,active,1564,1,0
+8815620456686,"Cargador FLIR T198125 Doble Bahía con Fuente para Serie K (K33, K45, K53, K55, K65)",cargador-flir-con-fuente-incluida-compatible-con-camaras-para-combate-contra-incendios-serie-k-k33-k45-k53-k55-y-k65,Flir,active,2398,1,0
+8815626256622,Cargador para camara P6X,cargador-para-camara-p6x,Flir,active,0,0,0
+4597200879658,Cargador para camión (T198322ACC),cargador-para-camion-t198322acc,Flir,active,636,1,0
+4597197799466,Cargador para Camión FLIR T199414ACC 12V USB Micro-B para FLIR K2,t199414acc-cargador-para-camion-para-flir-k2,Flir,active,2165,1,0
+8932943495406,CB PIRI,cb-piri,Flir,active,0,0,0
+4506489225258,"Cigarette Lighter Adapter Kit, 12 VDC (T198509)",cigarette-lighter-adapter-kit-12-vdc-t198509,Flir,active,216,1,0
+4507091075114,"CLOSE-UP IR LENS, 1.5X (25 ΜM) WITH CASE (T198066)",close-up-ir-lens-1-5x-25-μm-with-case-t198066,Flir,active,125,1,0
+4507096416298,"Close-up IR lens, 2.9x (50 µm) with case (T198059)",close-up-ir-lens-2-9x-50-µm-with-case-t198059,Flir,active,125,1,0
+4507097301034,"CLOSE-UP IR LENS, 5.8X (100 ΜM) WITH CASE (T198060)",close-up-ir-lens-5-8x-100-μm-with-case-t198060,Flir,active,125,1,0
+8942502183150,Conferencia de transmisión de imágenes (FLIR A400/A700),conferencia-de-transmision-de-imagenes-flir-a400-a700,Flir,active,0,0,0
+8941363757294,Configuración avanzada del sensor inteligente (solo válido junto con T300389),configuracion-avanzada-del-sensor-inteligente-solo-valido-junto-con-t300312-o-t300389,Flir,active,0,0,0
+8941362348270,Configuración del sensor inteligente (FLIR A400/A700),configuracion-del-sensor-inteligente-flir-a400-a700,Flir,active,0,0,0
+9094634406126,Configuración del sensor inteligente (FLIR A50/A70),transmision-de-imagenes-de-flir-a50-a70-copia,Flir,active,0,0,0
+4510572249130,Connector cap kit (T300202),connector-cap-kit-t300202-_-flir-systems-jpg,Flir,active,521,1,0
+8891080212718,Convertidor y fuente de alimentación para el RANGER R20SS,convertidor-y-fuente-de-alimentacion-para-el-ranger-r20ss,Flir,active,172,0,0
+8630949871854,CoroCAM 6HD Cámara Detección Corona UV - Alta Tensión Profesional,corocam-6d-copy,UVIRCO,active,3972,0,0
+4387379576874,COROCAM 7,corocam-7,Flir,archived,4319,0,0
+4387380658218,COROCAM 8 UAV,corocam-8-uav,Flir,archived,4182,0,0
+4387380133930,CoroCAM 8HD Sistema UV + Térmico FLIR 640×512 + Cámara HD - Detección Corona,corocam-8,UVIRCO,active,4394,0,0
+8630952165614,CoroCAM 8HD Sistema UV + Térmico FLIR 640×512 + Cámara HD - Detección Corona,corocam-8-copy,UVIRCO,archived,4382,0,0
+8630983885038,CoroCAM 8HD UAV - Cámara Termográfica Detección Efecto Corona para Drones Industriales,corocam-8-uav-copy,UVIRCO,active,1477,0,0
+8923377697006,CoroCAM ® UVS-AP,corocam-®-uvs-copia,UVIRCO,active,117,0,0
+8923402436846,CoroCAM ® UVS-IS,corocam-®-uvs-t-copia,UVIRCO,active,117,0,0
+8923384807662,CoroCAM ® UVS-T,corocam-®-uvs-ap-copia,UVIRCO,active,117,0,0
+8630956622062,CoroCAM® 7HD – Cámara  Profesional para Detección de Corona y Descargas Parciales en Alta Tensión,corocam-7hd,UVIRCO,active,3055,0,0
+8935769637102,"Curso de Termografía Nivel 1 con certificación · Certificación Internacional FLIR<span class=""hidden-price-in-title"">. Precio: 2300 USD</span>",curso-de-termografia-nivel-1,Flir,active,1741,1,1
+8990672257262,"Curso de Termografía Nivel 2 ITC · Certificación Internacional FLIR<span class=""hidden-price-in-title"">. Precio: 2350 USD</span>",curso-de-termografia-nivel-2,Flir,active,1609,1,0
+8815606366446,Detector de Voltaje sin Contacto FLIR VP52-2 CAT IV con Linterna LED,flir-vp52-2-detector-de-voltaje-sin-contacto-con-linterna-triple-alarma-y-punta-de-inspeccion,Flir,active,2035,1,0
+8835315728622,"E-Series, A20 - Ajuste de Calibración",e-series-a20-ajuste-de-calibracion,Colvin,active,65,1,0
+8835315794158,"E-Series, A20 - Ajuste de Calibración Filtro Alta T°",e-series-a20-ajuste-de-calibracion-filtro-alta-talta-t,Colvin,active,80,1,0
+8835315761390,"E-Series, A20 - Ajuste de Calibración Lente Extra",e-series-a20-ajuste-de-calibracion-lente-extra,Colvin,active,77,1,0
+8835315892462,"E-Series, A20 - Hora de mantención Limpieza interior exterior",e-series-a20-hora-de-mantencion-limpieza-interior-exterior,Colvin,active,89,1,0
+8835315859694,"E-Series, A20 - Revisión Equipo",e-series-a20-revision-equipo,Colvin,active,59,1,0
+8835314614510,"E30, E40 - Ajuste de Calibración",e30-e40-ajuste-de-calibracion,Colvin,active,60,1,0
+8835314647278,"E30, E40 - Ajuste de Calibración Lente Extra",e30-e40-ajuste-de-calibracion-lente-extra,Colvin,active,72,1,0
+8835314712814,"E30, E40 - Hora de mantención Limpieza interior exterior",e30-e40-hora-de-mantencion-limpieza-interior-exterior,Colvin,active,84,1,0
+8835314680046,"E30, E40 - Revisión Equipo",e30-e40-revision-equipo,Colvin,active,54,1,0
+8835315138798,"E4, E5 - Ajuste de Calibración",e4-e5-ajuste-de-calibracion,Colvin,active,58,1,0
+8835315237102,"E4, E5 - Hora de mantención Limpieza interior exterior",e4-e5-hora-de-mantencion-limpieza-interior-exterior,Colvin,active,82,1,0
+8835315171566,"E4, E5 - Revisión Equipo",e4-e5-revision-equipo,Colvin,active,52,1,0
+8835314450670,"E50, E60 - Ajuste de Calibración",e50-e60-ajuste-de-calibracion,Colvin,active,60,1,0
+8835314516206,"E50, E60 - Ajuste de Calibración Filtro Alta T°",e50-e60-ajuste-de-calibracion-filtro-alta-talta-t,Colvin,active,75,1,0
+8835314483438,"E50, E60 - Ajuste de Calibración Lente Extra",e50-e60-ajuste-de-calibracion-lente-extra,Colvin,active,72,1,0
+8835314581742,"E50, E60 - Hora de mantención Limpieza interior exterior",e50-e60-hora-de-mantencion-limpieza-interior-exterior,Colvin,active,84,1,0
+8835314548974,"E50, E60 - Revisión Equipo",e50-e60-revision-equipo,Colvin,active,54,1,0
+8835315040494,"E6, E8 - Ajuste de Calibración",e6-e8-ajuste-de-calibracion,Colvin,active,58,1,0
+8835315106030,"E6, E8 - Hora de mantención Limpieza interior exterior",e6-e8-hora-de-mantencion-limpieza-interior-exterior,Colvin,active,82,1,0
+8835315073262,"E6, E8 - Revisión Equipo",e6-e8-revision-equipo,Colvin,active,52,1,0
+8835314745582,"E75, 85, 95 - Ajuste de Calibración",e75-85-95-ajuste-de-calibracion,Colvin,active,63,1,0
+8835314811118,"E75, 85, 95 - Ajuste de Calibración Filtro Alta T°",e75-85-95-ajuste-de-calibracion-filtro-alta-talta-t,Colvin,active,78,1,0
+8835314876654,"E75, 85, 95 - Hora de mantención Limpieza interior exterior",e75-85-95-hora-de-mantencion-limpieza-interior-exterior,Colvin,active,87,1,0
+8835314843886,"E75, 85, 95 - Revisión Equipo",e75-85-95-revision-equipo,Colvin,active,57,1,0
+4387303391274,ELARA™ FC-SERIES ID,elara™-fc-series-id,Flir,draft,9117,0,0
+4387327606826,ELARA™ FC-SERIES O,elara™-fc-series-o,Flir,archived,2086,0,0
+9199944630510,Envio Centro Norte Chile,envio-centro-norte-chile,Flir,active,56,0,0
+9199944597742,Envio Centro Sur Chile,envio-centro-sur-chile,Flir,active,54,0,0
+9199944663278,Envio Norte Chile,envio-norte-chile,Flir,active,49,0,0
+9199944368366,Envio Region de Valparaiso,envio-region-de-valparaiso,Flir,active,50,0,0
+9199944761582,Envio Santiago / RM,envio-santiago-rm,Flir,active,58,0,0
+9199944499438,Envio Sur / Austral Chile,envio-sur-austral-chile,Flir,active,57,0,0
+8598790635758,EO IR Mk II — High-Fidelity Infrared & High Definition Daylight Imaging Payload,eo-ir-mk-ii-high-fidelity-infrared-high-definition-daylight-imaging-payload,Flir,active,1045,0,0
+4387184902186,ESTACIÓN DE TRABAJO USS CLIENT,estacion-de-trabajo-uss-client,Flir,active,1590,0,0
+7997362962670,Estuche Protector FLIR T912180ACC para Cámara Térmica ONE Edge,estuche-flir-one-edge,Flir,active,1226,1,0
+4511139201066,Estuche Rígido FLIR T198528 para Cámaras Termográficas Serie Ex,hard-transport-case-t198528,Flir,active,1814,1,0
+4510571102250,Estuche Rígido FLIR T300163 para Cámaras Termográficas A400/A700 y GF77a,hard-case-for-the-flir-a400-a700-series-t300163,Flir,active,1813,1,0
+4510582341674,"Ethernet cable M12 to RJ45, 10 m (T911855ACC)",ethernet-cable-m12-to-rj45-10-m-t911855acc,Flir,archived,874,1,0
+4510577328170,"ETHERNET CABLE M12 TO RJ45, 2 M (T911854ACC)",ethernet-cable-m12-to-rj45-2-m-t911854acc,Flir,active,616,1,0
+4510577950762,"Ethernet cable M12 to RJ45F, 0.3 m (T911869ACC)",ethernet-cable-m12-to-rj45f-0-3-m-t911869acc,Flir,active,225,1,0
+6181041242293,ETS320,ets320,Flir,active,3550,0,0
+9103814426862,Extech CG204,extech-cg204,Flir,active,0,0,0
+6751212142773,Extech DV690 Detector de Voltaje sin Contacto con Linterna LED y Láser,extech-dv690,Flir,active,1448,1,0
+4462671200298,EXTECH IR200,extech-ir200,Flir,active,630,1,0
+8597775515886,Extech MG310 Comprobador de Aislamiento/Multímetro CAT III 600V Compacto,extech-mg310,Flir,active,1426,1,0
+8597783085294,Extech MG320 Comprobador de Aislamiento/Multímetro True RMS CAT IV 1000V,extech-mg320,Flir,active,1626,1,0
+8597787902190,Extech MG500 Comprobador Digital de Aislamiento de Alta Tensión hasta 10kV,extech-mg500,Flir,active,1502,1,0
+8727289495790,Extension Pole (MR04),extension-pole-mr04,Flir,active,714,0,0
+4387763650602,EZ CURE II Caja de Curado Termostática para Cilindros de Concreto ASTM C31,ez-cure-ii,Flir,active,5018,0,0
+8597852225774,FC T2-Series,fc-t2-series,Flir,archived,1803,0,0
+8906128425198,FH644-ID 13MM,fh644-id,Flir,active,0,0,0
+8916805157102,FH669-ID 9MM,fh644-id-copia,Flir,active,0,0,0
+4475626356778,Fido X2,fido-x2,Flir,active,3797,1,0
+4475628781610,Fido X3,fido-x3,Flir,active,2591,1,0
+4400690069546,FLIR A300,flir-a300,Flir,active,5331,0,0
+4389876039722,FLIR A310,flir-a310-1,Flir,active,2511,1,0
+4386525216810,FLIR A310 EX,flir-a310-ex,Flir,active,2709,1,0
+4386525544490,FLIR A315,flir-a315,Flir,active,2474,0,0
+4386526036010,FLIR A315 f,flir-a315-f,Flir,active,2317,0,0
+4386526265386,FLIR A35,flir-a35,Flir,active,2445,0,0
+9037399130350,FLIR A50 29°,flir-a50-95-copia,Flir,active,0,0,0
+8930760360174,FLIR A50 51° - Cámara Termográfica Inteligente 464x348 30Hz (-20°C a 1000°C),flir-a50-con-lente-de-51-464-x-348-30-hz-de-20-c-a-1000-c,Flir,active,1435,0,0
+9037398737134,FLIR A50 95°,flir-a50-51-copia,Flir,active,0,0,0
+8941355958510,FLIR A500,flir-a500,Flir,active,0,0,0
+4568182358058,FLIR A500-EST,flir-a500-est,Flir,active,1994,1,0
+4386527379498,FLIR A615,flir-a615,Flir,active,2298,0,0
+4386531049514,FLIR A65,flir-a65,Flir,active,2237,1,0
+6180857839797,FLIR A655SC 25°,sc655,Flir,active,1368,1,0
+8918506701038,FLIR A70 51°,flir-a70-is-51-89951-1101-copia,Flir,active,0,0,0
+9088985465070,FLIR A70 51°,flir-a70-51-copia,Flir,active,0,0,0
+8913673814254,FLIR A70 51° (rango de temperatura),flir-a70-is-95-89995-0101-copia-2,Flir,active,0,0,0
+8903177011438,FLIR A70 95°,flir-a70-89995-0101,Flir,active,0,0,0
+9090208858350,FLIR A70 95° rango opcional,flir-a70-95-rango-opcional,Flir,active,0,0,0
+4568192286762,FLIR A700-EST,flir-a700-est,Flir,active,3056,1,0
+6799294660789,FLIR A700-EST™ IS,flir-a700-est™-is,Flir,active,7190,1,0
+4386550448170,FLIR ARGUS,flir-argus,Flir,active,2258,0,0
+9150990778606,FLIR ARIEL™ CM-3202 para Monitoreo Continuo,ariel™-cm-3202,FLIR,active,197,1,0
+9150990713070,FLIR Ariel™ CM-3505-11-I,flir-ariel™-cm-3505-11-i,FLIR,active,151,1,0
+4506203029546,FLIR Atlas SDK for .NET,flir-atlas-sdk-for-net,Flir,active,662,1,0
+4386527674410,FLIR AX8,flir-ax8,Flir,active,932,1,0
+4511219777578,FLIR Breach® PTQ136,flir-breach®-ptq136,Flir,active,6810,1,0
+6976581206197,FLIR C3-X · Cámara Termográfica (128x96 px) · Rango -20°C a +300°C,camara-termica-compacta-flir-c3-x,Flir,active,1905,1,0
+4386393030698,FLIR C5 · Cámara Termográfica (160x120 px) · Rango -20°C a +400°C,flir-c5,Flir,active,2071,1,0
+9140777648366,FLIR C8 · Cámara Termográfica · 320×240 · Rango -20 a 450°C,flir-c8-camara-termografica-320-240-rango-20-a-450-c,Flir,active,1342,1,1
+4506266402858,FLIR Cargador de Baterías,battery-charger-t198531,Flir,active,55,1,0
+9150992220398,FLIR CCTV Keyboard,flir-cctv-keyboard,FLIR,active,328,1,0
+4387764731946,FLIR CM174 Amperímetro de Gancho con Cámara Térmica 80x60 y Tecnología IGM,flir-cm174,Flir,active,3908,1,0
+4387762274346,"FLIR CM275 Amperímetro de Gancho con Cámara Térmica 160x120, Bluetooth® y METERLiNK®",flir-cm275,Flir,active,2508,1,0
+8572562473198,FLIR CM276 - Pinza Amperimétrica AC/DC 1000A con Termómetro IR y Bluetooth,flir-cm276,Flir,active,2010,1,0
+4387845931050,FLIR CM42 Amperímetro de Gancho Profesional 400A CAT III,flir-cm42,Flir,active,6921,1,0
+4387767943210,FLIR CM44 Amperímetro de Gancho Profesional 400A CAT III True RMS,flir-cm44,Flir,active,6922,1,0
+4387847438378,FLIR CM46 Amperímetro de Gancho con Cámara Térmica 80x60,flir-cm46,Flir,active,7225,1,0
+4387768991786,"FLIR CM55 Amperímetro de Gancho con Bobina Flexible 10"" y Bluetooth®",flir-cm55,Flir,active,4122,1,0
+4387768696874,"FLIR CM57 Amperímetro de Gancho con Bobina Flexible 18"" y Bluetooth®",flir-cm57,Flir,active,7034,1,0
+8572584657134,"FLIR CM57-2 Amperímetro de Gancho con Bobina Flexible 18"" y Bluetooth®",flir-cm57-2,Flir,active,1689,1,0
+4387788914730,FLIR CM65 Amperímetro de Gancho para Instalaciones Solares Fotovoltaicas con Cables MC4,flir-cm65,Flir,active,9047,1,0
+4387783376938,FLIR CM72 Amperímetro de Gancho Compacto con Gancho Estrecho y Luces LED,flir-cm72,Flir,active,7957,1,0
+4387762765866,FLIR CM74 - Amperímetro de Gancho Compacto,flir-cm74,Flir,active,8186,1,0
+4387782557738,FLIR CM78 Amperímetro industrial de Alto Rendimiento,flir-cm78,Flir,active,7922,1,0
+4387782197290,FLIR CM82 Amperímetro de potencia Industrial,flir-cm82,Flir,active,8343,1,0
+4387762143274,FLIR CM83 Amperímetro de Gancho Industrial con Análisis de Potencia y Bluetooth®,flir-cm83,Flir,active,1765,1,0
+4387770630186,FLIR CM85 Amperímetro de Potencia Industrial,flir-cm85,Flir,active,9543,1,0
+8572583805166,FLIR CM85-2 - Pinza Amperimétrica Industrial 1000A AC/DC con Análisis de Potencia y VFD,flir-cm85-2,Flir,active,2833,1,0
+4387789733930,FLIR CM94 Amperímetro de Gancho 2000A AC/DC CAT IV-1000V para Servicios Públicos,flir-cm94,Flir,active,8111,1,0
+7995448852718,FLIR Cx5 · Cámara Termográfica ATEX (128x96 px) · Rango -20°C a +300°C,flir-cx5,Flir,active,1621,1,0
+4387784818730,FLIR DM166 Multímetro Digital con Cámara Térmica 80x60 y Tecnología IGM,flir-dm166,Flir,active,8997,1,0
+4558159577130,FLIR DM284 KIT Multímetro con Cámara Térmica 160x120 - Kit Completo,dm284-kit,Flir,active,9223,1,0
+4387771514922,FLIR DM284 Multímetro Digital con Cámara Térmica 160x120 y Tecnología IGM,flir-dm284,Flir,active,5517,1,0
+4563149258794,FLIR DM284-FLEX-KIT Multímetro con Cámara Térmica 160x120 + Pinza Flexible,flir-dm284-flex-kit,Flir,active,1869,1,0
+4387771154474,"FLIR DM285 Multímetro Digital con Cámara Térmica 160x120, Bluetooth® y METERLiNK®",flir-dm285,Flir,active,2674,1,0
+8597772959982,"FLIR DM286 Multímetro Digital con Cámara Térmica 160x120, Bluetooth® y METERLiNK®",flir-dm286,Flir,active,1673,1,0

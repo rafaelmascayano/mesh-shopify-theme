@@ -253,6 +253,30 @@
 </style>
 
 <script>
+  (function () {
+    var previousOnError = window.onerror;
+
+    window.onerror = function (message, source) {
+      var messageText = String(message || '');
+      var sourceText = String(source || '');
+
+      if (
+        sourceText.indexOf('unific-util-shopify') !== -1 &&
+        messageText.indexOf('(intermediate value)(...) is not a function') !== -1
+      ) {
+        return true;
+      }
+
+      if (typeof previousOnError === 'function') {
+        return previousOnError.apply(this, arguments);
+      }
+
+      return false;
+    };
+  })();
+</script>
+
+<script>
 
 
 
